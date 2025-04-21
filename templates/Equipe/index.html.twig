@@ -1,0 +1,386 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}EasyTicket - Gestion des équipes{% endblock %}
+{% block stylesheets %}
+    <style>
+    .team-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    }
+    .modal {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .modal-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    }
+    </style>
+{% endblock %}
+{% block javascripts %}
+    <script>
+        // Toggle sidebar
+        document.getElementById('toggle-sidebar').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('collapsed');
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-chevron-left')) {
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            } else {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+        });
+
+        // Team modal management
+        const teamModal = document.getElementById('team-modal');
+        const addTeamBtn = document.getElementById('add-team-btn');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const saveTeamBtn = document.getElementById('save-team-btn');
+
+        // Confirm modal management
+        const confirmModal = document.getElementById('confirm-modal');
+        const cancelConfirmBtn = document.getElementById('cancel-confirm-btn');
+        const confirmArchiveBtn = document.getElementById('confirm-archive-btn');
+
+        // Show add team modal
+        addTeamBtn.addEventListener('click', function() {
+            document.getElementById('modal-title').textContent = 'Ajouter une équipe';
+            teamModal.classList.remove('modal-hidden');
+        });
+
+        // Show edit team modal
+        document.querySelectorAll('.edit-team-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('modal-title').textContent = 'Modifier une équipe';
+                // In a real app, we would populate the form with the team data
+                teamModal.classList.remove('modal-hidden');
+            });
+        });
+
+        // Show archive confirmation modal
+        document.querySelectorAll('.archive-team-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                confirmModal.classList.remove('modal-hidden');
+            });
+        });
+
+        // Close modals
+        cancelModalBtn.addEventListener('click', function() {
+            teamModal.classList.add('modal-hidden');
+        });
+
+        cancelConfirmBtn.addEventListener('click', function() {
+            confirmModal.classList.add('modal-hidden');
+        });
+
+        // Save team (just close the modal in this demo)
+        saveTeamBtn.addEventListener('click', function() {
+            teamModal.classList.add('modal-hidden');
+            // In a real app, we would save the team data here
+        });
+
+        // Confirm archive (just close the modal in this demo)
+        confirmArchiveBtn.addEventListener('click', function() {
+            confirmModal.classList.add('modal-hidden');
+            // In a real app, we would archive the team here
+        });
+
+        // Logo upload preview
+        document.getElementById('logo-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('logo-preview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <!-- Main Content -->
+    <div class="flex-1 overflow-auto">
+        <!-- Header -->
+        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-users mr-2 text-red-600"></i>
+                Gestion des équipes
+            </h1>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Rechercher..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <main class="p-6">
+            <!-- Actions Bar -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex space-x-2">
+                    <div class="relative">
+                        <select class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Tous les statuts</option>
+                            <option>Actif</option>
+                            <option>Archivé</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <select class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Tous les pays</option>
+                            <option>France</option>
+                            <option>Espagne</option>
+                            <option>Angleterre</option>
+                            <option>Allemagne</option>
+                            <option>Italie</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+                <button id="add-team-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center">
+                    <i class="fas fa-plus mr-2"></i>
+                    Ajouter une équipe
+                </button>
+            </div>
+
+            <!-- Teams Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Logo
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nom
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Pays
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Statut
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                {% for equipe in equipes %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <img src="{{ asset('images/' ~ equipe.logo) }}"
+                                                 alt="{{ equipe.nom }}" class="team-logo">
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ equipe.nom }}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <span class="text-sm text-gray-500">{{ equipe.pays }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                            {{ equipe.statut == 'Actif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                            {{ equipe.statut }}
+                        </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button class="edit-team-btn text-blue-600 hover:text-blue-900 mr-3" data-id="{{ equipe.id }}">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </button>
+                                            {% if equipe.statut == 'Actif' %}
+                                                <form method="post" action="#" class="inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('archive' ~ equipe.id) }}">
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                                        <i class="fas fa-archive"></i> Archiver
+                                                    </button>
+                                                </form>
+                                            {% else %}
+                                                <form method="post" action="#" class="inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('restore' ~ equipe.id) }}">
+                                                    <button type="submit" class="text-green-600 hover:text-green-900">
+                                                        <i class="fas fa-undo"></i> Restaurer
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                            Aucune équipe trouvée
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                </div>
+                <!-- Pagination -->
+                <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Précédent
+                        </a>
+                        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Suivant
+                        </a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Affichage de <span class="font-medium">1</span> à <span class="font-medium">5</span> sur <span class="font-medium">12</span> équipes
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Précédent</span>
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <a href="#" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                    1
+                                </a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                    2
+                                </a>
+                                <a href="#" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                    3
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Suivant</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add/Edit Team Modal -->
+<div id="team-modal" class="modal modal-hidden fixed inset-0 overflow-y-auto z-50">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Ajouter une équipe
+                        </h3>
+                        <div class="mt-4">
+                            <form id="team-form">
+                                <div class="mb-4">
+                                    <label for="team-name" class="block text-sm font-medium text-gray-700 mb-1">Nom de l'équipe</label>
+                                    <input type="text" id="team-name" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="team-country" class="block text-sm font-medium text-gray-700 mb-1">Pays</label>
+                                    <select id="team-country" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">Sélectionner un pays</option>
+                                        <option value="France">France</option>
+                                        <option value="Espagne">Espagne</option>
+                                        <option value="Angleterre">Angleterre</option>
+                                        <option value="Allemagne">Allemagne</option>
+                                        <option value="Italie">Italie</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                                    <div class="mt-1 flex items-center">
+                                            <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                                <img id="logo-preview" src="https://via.placeholder.com/48" alt="Logo preview" class="h-full w-full object-contain">
+                                            </span>
+                                        <label for="logo-upload" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                                            <span>Changer</span>
+                                            <input id="logo-upload" type="file" class="sr-only">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                                    <div class="mt-1 space-y-2">
+                                        <div class="flex items-center">
+                                            <input id="status-active" name="status" type="radio" checked class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                            <label for="status-active" class="ml-2 block text-sm text-gray-700">
+                                                Actif
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input id="status-archived" name="status" type="radio" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                            <label for="status-archived" class="ml-2 block text-sm text-gray-700">
+                                                Archivé
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="save-team-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Enregistrer
+                </button>
+                <button type="button" id="cancel-modal-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Archive Confirmation Modal -->
+<div id="confirm-modal" class="modal modal-hidden fixed inset-0 overflow-y-auto z-50">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                        <i class="fas fa-exclamation text-red-600"></i>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="confirm-modal-title">
+                            Archiver l'équipe
+                        </h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">
+                                Êtes-vous sûr de vouloir archiver cette équipe ? Elle ne sera plus disponible pour la création de nouveaux matchs.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="confirm-archive-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    Confirmer
+                </button>
+                <button type="button" id="cancel-confirm-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Annuler
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

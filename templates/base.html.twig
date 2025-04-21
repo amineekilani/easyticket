@@ -1,17 +1,106 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Baha Eddine Manai{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+    <link rel="stylesheet" href="{{ asset('CSS/bootstrap.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block stylesheets %}
+    {% endblock %}
+    <style>
+        .sidebar{
+            background-color: #b62020;
+        }
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .sidebar-text {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+    </style>
+    {% block javascripts %}
+    {% endblock %}
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+</head>
+<body>
+
+    <div class="flex h-screen overflow-hidden">
+        <div class="sidebar text-white w-64 flex flex-col">
+            <div class="p-4 flex items-center space-x-2 border-b border-red-900">
+                <i class="fas fa-futbol text-3xl text-white-600"></i>
+                <h1 class="text-2xl font-bold text-white-800">EasyTicket</h1>
+            </div>
+            <div class="p-4 flex items-center justify-between border-b border-red-900">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span class="sidebar-text">Admin</span>
+                </div>
+                <button id="toggle-sidebar" class="text-red-300 hover:text-white">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            </div>
+            <nav class="flex-1 overflow-y-auto">
+                <ul class="space-y-1 p-2">
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                            <i class="fas fa-home mr-3"></i>
+                            <span class="sidebar-text">Tableau de bord</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                            <i class="fas fa-calendar-alt mr-3"></i>
+                            <span class="sidebar-text">Matchs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded bg-red-800">
+                            <i class="fas fa-users mr-3"></i>
+                            <span class="sidebar-text">Équipes</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                            <i class="fas fa-stadium mr-3"></i>
+                            <span class="sidebar-text">Stades</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                            <i class="fas fa-receipt mr-3"></i>
+                            <span class="sidebar-text">Billets</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            <span class="sidebar-text">Statistiques</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="p-4 border-t border-red-900">
+                <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-900">
+                    <i class="fas fa-sign-out-alt mr-3"></i>
+                    <span class="sidebar-text">Déconnexion</span>
+                </a>
+            </div>
+        </div>
+    {% block body %}
+    {% endblock %}
+    </div>
+</body>
 </html>

@@ -1,0 +1,28 @@
+.sidebar {
+    transition: all 0.3s ease;
+}
+.sidebar.collapsed {
+    width: 70px;
+}
+.sidebar.collapsed .sidebar-text {
+    display: none;
+}
+.sidebar.collapsed .logo-text {
+    display: none;
+}
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+}
+.team-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+.modal {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.modal-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}

@@ -109,11 +109,27 @@ final class EquipeController extends AbstractController
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
-    public function show(Equipe $equipe): Response
+    #[Route('/{id}/archive', name: 'app_equipe_archive', methods: ['POST'])]
+    public function archive(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('equipe/show.html.twig', [
-            'equipe' => $equipe,
-        ]);
+        if ($this->isCsrfTokenValid('archive'.$equipe->getId(), $request->request->get('_token'))) {
+            $equipe->setStatut('Archivé');
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'équipe a été archivée avec succès');
+        }
+
+        return $this->redirectToRoute('app_equipe_index');
+    }
+
+    #[Route('/{id}/restore', name: 'app_equipe_restore', methods: ['POST'])]
+    public function restore(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('restore'.$equipe->getId(), $request->request->get('_token'))) {
+            $equipe->setStatut('Actif');
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'équipe a été restaurée avec succès');
+        }
+
+        return $this->redirectToRoute('app_equipe_index');
     }
 }

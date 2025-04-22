@@ -146,10 +146,10 @@
                         </div>
                     </div>
                 </div>
-                <button id="add-team-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center">
+                <a id="add-team-btn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center" href="{{ path('app_equipe_new') }}">
                     <i class="fas fa-plus mr-2"></i>
                     Ajouter une équipe
-                </button>
+                </a>
             </div>
 
             <!-- Teams Table -->
@@ -179,7 +179,7 @@
                                 {% for equipe in equipes %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <img src="{{ asset('images/' ~ equipe.logo) }}"
+                                            <img src="{{ asset('uploads/logos/' ~ equipe.logo) }}"
                                                  alt="{{ equipe.nom }}" class="team-logo">
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">

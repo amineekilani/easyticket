@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle équipe - Admin{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .logo-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 0.375rem;
+        }
+        .file-upload-label {
+            transition: all 0.3s ease;
+        }
+        .file-upload-label:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function previewLogo(input) {
+            const preview = document.getElementById('logo-preview');
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow rounded-lg overflow-hidden" style="padding: 40px 70px 40px 70px">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">Ajouter une nouvelle équipe</h2>
+            </div>
+
+            <div class="px-6 py-4">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+                <div>
+                    {{ form_label(form.nom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.nom, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}}) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.pays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.pays, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}}) }}
+                    {{ form_errors(form.pays) }}
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Logo</label>
+                    <div class="mt-1 flex items-center space-x-4">
+                        <img id="logo-preview" src="{{ asset('images/default-team.png') }}"
+                             class="logo-preview {{ form.vars.data.logo ? '' : 'hidden' }}"
+                             alt="Aperçu du logo">
+                        <label for="{{ form.logoFile.vars.id }}"
+                               class="file-upload-label inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer">
+                            <i class="fas fa-upload mr-2"></i>
+                            {{ form.vars.data.logo ? 'Changer le logo' : 'Télécharger un logo' }}
+                        </label>
+                        {{ form_widget(form.logoFile) }}
+                    </div>
+                </div>
+
+                <div>
+                    {{ form_label(form.statut, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    <div class="mt-2 space-y-2">
+                        {% for child in form.statut %}
+                            <div class="flex items-center">
+                                {{ form_widget(child, {'attr': {'class': 'h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300'}}) }}
+                                {{ form_label(child, null, {'label_attr': {'class': 'ml-2 block text-sm text-gray-700'}}) }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-6">
+                    <a href="{{ path('app_equipe_index') }}"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Annuler
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <i class="fas fa-save mr-2"></i>
+                        Enregistrer
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -58,29 +58,43 @@ final class EquipeController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
-    public function show(Equipe $equipe): Response
-    {
-        return $this->render('equipe/show.html.twig', [
-            'equipe' => $equipe,
-        ]);
-    }
-
     #[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
     {
+        $currentLogo = $equipe->getLogo();
         $form = $this->createForm(EquipeType::class, $equipe);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            /** @var UploadedFile $logoFile */
+            $logoFile = $form->get('logoFile')->getData();
 
+            if ($logoFile) {
+                // Remove old logo if it exists
+                if ($currentLogo) {
+                    $oldLogoPath = $this->getParameter('kernel.project_dir').'/public/uploads/logos/'.$currentLogo;
+                    if (file_exists($oldLogoPath)) {
+                        unlink($oldLogoPath);
+                    }
+                }
+
+                // Upload new logo
+                $newFilename = uniqid().'.'.$logoFile->guessExtension();
+                $logoFile->move(
+                    $this->getParameter('kernel.project_dir').'/public/uploads/logos',
+                    $newFilename
+                );
+                $equipe->setLogo($newFilename);
+            }
+
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'équipe a été modifiée avec succès');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('equipe/edit.html.twig', [
+        return $this->render('admin/equipe/edit.html.twig', [
             'equipe' => $equipe,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -93,5 +107,13 @@ final class EquipeController extends AbstractController
         }
 
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
+    public function show(Equipe $equipe): Response
+    {
+        return $this->render('equipe/show.html.twig', [
+            'equipe' => $equipe,
+        ]);
     }
 }

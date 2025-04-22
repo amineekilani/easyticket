@@ -14,16 +14,36 @@ class Equipe
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de l'équipe est obligatoire")]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le pays est obligatoire")]
     private ?string $pays = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $statut = null;
+    private ?string $statut = 'Actif';
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logo = null;
+
+    #[Assert\Image(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        groups: ['upload']
+    )]
+    private $logoFile;
+
+    // Getters et Setters...
+    public function getLogoFile()
+    {
+        return $this->logoFile;
+    }
+
+    public function setLogoFile($logoFile): void
+    {
+        $this->logoFile = $logoFile;
+    }
 
     public function getId(): ?int
     {

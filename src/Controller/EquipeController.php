@@ -17,7 +17,7 @@ final class EquipeController extends AbstractController
     #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository): Response
     {
-        return $this->render('equipe/index.html.twig', [
+        return $this->render('admin/equipe/index.html.twig', [
             'equipes' => $equipeRepository->findAll(),
         ]);
     }
@@ -30,15 +30,31 @@ final class EquipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $logoFile */
+            $logoFile = $form->get('logoFile')->getData();
+
+            if ($logoFile) {
+                $newFilename = uniqid().'.'.$logoFile->guessExtension();
+
+                // Déplacez le fichier dans le répertoire public/uploads/logos
+                $logoFile->move(
+                    $this->getParameter('kernel.project_dir').'/public/uploads/logos',
+                    $newFilename
+                );
+
+                $equipe->setLogo($newFilename);
+            }
+
             $entityManager->persist($equipe);
             $entityManager->flush();
 
+            $this->addFlash('success', 'L\'équipe a été créée avec succès');
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('equipe/new.html.twig', [
+        return $this->render('admin/equipe/new.html.twig', [
             'equipe' => $equipe,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 

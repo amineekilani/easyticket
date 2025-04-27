@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Amine Kilani & Baha Eddine Manai{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('CSS/bootstrap.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,6 +30,25 @@
         .sidebar.collapsed .nav-item {
             justify-content: center;
         }
+        .stadium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .stadium-image {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+        .capacity-meter {
+            height: 6px;
+            border-radius: 3px;
+        }
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
     </style>
     {% block javascripts %}
     {% endblock %}
@@ -67,13 +88,13 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ path('app_equipe_index') }}" class="nav-item flex items-center p-2 rounded bg-red-800">
+                        <a href="{{ path('app_equipe_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
                             <i class="fas fa-users mr-3"></i>
                             <span class="sidebar-text">Équipes</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                        <a href="{{ path('app_stade_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
                             <i class="fas fa-stadium mr-3"></i>
                             <span class="sidebar-text">Stades</span>
                         </a>

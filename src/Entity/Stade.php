@@ -3,10 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\StadeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StadeRepository::class)]
 class Stade
@@ -16,25 +14,27 @@ class Stade
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    private ?string $adresse = null;
+    #[ORM\Column(length: 255)]
+    private ?string $ville = null;
 
-    #[ORM\Column]
-    private ?int $capacite = null;
+    #[ORM\Column(nullable: true)]
+    private ?int $capaciteVirage = null;
 
-    /**
-     * @var Collection<int, Zone>
-     */
-    #[ORM\OneToMany(targetEntity: Zone::class, mappedBy: 'Stade')]
-    private Collection $zones;
+    #[ORM\Column(nullable: true)]
+    private ?int $capacitePelouse = null;
 
-    public function __construct()
-    {
-        $this->zones = new ArrayCollection();
-    }
+    #[ORM\Column(nullable: true)]
+    private ?int $capaciteEnceinte = null;
+
+    #[ORM\Column(length: 20000, nullable: true)]
+    private ?string $localisation = null;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Image(maxSize: '2M', mimeTypes: ['image/jpeg', 'image/png', 'image/webp'], groups: ['upload'])]
+    private $imageFile;
 
     public function getId(): ?int
     {
@@ -53,57 +53,73 @@ class Stade
         return $this;
     }
 
-    public function getAdresse(): ?string
+    public function getVille(): ?string
     {
-        return $this->adresse;
+        return $this->ville;
     }
 
-    public function setAdresse(string $adresse): static
+    public function setVille(string $ville): static
     {
-        $this->adresse = $adresse;
+        $this->ville = $ville;
 
         return $this;
     }
 
-    public function getCapacite(): ?int
+    public function getCapaciteVirage(): ?int
     {
-        return $this->capacite;
+        return $this->capaciteVirage;
     }
 
-    public function setCapacite(int $capacite): static
+    public function setCapaciteVirage(?int $capaciteVirage): static
     {
-        $this->capacite = $capacite;
+        $this->capaciteVirage = $capaciteVirage;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Zone>
-     */
-    public function getZones(): Collection
+    public function getCapacitePelouse(): ?int
     {
-        return $this->zones;
+        return $this->capacitePelouse;
     }
 
-    public function addZone(Zone $zone): static
+    public function setCapacitePelouse(?int $capacitePelouse): static
     {
-        if (!$this->zones->contains($zone)) {
-            $this->zones->add($zone);
-            $zone->setStade($this);
-        }
+        $this->capacitePelouse = $capacitePelouse;
 
         return $this;
     }
 
-    public function removeZone(Zone $zone): static
+    public function getCapaciteEnceinte(): ?int
     {
-        if ($this->zones->removeElement($zone)) {
-            // set the owning side to null (unless already changed)
-            if ($zone->getStade() === $this) {
-                $zone->setStade(null);
-            }
-        }
+        return $this->capaciteEnceinte;
+    }
+
+    public function setCapaciteEnceinte(?int $capaciteEnceinte): static
+    {
+        $this->capaciteEnceinte = $capaciteEnceinte;
 
         return $this;
+    }
+
+    public function getLocalisation(): ?string
+    {
+        return $this->localisation;
+    }
+
+    public function setLocalisation(?string $localisation): static
+    {
+        $this->localisation = $localisation;
+
+        return $this;
+    }
+
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile($imageFile): void
+    {
+        $this->imageFile = $imageFile;
     }
 }

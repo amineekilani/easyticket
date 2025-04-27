@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Stade{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function previewLogo(input) {
+            const preview = document.getElementById('logo-preview');
+            const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <h1>Edit Stade</h1>
+
+    {{ include('/admin/stade/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_stade_index') }}">back to list</a>
+
+    {{ include('/admin/stade/_delete_form.html.twig') }}
+{% endblock %}

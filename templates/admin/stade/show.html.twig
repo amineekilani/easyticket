@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stade{% endblock %}
+
+
+
+{% block body %}
+    <h1>Stade</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ stade.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ stade.nom }}</td>
+            </tr>
+            <tr>
+                <th>Ville</th>
+                <td>{{ stade.ville }}</td>
+            </tr>
+            <tr>
+                <th>CapaciteVirage</th>
+                <td>{{ stade.capaciteVirage }}</td>
+            </tr>
+            <tr>
+                <th>CapacitePelouse</th>
+                <td>{{ stade.capacitePelouse }}</td>
+            </tr>
+            <tr>
+                <th>CapaciteEnceinte</th>
+                <td>{{ stade.capaciteEnceinte }}</td>
+            </tr>
+            <tr>
+                <th>Localisation</th>
+                <td>{{ stade.localisation }}</td>
+            </tr>
+            <tr>
+                <th>Image</th>
+                <td>{{ stade.imageFile }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_stade_index') }}">back to list</a>
+
+    <a href="{{ path('app_stade_edit', {'id': stade.id}) }}">edit</a>
+
+    {{ include('/admin/stade/_delete_form.html.twig') }}
+{% endblock %}

@@ -6,21 +6,36 @@ use App\Entity\Equipe;
 use App\Form\EquipeType;
 use App\Repository\EquipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 #[Route('/admin/equipe')]
 final class EquipeController extends AbstractController
 {
     #[Route(name: 'app_equipe_index', methods: ['GET'])]
-    public function index(EquipeRepository $equipeRepository): Response
-    {
-        return $this->render('admin/equipe/index.html.twig', [
-            'equipes' => $equipeRepository->findAll(),
-        ]);
-    }
+    public function index(EquipeRepository $equipeRepository, Request $request): Response
+{
+    $page = $request->query->getInt('page', 1);
+    $limit = 5;
+    
+    $paginatedData = $equipeRepository->findPaginated($page, $limit);
+    $pageCount = ceil($paginatedData['totalItems'] / $limit);
+    
+    return $this->render('admin/equipe/index.html.twig', [
+        'equipes' => $paginatedData['results'],
+        'pagination' => [
+            'currentPage' => $page,
+            'pageCount' => $pageCount,
+            'hasPrevious' => $page > 1,
+            'hasNext' => $page < $pageCount,
+            'previousPage' => max(1, $page - 1),
+            'nextPage' => min($pageCount, $page + 1),
+        ],
+    ]);
+}
 
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

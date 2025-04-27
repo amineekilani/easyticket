@@ -26,9 +26,9 @@ class EquipeType extends AbstractType
                 'label' => 'Pays',
                 'choices' => [
                     'Tunisie' => 'Tunisie',
-                    'France' => 'France',
-                    'Espagne' => 'Espagne',
-                    'Angleterre' => 'Angleterre',
+                    'Égypte' => 'Égypte',
+                    'Algérie' => 'Algérie',
+                    'Afrique du Sud' => 'Afrique du Sud',
                     'Allemagne' => 'Allemagne',
                     'Italie' => 'Italie',
                 ],

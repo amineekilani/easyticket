@@ -29,7 +29,7 @@ class Stade
     #[ORM\Column(nullable: true)]
     private ?int $capaciteEnceinte = null;
 
-    #[ORM\Column(length: 20000, nullable: true)]
+    #[ORM\Column(type: 'text', nullable: true)]
     private ?string $localisation = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]

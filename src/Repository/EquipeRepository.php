@@ -14,20 +14,43 @@ class EquipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipe::class);
     }
 
-    public function findPaginated(int $page, int $limit): array
+    public function findPaginated(int $page, int $limit, ?string $statut = null, ?string $pays = null): array
     {
-        $query = $this->createQueryBuilder('e')
-            ->orderBy('e.nom', 'ASC')
-            ->getQuery();
+        $qb = $this->createQueryBuilder('e')
+            ->orderBy('e.nom', 'ASC');
+
+        if ($statut) {
+            $qb->andWhere('e.statut = :statut')
+                ->setParameter('statut', $statut);
+        }
+        if ($pays) {
+            $qb->andWhere('e.pays = :pays')
+                ->setParameter('pays', $pays);
+        }
+
+        $query = $qb->getQuery();
 
         $paginator = new Paginator($query);
-        $paginator->getQuery()
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit);
+
+        $totalItems = count($paginator);
+        $pages = ceil($totalItems / $limit);
+        $offset = ($page - 1) * $limit;
+
+        $query->setFirstResult($offset)->setMaxResults($limit);
 
         return [
-            'results' => iterator_to_array($paginator->getIterator()),
-            'totalItems' => count($paginator)
+            'results' => $query->getResult(),
+            'totalItems' => $totalItems,
         ];
     }
+
+    public function findDistinctPays(): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('DISTINCT e.pays')
+            ->orderBy('e.pays', 'ASC');
+
+        return array_column($qb->getQuery()->getResult(), 'pays');
+    }
+
 }

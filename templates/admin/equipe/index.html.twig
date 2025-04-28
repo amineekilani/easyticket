@@ -89,24 +89,40 @@ nav a:focus {
             <div class="flex justify-between items-center mb-6">
                 <div class="flex space-x-2">
                     <div class="relative">
-                        <select class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Tous les statuts</option>
-                            <option>Actif</option>
-                            <option>Archivé</option>
-                        </select>
+                        <form method="get" action="{{ path('app_equipe_index') }}" class="flex items-center">
+                            <input type="hidden" name="pays" value="{{ app.request.get('pays') }}">
+                            <div class="relative">
+                                <select name="statut" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="Actif" {{ app.request.get('statut') == 'Actif' ? 'selected' : '' }}>Actif</option>
+                                    <option value="Archivé" {{ app.request.get('statut') == 'Archivé' ? 'selected' : '' }}>Archivé</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </form>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <i class="fas fa-chevron-down"></i>
                         </div>
                     </div>
                     <div class="relative">
-                        <select class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Tous les pays</option>
-                            <option>France</option>
-                            <option>Espagne</option>
-                            <option>Angleterre</option>
-                            <option>Allemagne</option>
-                            <option>Italie</option>
-                        </select>
+                        <form method="get" action="{{ path('app_equipe_index') }}" class="flex items-center">
+                            <input type="hidden" name="statut" value="{{ app.request.get('statut') }}">
+                            <div class="relative">
+                                <select name="pays" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Tous les pays</option>
+                                    {% for unPays in listePays %}
+                                        <option value="{{ unPays }}" {{ app.request.get('pays') == unPays ? 'selected' : '' }}>
+                                            {{ unPays }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                            </div>
+                        </form>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                             <i class="fas fa-chevron-down"></i>
                         </div>
@@ -192,28 +208,48 @@ nav a:focus {
                         </tbody>
                     </table>
                 </div>
+                {% set qs = {
+                    statut: app.request.get('statut'),
+                    pays:   app.request.get('pays')
+                } %}
+
                 <div class="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                        <a href="{{ path('app_equipe_index', {'page': pagination.previousPage}) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-l-md {{ pagination.hasPrevious ? '' : 'cursor-not-allowed text-gray-300' }}">
+
+                        {# ◀ Previous #}
+                        <a href="{{ path('app_equipe_index', qs|merge({ page: pagination.previousPage })) }}"
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium
+                  {{ pagination.hasPrevious ? 'text-gray-500 hover:bg-gray-50' : 'cursor-not-allowed text-gray-300' }}
+                  rounded-l-md">
                             <span class="sr-only">Précédent</span>
                             <i class="fas fa-chevron-left"></i>
                         </a>
+
+                        {# Page numbers #}
                         {% for page in 1..pagination.pageCount %}
-                            <a href="{{ path('app_equipe_index', {'page': page}) }}" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md 
-                                {% if page == pagination.currentPage %} 
-                                    bg-red-600 text-white 
-                                {% else %}
-                                    bg-white text-gray-500 hover:bg-gray-50
-                                {% endif %}">
+                            <a href="{{ path('app_equipe_index', qs|merge({ page: page })) }}"
+                               class="relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md
+                      {% if page == pagination.currentPage %}
+                          bg-red-600 text-white
+                      {% else %}
+                          bg-white text-gray-500 hover:bg-gray-50
+                      {% endif %}">
                                 {{ page }}
                             </a>
                         {% endfor %}
-                        <a href="{{ path('app_equipe_index', {'page': pagination.nextPage}) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 rounded-r-md {{ pagination.hasNext ? '' : 'cursor-not-allowed text-gray-300' }}">
+
+                        {# ▶ Next #}
+                        <a href="{{ path('app_equipe_index', qs|merge({ page: pagination.nextPage })) }}"
+                           class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium
+                  {{ pagination.hasNext ? 'text-gray-500 hover:bg-gray-50' : 'cursor-not-allowed text-gray-300' }}
+                  rounded-r-md">
                             <span class="sr-only">Suivant</span>
                             <i class="fas fa-chevron-right"></i>
                         </a>
+
                     </nav>
                 </div>
+
             </div>
         </main>
     </div>

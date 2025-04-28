@@ -17,25 +17,34 @@ final class EquipeController extends AbstractController
 {
     #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
-{
-    $page = $request->query->getInt('page', 1);
-    $limit = 5;
-    
-    $paginatedData = $equipeRepository->findPaginated($page, $limit);
-    $pageCount = ceil($paginatedData['totalItems'] / $limit);
-    
-    return $this->render('admin/equipe/index.html.twig', [
-        'equipes' => $paginatedData['results'],
-        'pagination' => [
-            'currentPage' => $page,
-            'pageCount' => $pageCount,
-            'hasPrevious' => $page > 1,
-            'hasNext' => $page < $pageCount,
-            'previousPage' => max(1, $page - 1),
-            'nextPage' => min($pageCount, $page + 1),
-        ],
-    ]);
-}
+    {
+        $page = $request->query->getInt('page', 1);
+        $limit = 5;
+        $statut = $request->query->get('statut');
+        $pays = $request->query->get('pays'); // (on ajoute le filtre pays)
+
+        $paginatedData = $equipeRepository->findPaginated($page, $limit, $statut, $pays);
+
+        // On récupère la liste unique des pays existants :
+        $listePays = $equipeRepository->findDistinctPays();
+
+        $pageCount = ceil($paginatedData['totalItems'] / $limit);
+
+        return $this->render('admin/equipe/index.html.twig', [
+            'equipes' => $paginatedData['results'],
+            'pagination' => [
+                'currentPage' => $page,
+                'pageCount' => $pageCount,
+                'hasPrevious' => $page > 1,
+                'hasNext' => $page < $pageCount,
+                'previousPage' => max(1, $page - 1),
+                'nextPage' => min($pageCount, $page + 1),
+            ],
+            'listePays' => $listePays, // 🔥 On envoie à Twig
+        ]);
+    }
+
+
 
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

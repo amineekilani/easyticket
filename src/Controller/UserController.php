@@ -18,10 +18,25 @@ final class UserController extends AbstractController
     public function __construct(private UserPasswordHasherInterface $passwordHasher) {}
 
     #[Route(name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository, Request $request): Response
     {
+        $page = $request->query->getInt('page', 1);
+        $limit = 10;
+
+        $paginatedData = $userRepository->findPaginated($page, $limit);
+
+        $pageCount = ceil($paginatedData['totalItems'] / $limit);
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $paginatedData['results'],
+            'pagination' => [
+                'currentPage' => $page,
+                'pageCount' => $pageCount,
+                'hasPrevious' => $page > 1,
+                'hasNext' => $page < $pageCount,
+                'previousPage' => max(1, $page - 1),
+                'nextPage' => min($pageCount, $page + 1),
+            ],
         ]);
     }
 
@@ -45,14 +60,6 @@ final class UserController extends AbstractController
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(User $user): Response
-    {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
         ]);
     }
 

@@ -51,7 +51,52 @@
 
     </style>
     {% block javascripts %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Toggle sidebar
+                const toggleBtn = document.getElementById('toggle-sidebar');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', function () {
+                        const sidebar = document.querySelector('.sidebar');
+                        sidebar.classList.toggle('collapsed');
+                        const icon = this.querySelector('i');
+                        if (icon.classList.contains('fa-chevron-left')) {
+                            icon.classList.remove('fa-chevron-left');
+                            icon.classList.add('fa-chevron-right');
+                        } else {
+                            icon.classList.remove('fa-chevron-right');
+                            icon.classList.add('fa-chevron-left');
+                        }
+
+                        const logoText = document.querySelector('.logo-text');
+                        if (logoText) {
+                            logoText.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'inline';
+                        }
+                    });
+                }
+
+                // Archive confirmation
+                document.querySelectorAll('.archive-team-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        if (!confirm('Êtes-vous sûr de vouloir archiver cette équipe ?')) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+
+                // Restore confirmation
+                document.querySelectorAll('.restore-team-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        if (!confirm('Êtes-vous sûr de vouloir restaurer cette équipe ?')) {
+                            e.preventDefault();
+                        }
+                    });
+                });
+            });
+        </script>
     {% endblock %}
+
+
 
 </head>
 <body>
@@ -60,7 +105,7 @@
         <div class="sidebar text-white w-64 flex flex-col">
             <a class="p-4 flex items-center space-x-2 border-b border-red-900" href="{{ path('app_customer') }}">
                 <i class="fas fa-futbol text-3xl text-white-600"></i>
-                <h1 class="text-2xl font-bold text-white-800">EasyTicket</h1>
+                <h1 class="text-2xl font-bold text-white-800 logo-text">EasyTicket</h1>
             </a>
             <div class="p-4 flex items-center justify-between border-b border-red-900">
                 <div class="flex items-center space-x-2">
@@ -76,7 +121,7 @@
             <nav class="flex-1 overflow-y-auto">
                 <ul class="space-y-1 p-2">
                     <li>
-                        <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                        <a href="{{ path('app_dashbord') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
                             <i class="fas fa-home mr-3"></i>
                             <span class="sidebar-text">Tableau de bord</span>
                         </a>

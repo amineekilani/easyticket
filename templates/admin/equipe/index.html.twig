@@ -70,9 +70,10 @@ nav a:focus {
             const input = document.getElementById('search-input');
             const statutSelect = document.querySelector('select[name="statut"]');
             const paysSelect = document.querySelector('select[name="pays"]');
+            const paginationBlock = document.getElementById('pagination-block');
 
             input.addEventListener('input', function () {
-                const query = input.value;
+                const query = input.value.trim();
                 const statut = statutSelect?.value || '';
                 const pays = paysSelect?.value || '';
 
@@ -83,10 +84,16 @@ nav a:focus {
                     .then(html => {
                         const tbody = document.querySelector('table tbody');
                         tbody.innerHTML = html;
+
+                        // 👇 Affiche ou cache la pagination
+                        if (query.length > 0) {
+                            paginationBlock.style.display = 'none';
+                        } else {
+                            paginationBlock.style.display = 'flex';
+                        }
                     });
             });
         });
-
     </script>
 {% endblock %}
 
@@ -182,53 +189,7 @@ nav a:focus {
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            {% for equipe in equipes %}
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <img src="{{ equipe.logo ? asset('uploads/logos/' ~ equipe.logo) : asset('images/default-team.png') }}" alt="{{ equipe.nom }}" class="team-logo">
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900">{{ equipe.nom }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <span class="text-sm text-gray-500">{{ equipe.pays }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                            {{ equipe.statut == 'Actif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                            {{ equipe.statut }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ path('app_equipe_edit', { id: equipe.id }) }}" class="text-blue-600 hover:text-blue-900 mr-3">
-                                            <i class="fas fa-edit"></i> Modifier
-                                        </a>
-                                        {% if equipe.statut == 'Actif' %}
-                                            <form method="post" action="{{ path('app_equipe_archive', { id: equipe.id }) }}" class="inline">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('archive' ~ equipe.id) }}">
-                                                <button type="submit" class="text-red-600 hover:text-red-900 archive-team-btn">
-                                                    <i class="fas fa-archive"></i> Archiver
-                                                </button>
-                                            </form>
-                                        {% else %}
-                                            <form method="post" action="{{ path('app_equipe_restore', { id: equipe.id }) }}" class="inline">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('restore' ~ equipe.id) }}">
-                                                <button type="submit" class="text-green-600 hover:text-green-900 restore-team-btn">
-                                                    <i class="fas fa-undo"></i> Restaurer
-                                                </button>
-                                            </form>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                        Aucune équipe trouvée
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                        {% include 'admin/equipe/_table.html.twig' with { equipes: equipes } %}
                         </tbody>
                     </table>
                 </div>
@@ -237,7 +198,7 @@ nav a:focus {
                     pays:   app.request.get('pays')
                 } %}
 
-                <div class="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+                <div id="pagination-block" class="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
                     <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
 
                         {# ◀ Previous #}

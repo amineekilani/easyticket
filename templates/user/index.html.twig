@@ -14,36 +14,40 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('search-input');
-        const roleFilter = document.getElementById('role-filter');
-        const verifiedFilter = document.getElementById('verified-filter');
-        const tableBody = document.getElementById('user-table');
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const roleFilter = document.getElementById('role-filter');
+            const verifiedFilter = document.getElementById('verified-filter');
+            const tableBody = document.getElementById('user-table');
+            const paginationBlock = document.getElementById('pagination-block');
 
-        function fetchFilteredUsers() {
-            const search = searchInput.value;
-            const role = roleFilter.value;
-            const verified = verifiedFilter.value;
+            function fetchFilteredUsers() {
+                const search = searchInput.value.trim();
+                const role = roleFilter.value;
+                const verified = verifiedFilter.value;
 
-            const params = new URLSearchParams({
-                search,
-                role,
-                verified
-            });
+                const params = new URLSearchParams({ search, role, verified });
 
-            fetch(`/user/search?${params.toString()}`)
-                .then(response => response.text())
-                .then(html => {
-                    tableBody.innerHTML = html;
-                });
-        }
+                fetch(`/user/search?${params.toString()}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        tableBody.innerHTML = html;
 
-        searchInput.addEventListener('input', fetchFilteredUsers);
-        roleFilter.addEventListener('change', fetchFilteredUsers);
-        verifiedFilter.addEventListener('change', fetchFilteredUsers);
-    });
-</script>
+                        // Masquer la pagination si recherche active
+                        if (search.length > 0 || role !== '' || verified !== '') {
+                            paginationBlock.style.display = 'none';
+                        } else {
+                            paginationBlock.style.display = 'flex';
+                        }
+                    });
+            }
+
+            searchInput.addEventListener('input', fetchFilteredUsers);
+            roleFilter.addEventListener('change', fetchFilteredUsers);
+            verifiedFilter.addEventListener('change', fetchFilteredUsers);
+        });
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -95,49 +99,7 @@
                         </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200" id="user-table">
-                        {% for user in users %}
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                    {{ 'ROLE_ADMIN' in user.roles ? 'bg-indigo-100 text-indigo-800' : 'bg-red-100 text-red-800' }}">
-                                    {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
-                                </span>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    {% if user.isVerified %}
-                                        <span class="text-green-700 " title="Vérifié">
-                                            ✓
-                                        </span>
-                                    {% else %}
-                                        <span class="text-red-600 " title="Non vérifié">
-                                            ✗
-                                        </span>
-                                    {% endif %}
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="text-blue-600 hover:text-blue-900">
-                                        <i class="fas fa-edit"></i> Modifier
-                                    </a>
-                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button class="text-red-600 hover:text-red-800" type="submit">
-                                            <i class="fas fa-trash"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                    Aucun utilisateur trouvé.
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        {% include 'user/_table.html.twig' with { users: users } %}
                         </tbody>
                     </table>
                 </div>
@@ -145,7 +107,7 @@
         </main>
     </div>
     <!-- Pagination -->
-    <div class="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
+    <div id="pagination-block" class="bg-white px-4 py-3 flex items-center justify-center border-t border-gray-200 sm:px-6">
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             <a href="{{ path('app_user_index', { page: pagination.previousPage }) }}"
                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium

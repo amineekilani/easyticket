@@ -1,0 +1,33 @@
+{% for user in users %}
+    <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+            {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                {{ user.isVerified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                {{ user.isVerified ? 'Oui' : 'Non' }}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="text-blue-600 hover:text-blue-900">
+                <i class="fas fa-edit"></i> Modifier
+            </a>
+            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                <button class="text-red-600 hover:text-red-800" type="submit">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </form>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+            Aucun utilisateur trouvé.
+        </td>
+    </tr>
+{% endfor %}

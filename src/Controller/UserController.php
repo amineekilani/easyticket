@@ -91,4 +91,19 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/search', name: 'app_user_search', methods: ['GET'])]
+    public function search(UserRepository $userRepository, Request $request): Response
+    {
+        $search = $request->query->get('search');
+        $role = $request->query->get('role');
+        $isVerified = $request->query->get('verified');
+
+        $results = $userRepository->findPaginated(1, 100, $role, $isVerified, $search);
+
+        return $this->render('user/_table.html.twig', [
+            'users' => $results['results']
+        ]);
+    }
+
 }

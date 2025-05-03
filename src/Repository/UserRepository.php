@@ -32,14 +32,30 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
-    public function findPaginated(int $page, int $limit): array
+    public function findPaginated(int $page, int $limit, ?string $role = null, ?string $isVerified = null, ?string $search = null): array
     {
         $qb = $this->createQueryBuilder('u')
-            ->orderBy('u.id', 'ASC')
+            ->orderBy('u.id', 'ASC');
+
+        if ($role === 'Admin') {
+            $qb->andWhere('u.roles LIKE :role')->setParameter('role', '%ROLE_ADMIN%');
+        } elseif ($role === 'Client') {
+            $qb->andWhere('u.roles LIKE :role')->setParameter('role', '%ROLE_USER%');
+        }
+
+        if ($isVerified !== null && in_array($isVerified, ['0', '1'], true)) {
+            $qb->andWhere('u.isVerified = :verified')->setParameter('verified', (bool) $isVerified);
+        }
+
+        if ($search) {
+            $qb->andWhere('u.name LIKE :search')->setParameter('search', '%' . $search . '%');
+        }
+
+        $query = $qb->getQuery()
             ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
 
-        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($qb);
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
 
         return [
             'results' => iterator_to_array($paginator),

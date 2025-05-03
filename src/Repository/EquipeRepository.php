@@ -14,7 +14,7 @@ class EquipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipe::class);
     }
 
-    public function findPaginated(int $page, int $limit, ?string $statut = null, ?string $pays = null): array
+    public function findPaginated(int $page, int $limit, ?string $statut = null, ?string $pays = null, ?string $search = null): array
     {
         $qb = $this->createQueryBuilder('e')
             ->orderBy('e.nom', 'ASC');
@@ -23,9 +23,15 @@ class EquipeRepository extends ServiceEntityRepository
             $qb->andWhere('e.statut = :statut')
                 ->setParameter('statut', $statut);
         }
+
         if ($pays) {
             $qb->andWhere('e.pays = :pays')
                 ->setParameter('pays', $pays);
+        }
+
+        if ($search) {
+            $qb->andWhere('e.nom LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
         }
 
         $query = $qb->getQuery();
@@ -33,7 +39,6 @@ class EquipeRepository extends ServiceEntityRepository
         $paginator = new Paginator($query);
 
         $totalItems = count($paginator);
-        $pages = ceil($totalItems / $limit);
         $offset = ($page - 1) * $limit;
 
         $query->setFirstResult($offset)->setMaxResults($limit);

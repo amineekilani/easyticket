@@ -156,4 +156,19 @@ final class EquipeController extends AbstractController
 
         return $this->redirectToRoute('app_equipe_index');
     }
+
+    #[Route('/search', name: 'app_equipe_search', methods: ['GET'])]
+    public function search(Request $request, EquipeRepository $equipeRepository): Response
+    {
+        $search = $request->query->get('search');
+        $statut = $request->query->get('statut');
+        $pays = $request->query->get('pays');
+
+        $result = $equipeRepository->findPaginated(1, 100, $statut, $pays, $search); // pas de pagination ici
+
+        return $this->render('admin/equipe/_table.html.twig', [
+            'equipes' => $result['results']
+        ]);
+    }
+
 }

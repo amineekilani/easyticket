@@ -1,15 +1,43 @@
 {% for equipe in equipes %}
     <tr>
         <td class="px-6 py-4 whitespace-nowrap">
-            <img src="{{ equipe.logo ? asset('uploads/logos/' ~ equipe.logo) : asset('images/default-team.png') }}" alt="{{ equipe.nom }}" class="team-logo">
+            <img src="{{ equipe.logo ? asset('uploads/logos/' ~ equipe.logo) : asset('images/default-team.png') }}"
+                 alt="{{ equipe.nom }}"
+                 class="team-logo">
         </td>
-        <td class="px-6 py-4">{{ equipe.nom }}</td>
-        <td class="px-6 py-4">{{ equipe.pays }}</td>
-        <td class="px-6 py-4">{{ equipe.statut }}</td>
-        <td class="px-6 py-4 text-right">
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">{{ equipe.nom }}</div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center">
+                <span class="text-sm text-gray-500">{{ equipe.pays }}</span>
+            </div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                {{ equipe.statut == 'Actif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                {{ equipe.statut }}
+            </span>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <a href="{{ path('app_equipe_edit', { id: equipe.id }) }}" class="text-blue-600 hover:text-blue-900 mr-3">
                 <i class="fas fa-edit"></i> Modifier
             </a>
+            {% if equipe.statut == 'Actif' %}
+                <form method="post" action="{{ path('app_equipe_archive', { id: equipe.id }) }}" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('archive' ~ equipe.id) }}">
+                    <button type="submit" class="text-red-600 hover:text-red-900 archive-team-btn">
+                        <i class="fas fa-archive"></i> Archiver
+                    </button>
+                </form>
+            {% else %}
+                <form method="post" action="{{ path('app_equipe_restore', { id: equipe.id }) }}" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('restore' ~ equipe.id) }}">
+                    <button type="submit" class="text-green-600 hover:text-green-900 restore-team-btn">
+                        <i class="fas fa-undo"></i> Restaurer
+                    </button>
+                </form>
+            {% endif %}
         </td>
     </tr>
 {% else %}

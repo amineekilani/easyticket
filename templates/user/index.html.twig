@@ -12,6 +12,38 @@
         }
     </style>
 {% endblock %}
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('search-input');
+        const roleFilter = document.getElementById('role-filter');
+        const verifiedFilter = document.getElementById('verified-filter');
+        const tableBody = document.getElementById('user-table');
+
+        function fetchFilteredUsers() {
+            const search = searchInput.value;
+            const role = roleFilter.value;
+            const verified = verifiedFilter.value;
+
+            const params = new URLSearchParams({
+                search,
+                role,
+                verified
+            });
+
+            fetch(`/user/search?${params.toString()}`)
+                .then(response => response.text())
+                .then(html => {
+                    tableBody.innerHTML = html;
+                });
+        }
+
+        searchInput.addEventListener('input', fetchFilteredUsers);
+        roleFilter.addEventListener('change', fetchFilteredUsers);
+        verifiedFilter.addEventListener('change', fetchFilteredUsers);
+    });
+</script>
+{% endblock %}
 
 {% block body %}
     <div class="flex-1 overflow-auto">
@@ -20,13 +52,34 @@
                 <i class="fas fa-user mr-2 text-red-600"></i>
                 Gestion des utilisateurs
             </h1>
-            <a class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center" href="{{ path('app_user_new') }}">
-                <i class="fas fa-plus mr-2"></i>
-                Ajouter un utilisateur
-            </a>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Rechercher par nom..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                </div>
+            </div>
         </header>
 
         <main class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex space-x-2">
+                    <select id="role-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les rôles</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Client">Client</option>
+                    </select>
+
+                    <select id="verified-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous les statuts</option>
+                        <option value="1">Vérifié</option>
+                        <option value="0">Non vérifié</option>
+                    </select>
+                </div>
+                <a class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center" href="{{ path('app_user_new') }}">
+                    <i class="fas fa-plus mr-2"></i>
+                    Ajouter un utilisateur
+                </a>
+            </div>
             <div class="bg-white rounded-lg shadow overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -40,7 +93,7 @@
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200" id="user-table">
                         {% for user in users %}
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>

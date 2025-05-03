@@ -13,6 +13,7 @@
     </style>
 {% endblock %}
 {% block javascripts %}
+    {{ parent() }}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('search-input');
@@ -63,13 +64,13 @@
         <main class="p-6">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex space-x-2">
-                    <select id="role-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="role-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
                         <option value="">Tous les rôles</option>
                         <option value="Admin">Admin</option>
                         <option value="Client">Client</option>
                     </select>
 
-                    <select id="verified-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select id="verified-filter" class="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500">
                         <option value="">Tous les statuts</option>
                         <option value="1">Vérifié</option>
                         <option value="0">Non vérifié</option>
@@ -98,16 +99,26 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                        {{ user.isVerified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ user.isVerified ? 'Oui' : 'Non' }}
-                                    </span>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                    {{ 'ROLE_ADMIN' in user.roles ? 'bg-indigo-100 text-indigo-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
+                                </span>
                                 </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    {% if user.isVerified %}
+                                        <span class="text-green-700 " title="Vérifié">
+                                            ✓
+                                        </span>
+                                    {% else %}
+                                        <span class="text-red-600 " title="Non vérifié">
+                                            ✗
+                                        </span>
+                                    {% endif %}
+                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                                     <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="text-blue-600 hover:text-blue-900">
                                         <i class="fas fa-edit"></i> Modifier

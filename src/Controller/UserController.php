@@ -48,13 +48,17 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user->setPassword(
-                $this->passwordHasher->hashPassword($user, $user->getPassword())
-            );
+            $plainPassword = $form->get('plainPassword')->getData();
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
+            $user->setPassword($hashedPassword);
+
+            $selectedRole = $form->get('role')->getData();
+            $user->setRoles([$selectedRole]);
+
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_index');
         }
 
         return $this->render('user/new.html.twig', [
@@ -67,6 +71,9 @@ final class UserController extends AbstractController
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class, $user);
+        $form->get('role')->setData(
+            in_array('ROLE_ADMIN', $user->getRoles()) ? 'ROLE_ADMIN' : 'ROLE_USER'
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -32,6 +32,7 @@ nav a:focus {
     </style>
 {% endblock %}
 {% block javascripts %}
+    {{ parent() }}
     <script>
         // Toggle sidebar
         document.getElementById('toggle-sidebar').addEventListener('click', function() {
@@ -115,7 +116,7 @@ nav a:focus {
                         <form method="get" action="{{ path('app_equipe_index') }}" class="flex items-center">
                             <input type="hidden" name="pays" value="{{ app.request.get('pays') }}">
                             <div class="relative">
-                                <select name="statut" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <select name="statut" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-red-500">
                                     <option value="">Tous les statuts</option>
                                     <option value="Actif" {{ app.request.get('statut') == 'Actif' ? 'selected' : '' }}>Actif</option>
                                     <option value="Archivé" {{ app.request.get('statut') == 'Archivé' ? 'selected' : '' }}>Archivé</option>
@@ -133,7 +134,7 @@ nav a:focus {
                         <form method="get" action="{{ path('app_equipe_index') }}" class="flex items-center">
                             <input type="hidden" name="statut" value="{{ app.request.get('statut') }}">
                             <div class="relative">
-                                <select name="pays" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <select name="pays" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-300 rounded-md px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-red-500">
                                     <option value="">Tous les pays</option>
                                     {% for unPays in listePays %}
                                         <option value="{{ unPays }}" {{ app.request.get('pays') == unPays ? 'selected' : '' }}>

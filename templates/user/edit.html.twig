@@ -1,13 +1,96 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Modifier un utilisateur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+
+        .form-radio {
+            margin-right: 0.5rem;
+        }
+
+        .radio-label {
+            margin-right: 1.5rem;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8" style="width:50%;min-width:500px">
+        <div class="bg-white shadow rounded-lg overflow-hidden" style="padding: 40px 70px">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800">Modifier l'utilisateur</h2>
+            </div>
 
-    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
+            <div class="px-6 py-4">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+                <div>
+                    {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
 
-    {{ include('user/_delete_form.html.twig') }}
+                <div>
+                    {{ form_label(form.name, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_errors(form.name) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.plainPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_errors(form.plainPassword.first) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_errors(form.plainPassword.second) }}
+                </div>
+
+                <div>
+                    {{ form_label(form.role, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="flex items-center">
+                        {% for child in form.role %}
+                            {{ form_widget(child, {'attr': {'class': 'form-radio'}}) }}
+                            {{ form_label(child, null, {'label_attr': {'class': 'radio-label'}}) }}
+                        {% endfor %}
+                    </div>
+                    {{ form_errors(form.role) }}
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-6">
+                    <a href="{{ path('app_user_index') }}"
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:ring-red-500">
+                        Annuler
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-red-500">
+                        <i class="fas fa-save mr-2"></i>
+                        Enregistrer
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

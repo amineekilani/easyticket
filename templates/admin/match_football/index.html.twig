@@ -1,47 +1,169 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MatchFootball index{% endblock %}
+{% block title %}Gestion des matchs de football{% endblock %}
 
 {% block body %}
-    <h1>MatchFootball index</h1>
+    <div class="container mx-auto px-4 py-8 overflow-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Gestion des matchs</h1>
+                <p class="text-gray-600 mt-2">Parcourez et gérez les matchs de football</p>
+            </div>
+            <a href="{{ path('app_match_football_new') }}" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
+                <i class="fas fa-plus-circle mr-2"></i>
+                Ajouter un match
+            </a>
+        </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>DateEtHeure</th>
-                <th>NbrBilletsVirage</th>
-                <th>PrixBilletVirage</th>
-                <th>NbrBilletsPelouse</th>
-                <th>PrixBilletPelouse</th>
-                <th>NbrBilletsEnceinte</th>
-                <th>PrixBilletEnceinte</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for match_football in match_footballs %}
-            <tr>
-                <td>{{ match_football.id }}</td>
-                <td>{{ match_football.dateEtHeure ? match_football.dateEtHeure|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ match_football.nbrBilletsVirage }}</td>
-                <td>{{ match_football.prixBilletVirage }}</td>
-                <td>{{ match_football.nbrBilletsPelouse }}</td>
-                <td>{{ match_football.prixBilletPelouse }}</td>
-                <td>{{ match_football.nbrBilletsEnceinte }}</td>
-                <td>{{ match_football.prixBilletEnceinte }}</td>
-                <td>
-                    <a href="{{ path('app_match_football_show', {'id': match_football.id}) }}">show</a>
-                    <a href="{{ path('app_match_football_edit', {'id': match_football.id}) }}">edit</a>
-                </td>
-            </tr>
+        {% if match_footballs|length > 0 %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
+                            <i class="fas fa-calendar-alt text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Matchs à venir</p>
+                            <h3 class="text-2xl font-bold">
+                                {% set upcoming = 0 %}
+                                {% for match in match_footballs %}
+                                    {% if match.dateEtHeure and match.dateEtHeure > date() %}
+                                        {% set upcoming = upcoming + 1 %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ upcoming }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-4">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+                            <i class="fas fa-check-circle text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Matchs terminés</p>
+                            <h3 class="text-2xl font-bold">
+                                {{ match_footballs|length - upcoming }}
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for match in match_footballs %}
+                    <div class="match-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1">
+                        <!-- Match header with date and status -->
+                        <div class="flex justify-between items-center p-4 border-b border-gray-100">
+                            <div class="flex items-center">
+                                {% if match.stade and match.stade.photo %}
+                                    <img src="{{ asset('uploads/stades/' ~ match.stade.photo) }}" 
+                                         class="w-12 h-8 object-cover rounded mr-3" 
+                                         alt="{{ match.stade.nom }}">
+                                {% endif %}
+                                <div>
+                                    <div class="font-medium text-gray-900">
+                                        {{ match.dateEtHeure ? match.dateEtHeure|date('d/m/Y') : 'Date non définie' }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ match.dateEtHeure ? match.dateEtHeure|date('H:i') : '--:--' }}
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {% if match.dateEtHeure and match.dateEtHeure > date() %}bg-amber-100 text-amber-800{% else %}bg-green-100 text-green-800{% endif %}">
+                                {% if match.dateEtHeure and match.dateEtHeure > date() %}
+                                    <i class="fas fa-clock mr-1"></i> À venir
+                                {% else %}
+                                    <i class="fas fa-check-circle mr-1"></i> Terminé
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <!-- Teams section -->
+                        <div class="p-5">
+                            <div class="flex justify-around items-center mb-4">
+                                <!-- Team 1 -->
+                                <div class="text-center">
+                                    {% if match.equipe1 and match.equipe1.logo %}
+                                        <img src="{{ asset('uploads/logos/' ~ match.equipe1.logo) }}" 
+                                             class="w-14 h-14 object-contain mx-auto mb-2" 
+                                             alt="{{ match.equipe1.nom }}">
+                                    {% else %}
+                                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <i class="fas fa-question text-gray-400"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="font-bold text-gray-900">{{ match.equipe1 ? match.equipe1.abreviation : 'À définir' }}</div>
+                                    <div class="text-xs text-gray-500">{{ match.equipe1 ? match.equipe1.pays : '' }}</div>
+                                </div>
+                                
+                                <!-- VS -->
+                                <div class="px-3">
+                                    <span class="text-xl font-extrabold text-red-600">VS</span>
+                                </div>
+                                
+                                <!-- Team 2 -->
+                                <div class="text-center">
+                                    {% if match.equipe2 and match.equipe2.logo %}
+                                        <img src="{{ asset('uploads/logos/' ~ match.equipe2.logo) }}" 
+                                             class="w-14 h-14 object-contain mx-auto mb-2" 
+                                             alt="{{ match.equipe2.nom }}">
+                                    {% else %}
+                                        <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                            <i class="fas fa-question text-gray-400"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="font-bold text-gray-900">{{ match.equipe2 ? match.equipe2.abreviation : 'À définir' }}</div>
+                                    <div class="text-xs text-gray-500">{{ match.equipe2 ? match.equipe2.pays : '' }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Ticket prices -->
+                            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                                <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider text-center mb-2">Prix des billets</h4>
+                                <div class="grid grid-cols-3 gap-2 text-center">
+                                    <div>
+                                        <div class="text-xs text-gray-500">Virage</div>
+                                        <div class="font-bold text-red-600">{{ match.prixBilletVirage ? match.prixBilletVirage ~ ' TND' : 'N/A' }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-500">Pelouse</div>
+                                        <div class="font-bold text-green-600">{{ match.prixBilletPelouse ? match.prixBilletPelouse ~ ' TND' : 'N/A' }}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-gray-500">Enceinte</div>
+                                        <div class="font-bold text-blue-600">{{ match.prixBilletEnceinte ? match.prixBilletEnceinte ~ ' TND' : 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex justify-between pt-4 border-t border-gray-100">
+                                <a href="{{ path('app_match_football_show', {'id': match.id}) }}" 
+                                   class="text-red-600 hover:text-red-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-red-50 transition">
+                                    <i class="fas fa-eye mr-2"></i> Détails
+                                </a>
+                                <a href="{{ path('app_match_football_edit', {'id': match.id}) }}" 
+                                   class="text-gray-600 hover:text-gray-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+                                    <i class="fas fa-edit mr-2"></i> Modifier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_match_football_new') }}">Create new</a>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden p-8 text-center">
+                <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+                    <i class="fas fa-futbol text-6xl opacity-50"></i>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun match programmé</h3>
+                <p class="text-gray-600 mb-4">Commencez par créer votre premier match de football</p>
+                <a href="{{ path('app_match_football_new') }}" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
+                    <i class="fas fa-plus-circle mr-2"></i> Créer un match
+                </a>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

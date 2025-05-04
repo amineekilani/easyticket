@@ -1,50 +1,330 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MatchFootball{% endblock %}
+{% block title %}Match Details - {{ match_football.equipe1 ? match_football.equipe1.nom : 'Team 1' }} vs {{ match_football.equipe2 ? match_football.equipe2.nom : 'Team 2' }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #ff5722;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #e74c3c;
+        }
+        
+        .match-header {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .team-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            text-align: center;
+        }
+        
+        .team-logo-large {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+        
+        .vs-text-large {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--secondary-color);
+            margin: 0 2rem;
+        }
+        
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .match-info-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .match-info-card .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .info-table {
+            width: 100%;
+        }
+        
+        .info-table tr:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .info-table th {
+            width: 40%;
+            padding: 1rem;
+            color: #7f8c8d;
+            font-weight: 600;
+        }
+        
+        .info-table td {
+            padding: 1rem;
+            font-weight: 500;
+        }
+        
+        .ticket-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .ticket-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ticket-card .card-header {
+            font-weight: 600;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        .ticket-card.virage .card-header {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success-color);
+        }
+        
+        .ticket-card.pelouse .card-header {
+            background-color: rgba(63, 81, 181, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .ticket-card.enceinte .card-header {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .ticket-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+        
+        .ticket-available {
+            color: #7f8c8d;
+        }
+        
+        .action-buttons .btn {
+            border-radius: 50px;
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .btn-outline-danger {
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: var(--danger-color);
+        }
+        
+        .stadium-info {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stadium-img-large {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>MatchFootball</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ match_football.id }}</td>
-            </tr>
-            <tr>
-                <th>DateEtHeure</th>
-                <td>{{ match_football.dateEtHeure ? match_football.dateEtHeure|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>NbrBilletsVirage</th>
-                <td>{{ match_football.nbrBilletsVirage }}</td>
-            </tr>
-            <tr>
-                <th>PrixBilletVirage</th>
-                <td>{{ match_football.prixBilletVirage }}</td>
-            </tr>
-            <tr>
-                <th>NbrBilletsPelouse</th>
-                <td>{{ match_football.nbrBilletsPelouse }}</td>
-            </tr>
-            <tr>
-                <th>PrixBilletPelouse</th>
-                <td>{{ match_football.prixBilletPelouse }}</td>
-            </tr>
-            <tr>
-                <th>NbrBilletsEnceinte</th>
-                <td>{{ match_football.nbrBilletsEnceinte }}</td>
-            </tr>
-            <tr>
-                <th>PrixBilletEnceinte</th>
-                <td>{{ match_football.prixBilletEnceinte }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_match_football_index') }}">back to list</a>
-
-    <a href="{{ path('app_match_football_edit', {'id': match_football.id}) }}">edit</a>
-
-    {{ include('admin/match_football/_delete_form.html.twig') }}
+    <div class="container py-4">
+        <div class="match-header">
+            <div class="team-display">
+                <div class="text-center">
+                    {% if match_football.equipe1 and match_football.equipe1.logo %}
+                        <img src="{{ asset('uploads/logos/' ~ match_football.equipe1.logo) }}" 
+                             class="team-logo-large" 
+                             alt="{{ match_football.equipe1.nom }}">
+                    {% else %}
+                        <div class="team-logo-large bg-light rounded d-flex align-items-center justify-content-center">
+                            <i class="fas fa-question text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="team-name">{{ match_football.equipe1 ? match_football.equipe1.nom : 'Team 1' }}</div>
+                </div>
+                
+                <div class="vs-text-large">VS</div>
+                
+                <div class="text-center">
+                    {% if match_football.equipe2 and match_football.equipe2.logo %}
+                        <img src="{{ asset('uploads/logos/' ~ match_football.equipe2.logo) }}" 
+                             class="team-logo-large" 
+                             alt="{{ match_football.equipe2.nom }}">
+                    {% else %}
+                        <div class="team-logo-large bg-light rounded d-flex align-items-center justify-content-center">
+                            <i class="fas fa-question text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="team-name">{{ match_football.equipe2 ? match_football.equipe2.nom : 'Team 2' }}</div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <h3 class="mb-1">
+                    <i class="far fa-calendar-alt mr-2"></i>
+                    {{ match_football.dateEtHeure ? match_football.dateEtHeure|date('l, F j, Y') : 'Date not set' }}
+                </h3>
+                <h4 class="text-muted">
+                    <i class="far fa-clock mr-2"></i>
+                    {{ match_football.dateEtHeure ? match_football.dateEtHeure|date('g:i A') : 'Time not set' }}
+                </h4>
+                
+                {% if match_football.stade %}
+                    <div class="stadium-info mt-3">
+                        <h5 class="mb-2">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            {{ match_football.stade.nom }}
+                        </h5>
+                        <p class="mb-0 text-muted">
+                            <i class="fas fa-city mr-2"></i>
+                            {{ match_football.stade.ville }}
+                        </p>
+                        {% if match_football.stade.photo %}
+                            <img src="{{ asset('uploads/stades/' ~ match_football.stade.photo) }}" 
+                                 class="stadium-img-large mt-3" 
+                                 alt="{{ match_football.stade.nom }}">
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="match-info-card card">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle mr-2"></i> Match Information
+                    </div>
+                    <div class="card-body">
+                        <table class="info-table">
+                            <tr>
+                                <th>Match ID</th>
+                                <td>{{ match_football.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    {% if match_football.dateEtHeure and match_football.dateEtHeure > date() %}
+                                        <span class="badge badge-warning">Upcoming</span>
+                                    {% else %}
+                                        <span class="badge badge-success">Completed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date & Time</th>
+                                <td>{{ match_football.dateEtHeure ? match_football.dateEtHeure|date('Y-m-d H:i:s') : 'Not set' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="match-info-card card">
+                    <div class="card-header">
+                        <i class="fas fa-ticket-alt mr-2"></i> Ticket Availability
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="ticket-card virage card h-100">
+                                    <div class="card-header">
+                                        Virage
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="ticket-price">{{ match_football.prixBilletVirage ? match_football.prixBilletVirage ~ ' TND' : 'N/A' }}</div>
+                                        <div class="ticket-available mt-2">
+                                            {{ match_football.nbrBilletsVirage }} available
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="ticket-card pelouse card h-100">
+                                    <div class="card-header">
+                                        Pelouse
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="ticket-price">{{ match_football.prixBilletPelouse ? match_football.prixBilletPelouse ~ ' TND' : 'N/A' }}</div>
+                                        <div class="ticket-available mt-2">
+                                            {{ match_football.nbrBilletsPelouse }} available
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="ticket-card enceinte card h-100">
+                                    <div class="card-header">
+                                        Enceinte
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="ticket-price">{{ match_football.prixBilletEnceinte ? match_football.prixBilletEnceinte ~ ' TND' : 'N/A' }}</div>
+                                        <div class="ticket-available mt-2">
+                                            {{ match_football.nbrBilletsEnceinte }} available
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons d-flex justify-content-between mt-4">
+            <a href="{{ path('app_match_football_index') }}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left mr-2"></i> Back to list
+            </a>
+            
+            <div>
+                <a href="{{ path('app_match_football_edit', {'id': match_football.id}) }}" class="btn btn-primary">
+                    <i class="fas fa-edit mr-2"></i> Edit Match
+                </a>
+                
+                {{ include('admin/match_football/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

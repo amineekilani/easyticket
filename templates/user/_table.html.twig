@@ -1,6 +1,7 @@
 {% for user in users %}
     <tr>
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.id }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.email }}</td>
         <td class="px-6 py-4 whitespace-nowrap">
             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -8,8 +9,7 @@
                 {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
             </span>
         </td>
-
-        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ user.dateInscription|date('d M, Y') }}</td>
         <td class="px-6 py-4 whitespace-nowrap text-center">
             {% if user.isVerified %}
                 <span class="text-green-700 " title="Vérifié">

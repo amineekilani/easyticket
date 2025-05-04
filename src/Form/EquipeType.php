@@ -22,6 +22,11 @@ class EquipeType extends AbstractType
                     'placeholder' => 'Entrez le nom ...'
                 ]
             ])
+            ->add('abreviation', TextType::class, [
+                'label' => 'Abréviation',
+                'attr' => ['placeholder' => 'Ex : EST, ESS, CA...']
+            ])
+
             ->add('pays', ChoiceType::class, [
                 'label' => 'Pays',
                 'choices' => [

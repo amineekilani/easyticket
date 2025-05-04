@@ -65,6 +65,12 @@
                 </div>
 
                 <div>
+                    {{ form_label(form.abreviation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
+                    {{ form_widget(form.abreviation, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}}) }}
+                    {{ form_errors(form.abreviation) }}
+                </div>
+
+                <div>
                     {{ form_label(form.pays, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700'}}) }}
                     {{ form_widget(form.pays, {'attr': {'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'}}) }}
                     {{ form_errors(form.pays) }}

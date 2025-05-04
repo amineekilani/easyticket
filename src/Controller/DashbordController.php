@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,12 +10,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashbordController extends AbstractController
 {
     #[Route('/admin/dashbord', name: 'app_dashbord')]
-    public function index(): Response
+    public function dashboard(UserRepository $userRepository): Response
     {
+        $latestUsers = $userRepository->findBy([], ['dateInscription' => 'DESC'], 5);
+
         return $this->render('admin/dashbord.html.twig', [
-            'controller_name' => 'DashbordController',
+            'latestUsers' => $latestUsers
         ]);
     }
+
 }
 
 /*

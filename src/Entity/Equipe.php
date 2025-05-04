@@ -35,6 +35,9 @@ class Equipe
     )]
     private $logoFile;
 
+    #[ORM\Column(length: 10)]
+    private ?string $abreviation = null;
+
     // Getters et Setters...
     public function getLogoFile()
     {
@@ -95,6 +98,18 @@ class Equipe
     public function setLogo(?string $logo): static
     {
         $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getAbreviation(): ?string
+    {
+        return $this->abreviation;
+    }
+
+    public function setAbreviation(string $abreviation): static
+    {
+        $this->abreviation = $abreviation;
 
         return $this;
     }

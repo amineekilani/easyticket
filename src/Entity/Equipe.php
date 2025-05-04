@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EquipeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -37,6 +39,17 @@ class Equipe
 
     #[ORM\Column(length: 10)]
     private ?string $abreviation = null;
+
+    /**
+     * @var Collection<int, MatchFootball>
+     */
+    #[ORM\OneToMany(targetEntity: MatchFootball::class, mappedBy: 'equipe1')]
+    private Collection $matchFootballs;
+
+    public function __construct()
+    {
+        $this->matchFootballs = new ArrayCollection();
+    }
 
     // Getters et Setters...
     public function getLogoFile()
@@ -110,6 +123,36 @@ class Equipe
     public function setAbreviation(string $abreviation): static
     {
         $this->abreviation = $abreviation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MatchFootball>
+     */
+    public function getMatchFootballs(): Collection
+    {
+        return $this->matchFootballs;
+    }
+
+    public function addMatchFootball(MatchFootball $matchFootball): static
+    {
+        if (!$this->matchFootballs->contains($matchFootball)) {
+            $this->matchFootballs->add($matchFootball);
+            $matchFootball->setEquipe1($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchFootball(MatchFootball $matchFootball): static
+    {
+        if ($this->matchFootballs->removeElement($matchFootball)) {
+            // set the owning side to null (unless already changed)
+            if ($matchFootball->getEquipe1() === $this) {
+                $matchFootball->setEquipe1(null);
+            }
+        }
 
         return $this;
     }

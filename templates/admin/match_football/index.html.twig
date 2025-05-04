@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MatchFootball index{% endblock %}
+
+{% block body %}
+    <h1>MatchFootball index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>DateEtHeure</th>
+                <th>NbrBilletsVirage</th>
+                <th>PrixBilletVirage</th>
+                <th>NbrBilletsPelouse</th>
+                <th>PrixBilletPelouse</th>
+                <th>NbrBilletsEnceinte</th>
+                <th>PrixBilletEnceinte</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for match_football in match_footballs %}
+            <tr>
+                <td>{{ match_football.id }}</td>
+                <td>{{ match_football.dateEtHeure ? match_football.dateEtHeure|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ match_football.nbrBilletsVirage }}</td>
+                <td>{{ match_football.prixBilletVirage }}</td>
+                <td>{{ match_football.nbrBilletsPelouse }}</td>
+                <td>{{ match_football.prixBilletPelouse }}</td>
+                <td>{{ match_football.nbrBilletsEnceinte }}</td>
+                <td>{{ match_football.prixBilletEnceinte }}</td>
+                <td>
+                    <a href="{{ path('app_match_football_show', {'id': match_football.id}) }}">show</a>
+                    <a href="{{ path('app_match_football_edit', {'id': match_football.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_match_football_new') }}">Create new</a>
+{% endblock %}

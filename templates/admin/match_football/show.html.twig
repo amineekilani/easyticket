@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MatchFootball{% endblock %}
+
+{% block body %}
+    <h1>MatchFootball</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ match_football.id }}</td>
+            </tr>
+            <tr>
+                <th>DateEtHeure</th>
+                <td>{{ match_football.dateEtHeure ? match_football.dateEtHeure|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>NbrBilletsVirage</th>
+                <td>{{ match_football.nbrBilletsVirage }}</td>
+            </tr>
+            <tr>
+                <th>PrixBilletVirage</th>
+                <td>{{ match_football.prixBilletVirage }}</td>
+            </tr>
+            <tr>
+                <th>NbrBilletsPelouse</th>
+                <td>{{ match_football.nbrBilletsPelouse }}</td>
+            </tr>
+            <tr>
+                <th>PrixBilletPelouse</th>
+                <td>{{ match_football.prixBilletPelouse }}</td>
+            </tr>
+            <tr>
+                <th>NbrBilletsEnceinte</th>
+                <td>{{ match_football.nbrBilletsEnceinte }}</td>
+            </tr>
+            <tr>
+                <th>PrixBilletEnceinte</th>
+                <td>{{ match_football.prixBilletEnceinte }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_match_football_index') }}">back to list</a>
+
+    <a href="{{ path('app_match_football_edit', {'id': match_football.id}) }}">edit</a>
+
+    {{ include('admin/match_football/_delete_form.html.twig') }}
+{% endblock %}

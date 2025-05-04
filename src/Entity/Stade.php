@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\StadeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -35,6 +37,17 @@ class Stade
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\Image(maxSize: '2M', mimeTypes: ['image/jpeg', 'image/png', 'image/webp'], groups: ['upload'])]
     private $photo;
+
+    /**
+     * @var Collection<int, MatchFootball>
+     */
+    #[ORM\OneToMany(targetEntity: MatchFootball::class, mappedBy: 'stade')]
+    private Collection $matchFootballs;
+
+    public function __construct()
+    {
+        $this->matchFootballs = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -126,5 +139,35 @@ class Stade
     public function getCapacite(): int
     {
         return $this->capaciteVirage + $this->capacitePelouse + $this->capaciteEnceinte;
+    }
+
+    /**
+     * @return Collection<int, MatchFootball>
+     */
+    public function getMatchFootballs(): Collection
+    {
+        return $this->matchFootballs;
+    }
+
+    public function addMatchFootball(MatchFootball $matchFootball): static
+    {
+        if (!$this->matchFootballs->contains($matchFootball)) {
+            $this->matchFootballs->add($matchFootball);
+            $matchFootball->setStade($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatchFootball(MatchFootball $matchFootball): static
+    {
+        if ($this->matchFootballs->removeElement($matchFootball)) {
+            // set the owning side to null (unless already changed)
+            if ($matchFootball->getStade() === $this) {
+                $matchFootball->setStade(null);
+            }
+        }
+
+        return $this;
     }
 }

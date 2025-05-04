@@ -48,13 +48,12 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user->setDateInscription(new \DateTime());
             $plainPassword = $form->get('plainPassword')->getData();
             $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
             $user->setPassword($hashedPassword);
-
             $selectedRole = $form->get('role')->getData();
             $user->setRoles([$selectedRole]);
-
             $entityManager->persist($user);
             $entityManager->flush();
 

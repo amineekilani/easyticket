@@ -103,7 +103,7 @@
     <!--ADMIN NAVBAR -->
     <div class="flex h-screen overflow-hidden">
         <div class="sidebar text-white w-64 flex flex-col">
-            <a class="p-4 flex items-center space-x-2 border-b border-red-900" href="{{ path('app_dashbord') }}">
+            <a class="p-4 flex items-center space-x-2 border-b border-red-900" href="{{ path('app_admin_dashboard') }}">
                 <i class="fas fa-futbol text-3xl text-white-600"></i>
                 <h1 class="text-2xl font-bold text-white-800 logo-text">EasyTicket</h1>
             </a>
@@ -121,7 +121,7 @@
             <nav class="flex-1 overflow-y-auto">
                 <ul class="space-y-1 p-2">
                     <li>
-                        <a href="{{ path('app_dashbord') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
+                        <a href="{{ path('app_admin_dashboard') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
                             <i class="fas fa-home mr-3"></i>
                             <span class="sidebar-text">Tableau de bord</span>
                         </a>
@@ -154,7 +154,7 @@
                 </ul>
             </nav>
             <div class="p-4 border-t border-red-900">
-                <a href="#" class="nav-item flex items-center p-2 rounded hover:bg-red-900">
+                <a href="{{ path('app_logout') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-900">
                     <i class="fas fa-sign-out-alt mr-3"></i>
                     <span class="sidebar-text">Déconnexion</span>
                 </a>

@@ -1,32 +1,250 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Stade{% endblock %}
+{% block title %}Modifier le stade - {{ stade.nom }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .logo-preview {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .file-upload-label {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .file-upload-label:hover {
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+        }
+        .form-input {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-section {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-section-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .danger-zone {
+            border-left: 4px solid #ef4444;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-xl rounded-xl overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-red-600 to-red-700">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-edit"></i>
+                        Modifier le stade : {{ stade.nom }}
+                    </h1>
+                    <a href="{{ path('app_stade_index') }}" class="text-white hover:text-gray-200 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </a>
+                </div>
+                <p class="mt-1 text-red-100">Mettez à jour les informations du stade ci-dessous</p>
+            </div>
+
+            <div class="p-8">
+                {{ form_start(form, {'attr': {'class': 'space-y-8'}}) }}
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-info-circle text-red-600"></i>
+                        Informations de base
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            {{ form_label(form.nom, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.nom, {'attr': {
+                                    'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                }}) }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-landmark text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.nom) }}
+                        </div>
+
+                        <div>
+                            {{ form_label(form.ville, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.ville, {'attr': {
+                                    'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                }}) }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-city text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.ville) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-users text-red-600"></i>
+                        Capacités
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            {{ form_label(form.capaciteVirage, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.capaciteVirage, {'attr': {
+                                    'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                }}) }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-chair text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.capaciteVirage) }}
+                        </div>
+
+                        <div>
+                            {{ form_label(form.capacitePelouse, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.capacitePelouse, {'attr': {
+                                    'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                }}) }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-tree text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.capacitePelouse) }}
+                        </div>
+
+                        <div>
+                            {{ form_label(form.capaciteEnceinte, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.capaciteEnceinte, {'attr': {
+                                    'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                }}) }}
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-people-arrows text-gray-400"></i>
+                                </div>
+                            </div>
+                            {{ form_errors(form.capaciteEnceinte) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-map-marker-alt text-red-600"></i>
+                        Localisation
+                    </h2>
+                    <div>
+                        {{ form_label(form.localisation, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        <div class="relative">
+                            {{ form_widget(form.localisation, {'attr': {
+                                'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                            }}) }}
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-map-pin text-gray-400"></i>
+                            </div>
+                        </div>
+                        {{ form_errors(form.localisation) }}
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-camera text-red-600"></i>
+                        Photo du stade
+                    </h2>
+                    <div class="flex flex-col sm:flex-row items-start gap-6">
+                        <div class="flex-shrink-0">
+                            <img id="logo-preview"
+                                 src="{{ stade.photo ? asset('uploads/stades/' ~ stade.photo) : asset('images/default-stadium.png') }}"
+                                 class="logo-preview"
+                                 alt="Photo actuelle du stade">
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-sm text-gray-500 mb-4">Téléchargez une nouvelle photo pour remplacer l'actuelle. Formats acceptés : JPG, PNG (max 5MB)</p>
+                            <label for="{{ form.photoFile.vars.id }}"
+                                   class="file-upload-label inline-flex items-center justify-center px-6 py-3 border-2 border-dashed border-gray-300 rounded-lg text-base font-medium text-gray-700 bg-white hover:border-red-300 hover:text-red-700 transition-all w-full sm:w-auto">
+                                <i class="fas fa-cloud-upload-alt text-xl mr-3 text-red-600"></i>
+                                <span class="whitespace-nowrap">Changer la photo</span>
+                                {{ form_widget(form.photoFile, {'attr': {'class': 'hidden'}}) }}
+                            </label>
+                            <p class="mt-2 text-sm text-gray-500" id="file-name">{% if stade.photo %}Photo actuelle : {{ stade.photo }}{% else %}Aucune photo actuelle{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_stade_index') }}"
+                       class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Retour à la liste
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+
+                <div class="mt-8 pt-6 border-t">
+                    <div class="form-section danger-zone">
+                        <h2 class="form-section-title text-red-600">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Zone de danger
+                        </h2>
+                        <p class="text-sm text-gray-600 mb-4">Cette action est irréversible. Toutes les données associées à ce stade seront également supprimées.</p>
+                        {{ include('/admin/stade/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block javascripts %}
     {{ parent() }}
     <script>
-        function previewLogo(input) {
+        function previewPhoto(input) {
             const preview = document.getElementById('logo-preview');
+            const fileNameDisplay = document.getElementById('file-name');
             const file = input.files[0];
             const reader = new FileReader();
 
             reader.onload = function(e) {
                 preview.src = e.target.result;
-                preview.classList.remove('hidden');
             }
 
             if (file) {
                 reader.readAsDataURL(file);
+                fileNameDisplay.textContent = `Nouveau fichier : ${file.name}`;
+                fileNameDisplay.className = "mt-2 text-sm text-green-600";
             }
         }
+
+        // Initialize file input change listener
+        document.getElementById('{{ form.photoFile.vars.id }}').addEventListener('change', function() {
+            previewPhoto(this);
+        });
     </script>
-{% endblock %}
-
-{% block body %}
-    <h1>Edit Stade</h1>
-
-    {{ include('/admin/stade/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_stade_index') }}">back to list</a>
-
-    {{ include('/admin/stade/_delete_form.html.twig') }}
 {% endblock %}

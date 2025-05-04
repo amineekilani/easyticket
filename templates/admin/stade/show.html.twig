@@ -1,52 +1,201 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Stade{% endblock %}
-
-
+{% block title %}
+	{{ stade.nom }}
+	|
+	{{ stade.ville }}
+{% endblock %}
 
 {% block body %}
-    <h1>Stade</h1>
+	<div
+		class="stadium-detail-container min-h-screen bg-gray-50">
+		<!-- Hero Section -->
+		<div class="relative h-96 overflow-hidden">
+			{% if stade.photo %}
+				<img src="{{ asset('uploads/stades/' ~ stade.photo) }}" alt="{{ stade.nom }}" class="w-full h-full object-cover object-center transition-all duration-500 hover:scale-105">
+			{% else %}
+				<div class="w-full h-full bg-gradient-to-r from-red-900 to-blue-700 flex items-center justify-center">
+					<i class="fas fa-stadium text-white text-6xl opacity-30"></i>
+				</div>
+			{% endif %}
+			<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+			<div class="absolute bottom-0 left-0 right-0 p-8">
+				<div class="max-w-7xl mx-auto">
+					<h1 class="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">{{ stade.nom }}</h1>
+					<div class="flex items-center text-blue-200">
+						<i class="fas fa-map-marker-alt mr-2"></i>
+						<span class="text-lg">{{ stade.ville }}</span>
+						<span class="mx-3">•</span>
+						<i class="fas fa-users mr-2"></i>
+						<span class="text-lg">{{ (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte)|number_format }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ stade.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ stade.nom }}</td>
-            </tr>
-            <tr>
-                <th>Ville</th>
-                <td>{{ stade.ville }}</td>
-            </tr>
-            <tr>
-                <th>CapaciteVirage</th>
-                <td>{{ stade.capaciteVirage }}</td>
-            </tr>
-            <tr>
-                <th>CapacitePelouse</th>
-                <td>{{ stade.capacitePelouse }}</td>
-            </tr>
-            <tr>
-                <th>CapaciteEnceinte</th>
-                <td>{{ stade.capaciteEnceinte }}</td>
-            </tr>
-            <tr>
-                <th>Localisation</th>
-                <td>{{ stade.localisation }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>{{ stade.imageFile }}</td>
-            </tr>
-        </tbody>
-    </table>
+		<!-- Main Content -->
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-16 relative z-10">
+			<div
+				class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+				<!-- Left Column -->
+				<div
+					class="lg:col-span-2 space-y-8">
+					<!-- Capacity Cards -->
+					<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-amber-500">
+							<div class="text-3xl font-bold text-gray-800">{{ stade.capaciteVirage|number_format }}</div>
+							<div class="text-sm text-gray-500 mt-1">VIRAGE</div>
+							<div class="mt-3 h-1 bg-gray-200 rounded-full overflow-hidden">
+								<div class="h-full bg-amber-500" style="width: {{ (stade.capaciteVirage / (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte) * 100)|round }}%"></div>
+							</div>
+						</div>
+						<div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-emerald-500">
+							<div class="text-3xl font-bold text-gray-800">{{ stade.capacitePelouse|number_format }}</div>
+							<div class="text-sm text-gray-500 mt-1">PELOUSE</div>
+							<div class="mt-3 h-1 bg-gray-200 rounded-full overflow-hidden">
+								<div class="h-full bg-emerald-500" style="width: {{ (stade.capacitePelouse / (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte) * 100)|round }}%"></div>
+							</div>
+						</div>
+						<div class="bg-white rounded-xl shadow-md p-6 text-center border-t-4 border-blue-500">
+							<div class="text-3xl font-bold text-gray-800">{{ stade.capaciteEnceinte|number_format }}</div>
+							<div class="text-sm text-gray-500 mt-1">ENCEINTE</div>
+							<div class="mt-3 h-1 bg-gray-200 rounded-full overflow-hidden">
+								<div class="h-full bg-blue-500" style="width: {{ (stade.capaciteEnceinte / (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte) * 100)|round }}%"></div>
+							</div>
+						</div>
+					</div>
 
-    <a href="{{ path('app_stade_index') }}">back to list</a>
+					<!-- Location Section -->
+					<div class="bg-white rounded-xl shadow-md overflow-hidden">
+						<div class="p-6 border-b border-gray-200">
+							<h2 class="text-xl font-semibold text-gray-800 flex items-center">
+								<i class="fas fa-map-marked-alt text-red-500 mr-2"></i>
+								LOCALISATION
+							</h2>
+						</div>
+						<div class="p-4">
+							{% if stade.localisation %}
+								<div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+									<iframe src="https://maps.google.com/maps?q={{ stade.localisation|url_encode }}&output=embed" class="w-full h-96 border-0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+								</div>
+							{% else %}
+								<div class="h-64 flex flex-col items-center justify-center bg-gray-100 text-gray-400 rounded-lg">
+									<i class="fas fa-map-marked-alt text-4xl mb-3"></i>
+									<p>Localisation non disponible</p>
+									{% if is_granted('ROLE_ADMIN') %}
+										<a href="{{ path('app_stade_edit', {'id': stade.id}) }}" class="mt-4 text-sm text-red-500 hover:underline">
+											Ajouter une localisation
+										</a>
+									{% endif %}
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
 
-    <a href="{{ path('app_stade_edit', {'id': stade.id}) }}">edit</a>
+				<!-- Right Column -->
+				<div
+					class="space-y-6">
+					<!-- Stadium Details -->
+					<div class="bg-white rounded-xl shadow-md overflow-hidden">
+						<div class="p-6 border-b border-gray-200 bg-gray-50">
+							<h2 class="text-xl font-semibold text-gray-800 flex items-center">
+								<i class="fas fa-info-circle text-red-500 mr-2"></i>
+								DÉTAILS DU STADE
+							</h2>
+						</div>
+						<div class="p-6">
+							<div class="space-y-4">
+								<div>
+									<h3 class="text-sm font-medium text-gray-500">NOM COMPLET</h3>
+									<p class="mt-1 text-gray-900">{{ stade.nom }}</p>
+								</div>
+								<div>
+									<h3 class="text-sm font-medium text-gray-500">VILLE</h3>
+									<p class="mt-1 text-gray-900">{{ stade.ville }}</p>
+								</div>
+								<div>
+									<h3 class="text-sm font-medium text-gray-500">CAPACITÉ TOTALE</h3>
+									<p class="mt-1 text-gray-900">{{ (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte)|number_format }}
+										places</p>
+								</div>
+							</div>
+						</div>
+					</div>
 
-    {{ include('/admin/stade/_delete_form.html.twig') }}
+					<!-- Management Section -->
+					{% if is_granted('ROLE_ADMIN') %}
+						<div class="bg-white rounded-xl shadow-md overflow-hidden">
+							<div class="p-6 border-b border-gray-200 bg-gray-50">
+								<h2 class="text-xl font-semibold text-gray-800 flex items-center">
+									<i class="fas fa-cog text-red-500 mr-2"></i>
+									GESTION
+								</h2>
+							</div>
+							<div class="p-6 space-y-4">
+								<a href="{{ path('app_stade_edit', {'id': stade.id}) }}" class="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition duration-200">
+									<i class="fas fa-edit mr-2"></i>
+									Modifier le stade
+								</a>
+								<a href="{{ path('app_stade_index') }}" class="w-full flex items-center justify-center px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition duration-200">
+									<i class="fas fa-list mr-2"></i>
+									Liste des stades
+								</a>
+								{# Section de suppression améliorée #}
+								<div class="delete-section mt-4">
+									<button type="button" onclick="confirmDelete()" class="w-full flex items-center justify-center px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition duration-200">
+										<i class="fas fa-trash-alt mr-2"></i>
+										Supprimer le stade
+									</button>
+
+									<div id="deleteConfirmation" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+										<div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+											<h3 class="text-lg font-bold text-gray-900 mb-4">Confirmer la suppression</h3>
+											<p class="text-gray-600 mb-6">Êtes-vous sûr de vouloir supprimer définitivement ce stade ? Cette action est irréversible.</p>
+
+											<div class="flex justify-end space-x-3">
+												<button onclick="cancelDelete()" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+													Annuler
+												</button>
+												{{ include('/admin/stade/_delete_form.html.twig') }}
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<style>
+		.stadium-detail-container {
+			background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+			background-size: 20px 20px;
+		}
+
+		/* Responsive adjustments */
+		@media(max-width: 640px) {
+			.hero-content {
+				padding: 1.5rem;
+			}
+			.capacity-cards {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+	<script>
+		function confirmDelete() {
+document.getElementById('deleteConfirmation').classList.remove('hidden');
+document.body.classList.add('overflow-hidden');
+}
+
+function cancelDelete() {
+document.getElementById('deleteConfirmation').classList.add('hidden');
+document.body.classList.remove('overflow-hidden');
+}
+	</script>
 {% endblock %}

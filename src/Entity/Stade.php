@@ -34,7 +34,7 @@ class Stade
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Assert\Image(maxSize: '2M', mimeTypes: ['image/jpeg', 'image/png', 'image/webp'], groups: ['upload'])]
-    private $imageFile;
+    private $photo;
 
     public function getId(): ?int
     {
@@ -113,13 +113,18 @@ class Stade
         return $this;
     }
 
-    public function getImageFile()
+    public function getPhoto()
     {
-        return $this->imageFile;
+        return $this->photo;
     }
 
-    public function setImageFile($imageFile): void
+    public function setPhoto($photo): void
     {
-        $this->imageFile = $imageFile;
+        $this->photo = $photo;
+    }
+
+    public function getCapacite(): int
+    {
+        return $this->capaciteVirage + $this->capacitePelouse + $this->capaciteEnceinte;
     }
 }

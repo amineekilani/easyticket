@@ -6,7 +6,7 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-800">Gestion des stades</h1>
             </div>
-            <a href="{{ path('app_stade_new') }}" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">
+            <a href="{{ path('app_stade_new') }}" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
                 <i class="fas fa-plus-circle mr-2"></i>
                 Ajouter un stade
             </a>
@@ -14,7 +14,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="bg-white rounded-lg shadow p-4">
                 <div class="flex items-center">
-                    <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+                    <div class="p-3 rounded-full bg-red-100 text-red-600 mr-4">
                         <i class="fas fa-building text-xl"></i>
                     </div>
                     <div>
@@ -63,59 +63,77 @@
         {% if stades|length > 0 %}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for stade in stades %}
-                    <div class="stadium-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300">
-                        <div class="stadium-image h-40 flex items-center justify-center text-white">
-                            <i class="fas fa-stadium text-6xl opacity-70"></i>
-                        </div>
-                        <div class="p-6">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="text-xl font-bold text-gray-800">{{ stade.nom }}</h3>
-                                <span class="text-gray-500">{{ (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte)|number_format }}</span>
-                            </div>
-                            <div class="flex items-center text-gray-600 mb-4">
-                                <i class="fas fa-map-marker-alt mr-2 text-sm"></i>
-                                <span>{{ stade.ville }}</span>
-                            </div>
-                            <div class="space-y-3 mb-4">
-                                <div>
-                                    <div class="flex justify-between text-sm mb-1">
-                                        <span class="text-gray-600">Virage</span>
-                                        <span class="font-medium">{{ stade.capaciteVirage|number_format }}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ (stade.capaciteVirage / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capaciteVirage / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-sm mb-1">
-                                        <span class="text-gray-600">Pelouse</span>
-                                        <span class="font-medium">{{ stade.capacitePelouse|number_format }}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-green-500 h-2 rounded-full" style="width: {{ (stade.capacitePelouse / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capacitePelouse / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-sm mb-1">
-                                        <span class="text-gray-600">Enceinte</span>
-                                        <span class="font-medium">{{ stade.capaciteEnceinte|number_format }}</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (stade.capaciteEnceinte / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capaciteEnceinte / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between pt-4 border-t border-gray-100">
-                                <a href="{{ path('app_stade_show', {'id': stade.id}) }}" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                                    <i class="fas fa-eye mr-2"></i> Détails
-                                </a>
-                                <a href="{{ path('app_stade_edit', {'id': stade.id}) }}" class="text-gray-600 hover:text-gray-800 font-medium flex items-center">
-                                    <i class="fas fa-edit mr-2"></i> Modifier
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="stadium-card bg-white rounded-xl shadow-md overflow-hidden transition duration-300 hover:shadow-lg hover:-translate-y-1">
+    <!-- Image with gradient overlay -->
+    <div class="stadium-image h-48 relative overflow-hidden">
+        <img 
+            src="{{ stade.photo ? asset('uploads/stades/' ~ stade.photo) : asset('images/default-stadium.png') }}"
+            alt="{{ stade.nom }}"
+            class="w-full h-full object-cover transition duration-500 hover:scale-105"
+        >
+        <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+        <!-- Total capacity badge -->
+        <span class="absolute top-4 right-4 bg-white/90 text-gray-900 font-bold px-3 py-1 rounded-full text-sm shadow-sm">
+            {{ (stade.capaciteVirage + stade.capacitePelouse + stade.capaciteEnceinte)|number_format }}
+        </span>
+    </div>
+    
+    <div class="p-5">
+        <!-- Header with name and location -->
+        <div class="mb-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-1 line-clamp-1">{{ stade.nom }}</h3>
+            <div class="flex items-center text-gray-600">
+                <i class="fas fa-map-marker-alt mr-2 text-sm text-red-500"></i>
+                <span class="text-sm">{{ stade.ville }}</span>
+            </div>
+        </div>
+        
+        <!-- Capacity progress bars -->
+        <div class="space-y-3 mb-5">
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-600 font-medium">Virage</span>
+                    <span class="font-semibold text-gray-700">{{ stade.capaciteVirage|number_format }}</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-amber-500 h-2 rounded-full" style="width: {{ (stade.capaciteVirage / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capaciteVirage / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-600 font-medium">Pelouse</span>
+                    <span class="font-semibold text-gray-700">{{ stade.capacitePelouse|number_format }}</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (stade.capacitePelouse / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capacitePelouse / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
+                </div>
+            </div>
+            
+            <div>
+                <div class="flex justify-between text-xs mb-1">
+                    <span class="text-gray-600 font-medium">Enceinte</span>
+                    <span class="font-semibold text-gray-700">{{ stade.capaciteEnceinte|number_format }}</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: {{ (stade.capaciteEnceinte / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) > 100 ? 100 : (stade.capaciteEnceinte / (stade.capacitePelouse + stade.capaciteEnceinte + stade.capaciteVirage) * 100) }}%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action buttons -->
+        <div class="flex justify-between pt-4 border-t border-gray-100">
+            <a href="{{ path('app_stade_show', {'id': stade.id}) }}" 
+               class="text-red-600 hover:text-red-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-red-50 transition">
+                <i class="fas fa-eye mr-2"></i> Détails
+            </a>
+            <a href="{{ path('app_stade_edit', {'id': stade.id}) }}" 
+               class="text-gray-600 hover:text-gray-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+                <i class="fas fa-edit mr-2"></i> Modifier
+            </a>
+        </div>
+    </div>
+</div>
                 {% endfor %}
             </div>
         {% else %}
@@ -124,7 +142,7 @@
                     <i class="fas fa-stadium text-6xl opacity-50"></i>
                 </div>
                 <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun stade trouvé</h3>
-                <a href="{{ path('app_stade_new') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">
+                <a href="{{ path('app_stade_new') }}" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-200">
                     <i class="fas fa-plus-circle mr-2"></i> Ajoutez le premier stade
                 </a>
             </div>

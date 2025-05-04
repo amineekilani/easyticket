@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class DashbordController extends AbstractController
 {
-    #[Route('/admin/dashbord', name: 'app_dashbord')]
+    #[Route('/admin', name: 'app_admin_dashboard')]
     public function dashboard(UserRepository $userRepository): Response
     {
         $latestUsers = $userRepository->findBy([], ['dateInscription' => 'DESC'], 5);

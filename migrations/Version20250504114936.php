@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250502221901 extends AbstractMigration
+final class Version20250504114936 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,7 +21,7 @@ final class Version20250502221901 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE user ADD name VARCHAR(255) NOT NULL
+            ALTER TABLE stade CHANGE image_file photo VARCHAR(255) DEFAULT NULL
         SQL);
     }
 
@@ -29,7 +29,7 @@ final class Version20250502221901 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            ALTER TABLE user DROP name
+            ALTER TABLE stade CHANGE photo image_file VARCHAR(255) DEFAULT NULL
         SQL);
     }
 }

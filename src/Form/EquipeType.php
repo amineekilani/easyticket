@@ -31,9 +31,9 @@ class EquipeType extends AbstractType
                 'label' => 'Pays',
                 'choices' => [
                     'Tunisie' => 'Tunisie',
-                    'Égypte' => 'Égypte',
-                    'Algérie' => 'Algérie',
                     'Afrique du Sud' => 'Afrique du Sud',
+                    'Algérie' => 'Algérie',
+                    'Égypte' => 'Égypte',
                     'Maroc' => 'Maroc',],
                 'attr' => [
                     'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'

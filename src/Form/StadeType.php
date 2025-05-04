@@ -57,13 +57,13 @@ class StadeType extends AbstractType
                     'placeholder' => 'Entrez la localisation'
                 ]
             ])
-            ->add('logoFile', FileType::class, [
+            ->add('photoFile', FileType::class, [
                 'label' => 'Photo du stade',
                 'required' => false,
                 'mapped' => false,
                 'attr' => [
                     'class' => 'hidden',
-                    'onchange' => 'previewLogo(this)'
+                    'onchange' => 'previewPhoto(this)'
                 ]
             ]);
     }

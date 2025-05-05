@@ -1,11 +1,214 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New MatchFootball{% endblock %}
+{% block title %}Nouveau match de football{% endblock %}
 
 {% block body %}
-    <h1>Create new MatchFootball</h1>
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Créer un nouveau match</h1>
+                <p class="text-gray-600 mt-2">Remplissez les détails du match de football</p>
+            </div>
+            <a href="{{ path('app_match_football_index') }}" class="mt-4 md:mt-0 inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition duration-200">
+                <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
+            </a>
+        </div>
 
-    {{ include('admin/match_football/_form.html.twig') }}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+            <!-- Card header -->
+            <div class="border-b border-gray-200 pb-4 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <i class="fas fa-info-circle text-red-500 mr-2"></i>
+                    Informations du match
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">Renseignez tous les champs obligatoires</p>
+            </div>
 
-    <a href="{{ path('app_match_football_index') }}">back to list</a>
+            <!-- Form -->
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Équipe 1 -->
+                    <div class="form-group">
+                        {{ form_label(form.equipe1, 'Équipe à domicile', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        <div class="relative">
+                            {{ form_widget(form.equipe1, {
+                                'attr': {
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(form.equipe1) }}
+                    </div>
+
+                    <!-- Équipe 2 -->
+                    <div class="form-group">
+                        {{ form_label(form.equipe2, 'Équipe visiteur', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        <div class="relative">
+                            {{ form_widget(form.equipe2, {
+                                'attr': {
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(form.equipe2) }}
+                    </div>
+
+                    <!-- Stade -->
+                    <div class="form-group">
+                        {{ form_label(form.stade, 'Stade', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        <div class="relative">
+                            {{ form_widget(form.stade, {
+                                'attr': {
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(form.stade) }}
+                    </div>
+
+                    <!-- Date et heure -->
+                    <div class="form-group">
+                        {{ form_label(form.dateEtHeure, 'Date et heure', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        <div class="relative">
+                            {{ form_widget(form.dateEtHeure, {
+                                'attr': {
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md datetime-picker'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(form.dateEtHeure) }}
+                    </div>
+                </div>
+
+                <!-- Section billets -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-ticket-alt text-red-500 mr-2"></i>
+                        Configuration des billets
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Virage -->
+                        <div class="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                            <h4 class="font-bold text-amber-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Virage
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    {{ form_label(form.nbrBilletsVirage, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsVirage, {
+                                        'attr': {
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsVirage) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(form.prixBilletVirage, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
+                                    <div class="relative rounded-md shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletVirage, {
+                                            'attr': {
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletVirage) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pelouse -->
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+                            <h4 class="font-bold text-green-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Pelouse
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    {{ form_label(form.nbrBilletsPelouse, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsPelouse, {
+                                        'attr': {
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsPelouse) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(form.prixBilletPelouse, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
+                                    <div class="relative rounded-md shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletPelouse, {
+                                            'attr': {
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletPelouse) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enceinte -->
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                            <h4 class="font-bold text-blue-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Enceinte
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="form-group">
+                                    {{ form_label(form.nbrBilletsEnceinte, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsEnceinte, {
+                                        'attr': {
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsEnceinte) }}
+                                </div>
+                                <div class="form-group">
+                                    {{ form_label(form.prixBilletEnceinte, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
+                                    <div class="relative rounded-md shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 sm:text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletEnceinte, {
+                                            'attr': {
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletEnceinte) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form actions -->
+                <div class="flex justify-end pt-6 mt-6 border-t border-gray-200">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                        <i class="fas fa-save mr-2"></i> Enregistrer le match
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <style>
+        .form-group .form-error {
+            @apply text-red-500 text-xs mt-1;
+        }
+        
+        .datetime-picker {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-gray-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' /%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
 {% endblock %}

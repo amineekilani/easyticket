@@ -26,15 +26,18 @@ class MatchFootballType extends AbstractType
             ->add('prixBilletEnceinte')
             ->add('equipe1', EntityType::class, [
                 'class' => Equipe::class,
-'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'placeholder' => 'Sélectionner une équipe',
             ])
             ->add('equipe2', EntityType::class, [
                 'class' => Equipe::class,
-'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'placeholder' => 'Sélectionner une équipe',
             ])
             ->add('stade', EntityType::class, [
                 'class' => Stade::class,
-'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'placeholder' => 'Sélectionner un stade',
             ])
         ;
     }

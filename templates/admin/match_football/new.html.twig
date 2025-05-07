@@ -2,10 +2,56 @@
 
 {% block title %}Nouveau match de football{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Styles pour les messages d'erreur */
+        .form-error-container {
+            @apply mt-1;
+        }
+        
+        .form-error-list {
+            @apply mt-1 space-y-1;
+        }
+        
+        .form-error-item {
+            @apply flex items-start text-red-600 text-sm;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .form-error-icon {
+            @apply mr-2 mt-0.5;
+        }
+        
+        .has-error {
+            @apply border-red-500 bg-red-50;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Améliorations générales */
+        .form-group:focus-within label {
+            @apply text-red-600;
+        }
+        
+        .card-section {
+            transition: all 0.3s ease;
+        }
+        
+        .card-section:hover {
+            @apply shadow-md;
+            transform: translateY(-2px);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container mx-auto px-4 py-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div>
+            <div class="transition-transform hover:scale-[1.01]">
                 <h1 class="text-3xl font-bold text-gray-800">Créer un nouveau match</h1>
                 <p class="text-gray-600 mt-2">Remplissez les détails du match de football</p>
             </div>
@@ -14,69 +60,118 @@
             </a>
         </div>
 
-        <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden p-6 card-section">
             <!-- Card header -->
             <div class="border-b border-gray-200 pb-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800 flex items-center">
                     <i class="fas fa-info-circle text-red-500 mr-2"></i>
                     Informations du match
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Renseignez tous les champs obligatoires</p>
+                <p class="text-sm text-gray-500 mt-1">Renseignez tous les champs obligatoires <span class="text-red-500">*</span></p>
             </div>
 
             <!-- Form -->
-            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            {{ form_start(form, {'attr': {'class': 'space-y-6', 'id': 'match-form'}}) }}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Équipe 1 -->
                     <div class="form-group">
-                        {{ form_label(form.equipe1, 'Équipe à domicile', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        <div class="relative">
+                        {{ form_label(form.equipe1, 'Équipe à domicile', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1 flex items-center'}}) }}
+                        <span class="text-red-500 ml-1">*</span>
+                        <div class="relative mt-1">
                             {{ form_widget(form.equipe1, {
                                 'attr': {
-                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 rounded-md transition duration-200' ~ (form.equipe1.vars.errors|length ? ' border-red-500 bg-red-50')
                                 }
                             }) }}
                         </div>
-                        {{ form_errors(form.equipe1) }}
+                        <div class="form-error-container">
+                            {% if form.equipe1.vars.errors|length %}
+                                <ul class="form-error-list">
+                                    {% for error in form.equipe1.vars.errors %}
+                                        <li class="form-error-item">
+                                            <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                            {{ error.message }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Équipe 2 -->
                     <div class="form-group">
-                        {{ form_label(form.equipe2, 'Équipe visiteur', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        <div class="relative">
+                        {{ form_label(form.equipe2, 'Équipe visiteur', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1 flex items-center'}}) }}
+                        <span class="text-red-500 ml-1">*</span>
+                        <div class="relative mt-1">
                             {{ form_widget(form.equipe2, {
                                 'attr': {
-                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 rounded-md transition duration-200' ~ (form.equipe2.vars.errors|length ? ' border-red-500 bg-red-50')
                                 }
                             }) }}
                         </div>
-                        {{ form_errors(form.equipe2) }}
+                        <div class="form-error-container">
+                            {% if form.equipe2.vars.errors|length %}
+                                <ul class="form-error-list">
+                                    {% for error in form.equipe2.vars.errors %}
+                                        <li class="form-error-item">
+                                            <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                            {{ error.message }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Stade -->
                     <div class="form-group">
-                        {{ form_label(form.stade, 'Stade', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        <div class="relative">
+                        {{ form_label(form.stade, 'Stade', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1 flex items-center'}}) }}
+                        <span class="text-red-500 ml-1">*</span>
+                        <div class="relative mt-1">
                             {{ form_widget(form.stade, {
                                 'attr': {
-                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md'
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 rounded-md transition duration-200' ~ (form.stade.vars.errors|length ? ' border-red-500 bg-red-50')
                                 }
                             }) }}
                         </div>
-                        {{ form_errors(form.stade) }}
+                        <div class="form-error-container">
+                            {% if form.stade.vars.errors|length %}
+                                <ul class="form-error-list">
+                                    {% for error in form.stade.vars.errors %}
+                                        <li class="form-error-item">
+                                            <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                            {{ error.message }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <!-- Date et heure -->
                     <div class="form-group">
-                        {{ form_label(form.dateEtHeure, 'Date et heure', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        <div class="relative">
+                        {{ form_label(form.dateEtHeure, 'Date et heure', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1 flex items-center'}}) }}
+                        <span class="text-red-500 ml-1">*</span>
+                        <div class="relative mt-1">
                             {{ form_widget(form.dateEtHeure, {
                                 'attr': {
-                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 rounded-md datetime-picker'
+                                    'class': 'block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 rounded-md datetime-picker transition duration-200' ~ (form.dateEtHeure.vars.errors|length ? ' border-red-500 bg-red-50'),
+                                    'min': 'now'|date('Y-m-d\\TH:i')
                                 }
                             }) }}
                         </div>
-                        {{ form_errors(form.dateEtHeure) }}
+                        <div class="form-error-container">
+                            {% if form.dateEtHeure.vars.errors|length %}
+                                <ul class="form-error-list">
+                                    {% for error in form.dateEtHeure.vars.errors %}
+                                        <li class="form-error-item">
+                                            <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                            {{ error.message }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
@@ -89,7 +184,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Virage -->
-                        <div class="bg-amber-50 rounded-lg p-4 border border-amber-100">
+                        <div class="bg-amber-50 rounded-lg p-4 border border-amber-100 card-section">
                             <h4 class="font-bold text-amber-800 mb-3 flex items-center">
                                 <i class="fas fa-ticket-alt mr-2"></i> Virage
                             </h4>
@@ -98,10 +193,23 @@
                                     {{ form_label(form.nbrBilletsVirage, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
                                     {{ form_widget(form.nbrBilletsVirage, {
                                         'attr': {
-                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white'
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white transition duration-200' ~ (form.nbrBilletsVirage.vars.errors|length ? ' border-red-500 bg-red-50'),
+                                            'data-capacity-target': 'virage'
                                         }
                                     }) }}
-                                    {{ form_errors(form.nbrBilletsVirage) }}
+                                    <div class="text-xs text-gray-500 mt-1" id="virage-capacity-info"></div>
+                                    <div class="form-error-container">
+                                        {% if form.nbrBilletsVirage.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.nbrBilletsVirage.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     {{ form_label(form.prixBilletVirage, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
@@ -111,18 +219,29 @@
                                         </div>
                                         {{ form_widget(form.prixBilletVirage, {
                                             'attr': {
-                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white',
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 rounded-md bg-white transition duration-200' ~ (form.prixBilletVirage.vars.errors|length ? ' border-red-500 bg-red-50'),
                                                 'placeholder': '0.00'
                                             }
                                         }) }}
                                     </div>
-                                    {{ form_errors(form.prixBilletVirage) }}
+                                    <div class="form-error-container">
+                                        {% if form.prixBilletVirage.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.prixBilletVirage.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Pelouse -->
-                        <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+                        <div class="bg-green-50 rounded-lg p-4 border border-green-100 card-section">
                             <h4 class="font-bold text-green-800 mb-3 flex items-center">
                                 <i class="fas fa-ticket-alt mr-2"></i> Pelouse
                             </h4>
@@ -131,10 +250,23 @@
                                     {{ form_label(form.nbrBilletsPelouse, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
                                     {{ form_widget(form.nbrBilletsPelouse, {
                                         'attr': {
-                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md bg-white'
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 rounded-md bg-white transition duration-200' ~ (form.nbrBilletsPelouse.vars.errors|length ? ' border-red-500 bg-red-50'),
+                                            'data-capacity-target': 'pelouse'
                                         }
                                     }) }}
-                                    {{ form_errors(form.nbrBilletsPelouse) }}
+                                    <div class="text-xs text-gray-500 mt-1" id="pelouse-capacity-info"></div>
+                                    <div class="form-error-container">
+                                        {% if form.nbrBilletsPelouse.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.nbrBilletsPelouse.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     {{ form_label(form.prixBilletPelouse, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
@@ -144,18 +276,29 @@
                                         </div>
                                         {{ form_widget(form.prixBilletPelouse, {
                                             'attr': {
-                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-md bg-white',
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 rounded-md bg-white transition duration-200' ~ (form.prixBilletPelouse.vars.errors|length ? ' border-red-500 bg-red-50'),
                                                 'placeholder': '0.00'
                                             }
                                         }) }}
                                     </div>
-                                    {{ form_errors(form.prixBilletPelouse) }}
+                                    <div class="form-error-container">
+                                        {% if form.prixBilletPelouse.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.prixBilletPelouse.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Enceinte -->
-                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-100 card-section">
                             <h4 class="font-bold text-blue-800 mb-3 flex items-center">
                                 <i class="fas fa-ticket-alt mr-2"></i> Enceinte
                             </h4>
@@ -164,10 +307,23 @@
                                     {{ form_label(form.nbrBilletsEnceinte, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
                                     {{ form_widget(form.nbrBilletsEnceinte, {
                                         'attr': {
-                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white'
+                                            'class': 'block w-full pl-3 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white transition duration-200' ~ (form.nbrBilletsEnceinte.vars.errors|length ? ' border-red-500 bg-red-50'),
+                                            'data-capacity-target': 'enceinte'
                                         }
                                     }) }}
-                                    {{ form_errors(form.nbrBilletsEnceinte) }}
+                                    <div class="text-xs text-gray-500 mt-1" id="enceinte-capacity-info"></div>
+                                    <div class="form-error-container">
+                                        {% if form.nbrBilletsEnceinte.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.nbrBilletsEnceinte.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     {{ form_label(form.prixBilletEnceinte, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
@@ -177,12 +333,23 @@
                                         </div>
                                         {{ form_widget(form.prixBilletEnceinte, {
                                             'attr': {
-                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white',
+                                                'class': 'block w-full pl-12 pr-3 py-2 text-sm border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md bg-white transition duration-200' ~ (form.prixBilletEnceinte.vars.errors|length ? ' border-red-500 bg-red-50'),
                                                 'placeholder': '0.00'
                                             }
                                         }) }}
                                     </div>
-                                    {{ form_errors(form.prixBilletEnceinte) }}
+                                    <div class="form-error-container">
+                                        {% if form.prixBilletEnceinte.vars.errors|length %}
+                                            <ul class="form-error-list">
+                                                {% for error in form.prixBilletEnceinte.vars.errors %}
+                                                    <li class="form-error-item">
+                                                        <i class="fas fa-exclamation-circle form-error-icon"></i>
+                                                        {{ error.message }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -191,7 +358,7 @@
 
                 <!-- Form actions -->
                 <div class="flex justify-end pt-6 mt-6 border-t border-gray-200">
-                    <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200 transform hover:scale-105">
                         <i class="fas fa-save mr-2"></i> Enregistrer le match
                     </button>
                 </div>
@@ -199,16 +366,55 @@
         </div>
     </div>
 
-    <style>
-        .form-group .form-error {
-            @apply text-red-500 text-xs mt-1;
-        }
-        
-        .datetime-picker {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='h-5 w-5 text-gray-400' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' /%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.5rem center;
-            background-size: 1.5em 1.5em;
-        }
-    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mise à jour dynamique des capacités
+            const stadeSelect = document.getElementById('{{ form.stade.vars.id }}');
+            
+            if (stadeSelect) {
+                stadeSelect.addEventListener('change', function() {
+                    const stadeId = this.value;
+                    if (stadeId) {
+                        fetch(`/stade/capacity/${stadeId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Mise à jour des infos de capacité
+                                document.getElementById('virage-capacity-info').textContent = `Capacité max: ${data.virage}`;
+                                document.getElementById('pelouse-capacity-info').textContent = `Capacité max: ${data.pelouse}`;
+                                document.getElementById('enceinte-capacity-info').textContent = `Capacité max: ${data.enceinte}`;
+                                
+                                // Mise à jour des attributs max
+                                document.querySelector('[data-capacity-target="virage"]').max = data.virage;
+                                document.querySelector('[data-capacity-target="pelouse"]').max = data.pelouse;
+                                document.querySelector('[data-capacity-target="enceinte"]').max = data.enceinte;
+                            });
+                    }
+                });
+                
+                // Déclencher le changement si un stade est déjà sélectionné
+                if (stadeSelect.value) {
+                    stadeSelect.dispatchEvent(new Event('change'));
+                }
+            }
+            
+            // Validation des nombres de billets
+            const validateCapacity = function(input) {
+                const max = parseInt(input.max);
+                const value = parseInt(input.value) || 0;
+                
+                if (value > max) {
+                    input.setCustomValidity(`Ne peut pas dépasser ${max}`);
+                    input.reportValidity();
+                } else {
+                    input.setCustomValidity('');
+                }
+            };
+            
+            document.querySelectorAll('[data-capacity-target]').forEach(input => {
+                input.addEventListener('input', function() {
+                    validateCapacity(this);
+                });
+            });
+        });
+    </script>
 {% endblock %}

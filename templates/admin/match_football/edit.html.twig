@@ -1,13 +1,278 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit MatchFootball{% endblock %}
+{% block title %}Modifier Match - {{ match_football.equipe1.nom }} vs {{ match_football.equipe2.nom }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-input {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .form-section {
+            background-color: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-section-title {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .danger-zone {
+            border-left: 4px solid #ef4444;
+        }
+        .ticket-card {
+            transition: all 0.3s ease;
+        }
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .team-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .team-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-    <h1>Edit MatchFootball</h1>
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-xl rounded-xl overflow-hidden">
+            <div class="px-8 py-6 bg-gradient-to-r from-red-600 to-red-700">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-edit"></i>
+                        Modifier le match : {{ match_football.equipe1.nom }} vs {{ match_football.equipe2.nom }}
+                    </h1>
+                    <a href="{{ path('app_match_football_index') }}" class="text-white hover:text-gray-200 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </a>
+                </div>
+                <p class="mt-1 text-red-100">Mettez à jour les informations du match ci-dessous</p>
+            </div>
 
-    {{ include('admin/match_football/_form.html.twig', {'button_label': 'Update'}) }}
+            <div class="p-8">
+                {{ form_start(form, {'attr': {'class': 'space-y-8'}}) }}
 
-    <a href="{{ path('app_match_football_index') }}">back to list</a>
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-info-circle text-red-600"></i>
+                        Informations du match
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Équipe 1 -->
+                        <div>
+                            {{ form_label(form.equipe1, 'Équipe à domicile', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.equipe1, {
+                                    'attr': {
+                                        'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                    }
+                                }) }}
+                            </div>
+                            {{ form_errors(form.equipe1) }}
+                        </div>
 
-    {{ include('admin/match_football/_delete_form.html.twig') }}
+                        <!-- Équipe 2 -->
+                        <div>
+                            {{ form_label(form.equipe2, 'Équipe visiteur', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.equipe2, {
+                                    'attr': {
+                                        'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                    }
+                                }) }}
+                            </div>
+                            {{ form_errors(form.equipe2) }}
+                        </div>
+
+                        <!-- Stade -->
+                        <div>
+                            {{ form_label(form.stade, 'Stade', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.stade, {
+                                    'attr': {
+                                        'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400'
+                                    }
+                                }) }}
+                            </div>
+                            {{ form_errors(form.stade) }}
+                        </div>
+
+                        <!-- Date et heure -->
+                        <div>
+                            {{ form_label(form.dateEtHeure, 'Date et heure', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                            <div class="relative">
+                                {{ form_widget(form.dateEtHeure, {
+                                    'attr': {
+                                        'class': 'form-input block w-full rounded-md py-3 px-4 border border-gray-300 placeholder-gray-400 datetime-picker'
+                                    }
+                                }) }}
+                            </div>
+                            {{ form_errors(form.dateEtHeure) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="form-section-title">
+                        <i class="fas fa-ticket-alt text-red-600"></i>
+                        Configuration des billets
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Virage -->
+                        <div class="ticket-card bg-amber-50 rounded-lg p-4 border border-amber-200">
+                            <h4 class="font-bold text-amber-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Virage
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    {{ form_label(form.nbrBilletsVirage, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsVirage, {
+                                        'attr': {
+                                            'class': 'form-input block w-full rounded-md py-2 px-3 border border-amber-200 bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsVirage) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.prixBilletVirage, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-amber-700 mb-1'}}) }}
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletVirage, {
+                                            'attr': {
+                                                'class': 'form-input block w-full rounded-md py-2 pl-12 pr-3 border border-amber-200 bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletVirage) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pelouse -->
+                        <div class="ticket-card bg-green-50 rounded-lg p-4 border border-green-200">
+                            <h4 class="font-bold text-green-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Pelouse
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    {{ form_label(form.nbrBilletsPelouse, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsPelouse, {
+                                        'attr': {
+                                            'class': 'form-input block w-full rounded-md py-2 px-3 border border-green-200 bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsPelouse) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.prixBilletPelouse, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-green-700 mb-1'}}) }}
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletPelouse, {
+                                            'attr': {
+                                                'class': 'form-input block w-full rounded-md py-2 pl-12 pr-3 border border-green-200 bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletPelouse) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enceinte -->
+                        <div class="ticket-card bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <h4 class="font-bold text-blue-800 mb-3 flex items-center">
+                                <i class="fas fa-ticket-alt mr-2"></i> Enceinte
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                    {{ form_label(form.nbrBilletsEnceinte, 'Nombre de billets', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
+                                    {{ form_widget(form.nbrBilletsEnceinte, {
+                                        'attr': {
+                                            'class': 'form-input block w-full rounded-md py-2 px-3 border border-blue-200 bg-white'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.nbrBilletsEnceinte) }}
+                                </div>
+                                <div>
+                                    {{ form_label(form.prixBilletEnceinte, 'Prix (TND)', {'label_attr': {'class': 'block text-xs font-medium text-blue-700 mb-1'}}) }}
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <span class="text-gray-500 text-sm">TND</span>
+                                        </div>
+                                        {{ form_widget(form.prixBilletEnceinte, {
+                                            'attr': {
+                                                'class': 'form-input block w-full rounded-md py-2 pl-12 pr-3 border border-blue-200 bg-white',
+                                                'placeholder': '0.00'
+                                            }
+                                        }) }}
+                                    </div>
+                                    {{ form_errors(form.prixBilletEnceinte) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                    <a href="{{ path('app_match_football_index') }}"
+                       class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        Retour à la liste
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+
+                <div class="mt-8 pt-6 border-t">
+                    <div class="form-section danger-zone">
+                        <h2 class="form-section-title text-red-600">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Zone de danger
+                        </h2>
+                        <p class="text-sm text-gray-600 mb-4">Cette action est irréversible. Toutes les données associées à ce match seront également supprimées.</p>
+                        {{ include('admin/match_football/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Initialiser le sélecteur de date/heure
+        document.querySelectorAll('.datetime-picker').forEach(function(element) {
+            element.addEventListener('focus', function() {
+                this.type = 'datetime-local';
+            });
+        });
+    </script>
 {% endblock %}

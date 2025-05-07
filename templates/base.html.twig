@@ -1,169 +1,177 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Amine Kilani & Baha Eddine Manai{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ asset('CSS/bootstrap.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    {% block stylesheets %}
-    {% endblock %}
-    <style>
-        .sidebar{
-            background-color: #b62020;
-        }
-        .sidebar {
-            transition: all 0.3s ease;
-        }
-        .sidebar.collapsed {
-            width: 70px;
-        }
-        .sidebar.collapsed .sidebar-text {
-            display: none;
-        }
-        .sidebar.collapsed .logo-text {
-            display: none;
-        }
-        .sidebar.collapsed .nav-item {
-            justify-content: center;
-        }
-        .stadium-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .stadium-image {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-        }
-        .capacity-meter {
-            height: 6px;
-            border-radius: 3px;
-        }
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Amine Kilani & Baha Eddine Manai
+			{% endblock %}
+		</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<script src="https://cdn.tailwindcss.com"></script>
+		{% block stylesheets %}{% endblock %}
+		<style>
+			.sidebar {
+				background-color: #b62020;
+			}
+			.sidebar {
+				transition: all 0.3s ease;
+			}
+			.sidebar.collapsed {
+				width: 70px;
+			}
+			.sidebar.collapsed .sidebar-text {
+				display: none;
+			}
+			.sidebar.collapsed .logo-text {
+				display: none;
+			}
+			.sidebar.collapsed .nav-item {
+				justify-content: center;
+			}
+			.stadium-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+			}
+			.stadium-image {
+				background: linear-gradient(135deg, #6b7280, #4b5563);
+			}
+			.capacity-meter {
+				height: 6px;
+				border-radius: 3px;
+			}
+			.animate-pulse {
+				animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+			}
+			@keyframes pulse {
+				0,
+				100% {
+					opacity: 1;
+				}
+				50% {
+					opacity: 0.5;
+				}
+			}
+		</style>
+		{% block javascripts %}
+			<script>
+				document.addEventListener('DOMContentLoaded', function () { // Toggle sidebar
+const toggleBtn = document.getElementById('toggle-sidebar');
+if (toggleBtn) {
+toggleBtn.addEventListener('click', function () {
+const sidebar = document.querySelector('.sidebar');
+sidebar.classList.toggle('collapsed');
+const icon = this.querySelector('i');
+if (icon.classList.contains('fa-chevron-left')) {
+icon.classList.remove('fa-chevron-left');
+icon.classList.add('fa-chevron-right');
+} else {
+icon.classList.remove('fa-chevron-right');
+icon.classList.add('fa-chevron-left');
+}
 
-    </style>
-    {% block javascripts %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Toggle sidebar
-                const toggleBtn = document.getElementById('toggle-sidebar');
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', function () {
-                        const sidebar = document.querySelector('.sidebar');
-                        sidebar.classList.toggle('collapsed');
-                        const icon = this.querySelector('i');
-                        if (icon.classList.contains('fa-chevron-left')) {
-                            icon.classList.remove('fa-chevron-left');
-                            icon.classList.add('fa-chevron-right');
-                        } else {
-                            icon.classList.remove('fa-chevron-right');
-                            icon.classList.add('fa-chevron-left');
-                        }
+const logoText = document.querySelector('.logo-text');
+if (logoText) {
+logoText.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'inline';
+}
+});
+}
 
-                        const logoText = document.querySelector('.logo-text');
-                        if (logoText) {
-                            logoText.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'inline';
-                        }
-                    });
-                }
+// Archive confirmation
+document.querySelectorAll('.archive-team-btn').forEach(btn => {
+btn.addEventListener('click', function (e) {
+if (!confirm('Êtes-vous sûr de vouloir archiver cette équipe ?')) {
+e.preventDefault();
+}
+});
+});
 
-                // Archive confirmation
-                document.querySelectorAll('.archive-team-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        if (!confirm('Êtes-vous sûr de vouloir archiver cette équipe ?')) {
-                            e.preventDefault();
-                        }
-                    });
-                });
-
-                // Restore confirmation
-                document.querySelectorAll('.restore-team-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        if (!confirm('Êtes-vous sûr de vouloir restaurer cette équipe ?')) {
-                            e.preventDefault();
-                        }
-                    });
-                });
-            });
-        </script>
-    {% endblock %}
+// Restore confirmation
+document.querySelectorAll('.restore-team-btn').forEach(btn => {
+btn.addEventListener('click', function (e) {
+if (!confirm('Êtes-vous sûr de vouloir restaurer cette équipe ?')) {
+e.preventDefault();
+}
+});
+});
+});
+			</script>
+		{% endblock %}
 
 
+	</head>
+	<body>
+		<!--ADMIN NAVBAR -->
+		<div class="flex h-screen overflow-hidden">
+			<div
+				class="sidebar text-white w-64 flex flex-col h-full">
+				<!-- Logo et titre -->
+				<div class="p-4 flex items-center space-x-2 border-b border-red-900">
+					<i class="fas fa-futbol text-3xl text-white"></i>
+					<h1 class="text-2xl font-bold text-white logo-text">EasyTicket</h1>
+				</div>
 
-</head>
-<body>
-    <!--ADMIN NAVBAR -->
-    <div class="flex h-screen overflow-hidden">
-        <div class="sidebar text-white w-64 flex flex-col">
-            <a class="p-4 flex items-center space-x-2 border-b border-red-900" href="{{ path('app_admin_dashboard') }}">
-                <i class="fas fa-futbol text-3xl text-white-600"></i>
-                <h1 class="text-2xl font-bold text-white-800 logo-text">EasyTicket</h1>
-            </a>
-            <div class="p-4 flex items-center justify-between border-b border-red-900">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <span class="sidebar-text">Admin</span>
-                </div>
-                <button id="toggle-sidebar" class="text-red-300 hover:text-white">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-            </div>
-            <nav class="flex-1 overflow-y-auto">
-                <ul class="space-y-1 p-2">
-                    <li>
-                        <a href="{{ path('app_admin_dashboard') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
-                            <i class="fas fa-home mr-3"></i>
-                            <span class="sidebar-text">Tableau de bord</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_match_football_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
-                            <i class="fas fa-calendar-alt mr-3"></i>
-                            <span class="sidebar-text">Matchs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_equipe_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
-                            <i class="fas fa-users mr-3"></i>
-                            <span class="sidebar-text">Équipes</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_stade_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
-                            <i class="fas fa-building mr-3"></i>
-                            <span class="sidebar-text">Stades</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ path('app_user_index') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-800">
-                            <i class="fas fa-user mr-3"></i>
-                            <span class="sidebar-text">Utilisateurs</span>
-                        </a>
-                    </li>
+				<!-- Section utilisateur et bouton de réduction -->
+				<div class="p-4 flex items-center justify-between border-b border-red-900">
+					<div class="flex items-center space-x-3">
+						<div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+							<i class="fas fa-user text-sm"></i>
+						</div>
+						<span class="sidebar-text font-medium">Admin</span>
+					</div>
+					<button id="toggle-sidebar" class="text-red-300 hover:text-white transition-colors">
+						<i class="fas fa-chevron-left text-sm"></i>
+					</button>
+				</div>
 
-                </ul>
-            </nav>
-            <div class="p-4 border-t border-red-900">
-                <a href="{{ path('app_logout') }}" class="nav-item flex items-center p-2 rounded hover:bg-red-900">
-                    <i class="fas fa-sign-out-alt mr-3"></i>
-                    <span class="sidebar-text">Déconnexion</span>
-                </a>
-            </div>
-        </div>
-        <div class="flex-1 overflow-auto bg-gray-100">
-    {% block body %}
-    {% endblock %}
-        </div>
-    </div>
-</body>
-</html>
+				<!-- Menu de navigation -->
+				<nav class="flex-1 overflow-y-auto py-2">
+					<ul class="space-y-1 px-2">
+						<li>
+							<a href="{{ path('app_admin_dashboard') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-800 transition-colors">
+								<i class="fas fa-home w-6 text-center mr-3"></i>
+								<span class="sidebar-text">Tableau de bord</span>
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('app_match_football_index') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-800 transition-colors">
+								<i class="fas fa-calendar-alt w-6 text-center mr-3"></i>
+								<span class="sidebar-text">Matchs</span>
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('app_equipe_index') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-800 transition-colors">
+								<i class="fas fa-users w-6 text-center mr-3"></i>
+								<span class="sidebar-text">Équipes</span>
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('app_stade_index') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-800 transition-colors">
+								<i class="fas fa-building w-6 text-center mr-3"></i>
+								<span class="sidebar-text">Stades</span>
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('app_user_index') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-800 transition-colors">
+								<i class="fas fa-user w-6 text-center mr-3"></i>
+								<span class="sidebar-text">Utilisateurs</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+
+				<!-- Bouton de déconnexion -->
+				<div class="p-4 border-t border-red-900">
+					<a href="{{ path('app_logout') }}" class="nav-item flex items-center p-3 rounded hover:bg-red-900 transition-colors">
+						<i class="fas fa-sign-out-alt w-6 text-center mr-3"></i>
+						<span class="sidebar-text">Déconnexion</span>
+					</a>
+				</div>
+			</div>
+			<div class="flex-1 overflow-auto bg-gray-100"> {% block body %}{% endblock %}
+				</div>
+			</div>
+		</body>
+	</html>

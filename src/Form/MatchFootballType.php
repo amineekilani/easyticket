@@ -37,6 +37,10 @@ class MatchFootballType extends AbstractType
                 'choice_label' => 'nom',
                 'constraints' => [
                     new Assert\NotNull(['message' => 'L\'équipe à domicile est obligatoire']),
+                    new Assert\NotEqualTo([
+                        'propertyPath' => 'parent.all[equipe2].data',
+                        'message' => 'Les équipes doivent être différentes'
+                    ]),
                 ],
                 'placeholder' => 'Sélectionner une équipe',
             ])

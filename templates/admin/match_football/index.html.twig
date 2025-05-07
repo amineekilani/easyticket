@@ -142,12 +142,21 @@
                             <div class="flex justify-between pt-4 border-t border-gray-100">
                                 <a href="{{ path('app_match_football_show', {'id': match.id}) }}" 
                                    class="text-red-600 hover:text-red-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-red-50 transition">
-                                    <i class="fas fa-eye mr-2"></i> Détails
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Détails
                                 </a>
-                                <a href="{{ path('app_match_football_edit', {'id': match.id}) }}" 
-                                   class="text-gray-600 hover:text-gray-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-gray-50 transition">
-                                    <i class="fas fa-edit mr-2"></i> Modifier
-                                </a>
+                                {% if match.dateEtHeure and match.dateEtHeure > date() %}
+                                    <a href="{{ path('app_match_football_edit', {'id': match.id}) }}"
+                                        class="text-gray-600 hover:text-gray-800 font-medium flex items-center text-sm px-3 py-2 rounded-lg hover:bg-gray-50 transition">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        Modifier
+                                    </a>
+                                {% else %}
+                                    <span class="text-gray-400 font-medium flex items-center text-sm px-3 py-2 rounded-lg cursor-not-allowed" title="Modification désactivée pour les matchs terminés">
+                                        <i class="fas fa-edit mr-2"></i>
+                                        Modifier
+                                    </span>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

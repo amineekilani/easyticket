@@ -1,11 +1,81 @@
-<h1>Bonjour ! Veuillez confirmer votre adresse e-mail !</h1>
-
-<p>
-	Veuillez confirmer votre adresse e-mail en cliquant sur le lien suivant:<br><br>
-	<a href="{{ url('app_verify_email', {'token': token}) }}">Confirmer mon email</a>.
-		    Ce lien va expirer dans 24 heures.
-</p>
-
-<p>
-	Bonne journée!
-</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmation de votre adresse email</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .logo {
+            max-height: 50px;
+            margin-bottom: 20px;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #4CAF50;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            margin-top: 20px;
+        }
+        .expiry-note {
+            font-size: 14px;
+            color: #666666;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- Vous pouvez ajouter votre logo ici -->
+        <!-- <img src="https://votre-site.com/logo.png" alt="Logo" class="logo"> -->
+        <h1 style="color: #2c3e50;">Confirmation de votre email</h1>
+    </div>
+    
+    <div class="content">
+        <p>Bonjour,</p>
+        
+        <p>Merci de vous être inscrit(e) sur notre plateforme. Pour finaliser votre inscription, veuillez confirmer votre adresse email en cliquant sur le bouton ci-dessous :</p>
+        
+        <div style="text-align: center;">
+            <a href="{{ url('app_verify_email', {'token': token}) }}" class="button">Confirmer mon email</a>
+        </div>
+        
+        <p class="expiry-note">Ce lien de confirmation expirera dans 24 heures.</p>
+        
+        <p>Si vous n'avez pas créé de compte sur EasyTicket, vous pouvez ignorer cet email en toute sécurité.</p>
+    </div>
+    
+    <div class="footer">
+        <p>© {{ "now"|date("Y") }} EasyTicket. Tous droits réservés.</p>
+        <p>
+            <a href="" style="color: #999999; text-decoration: none;">Visitez notre site</a> | 
+            <a href="" style="color: #999999; text-decoration: none;">Contactez-nous</a>
+        </p>
+    </div>
+</body>
+</html>

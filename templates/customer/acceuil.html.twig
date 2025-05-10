@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EasyTicket - Plateforme de billetterie footballistique Tunisienne</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% extends 'Customer/layout.html.twig' %}
+
+{% block title %}Accueil | EasyTicket{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
     <style>
+        /* Réservation de sièges */
         .stadium-seat {
             width: 30px;
             height: 30px;
@@ -41,1106 +39,372 @@
             border-radius: 8px;
             background-color: #f3f4f6;
         }
-        .qr-code {
-            width: 150px;
-            height: 150px;
-            background-color: #fff;
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
+
+        /* Cartes de match */
         .match-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        .nav-link:hover {
-            color: #ef4444;
-        }
-        .nav-link.active {
-            color: #ef4444;
-            border-bottom: 2px solid #ef4444;
-        }
     </style>
-</head>
-<body class="bg-gray-50">
-<!-- Header/Navigation -->
-<header class="bg-white shadow-md">
-    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <i class="fas fa-futbol text-3xl text-red-600"></i>
-            <h1 class="text-2xl font-bold text-gray-800">EasyTicket</h1>
-        </div>
-        <nav class="hidden md:flex space-x-8">
-            <a href="#home" class="nav-link text-gray-600 hover:text-red-600 font-medium">Accueil</a>
-            <a href="#matches" class="nav-link text-gray-600 hover:text-red-600 font-medium">Matchs</a>
-            <a href="#stadiums" class="nav-link text-gray-600 hover:text-red-600 font-medium">Stades</a>
-            <a href="#about" class="nav-link text-gray-600 hover:text-red-600 font-medium">À propos</a>
-        </nav>
-        <div class="flex items-center space-x-4">
-            <button id="loginBtn" class="px-4 py-2 text-red-600 font-medium rounded hover:bg-red-50">Connexion</button>
-            <button id="registerBtn" class="px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700">Inscription</button>
-            <div id="userMenu" class="hidden relative">
-                <button class="flex items-center space-x-2">
-                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User" class="w-8 h-8 rounded-full">
-                    <span class="text-gray-700">Mohamed</span>
-                </button>
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden">
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profil</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Mes billets</a>
-                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 border-t border-gray-100">Déconnexion</a>
+{% endblock %}
+{% block body %}
+
+    <!-- Hero Section -->
+    <section id="home" class="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
+        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+            <div class="md:w-1/2 mb-8 md:mb-0">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">Réservez vos billets de football en Tunisie</h1>
+                <p class="text-xl mb-6">La première plateforme tunisienne pour Réserver vos billets de match en ligne, simplement et en toute sécurité.</p>
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="{{ path("app_customer_matchs") }}" class="px-6 py-3 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 text-center">Voir les matchs</a>
+                    <a href="#how-it-works" class="px-6 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-red-600 text-center">Comment ça marche</a>
                 </div>
             </div>
-            <button id="cartBtn" class="relative">
-                <i class="fas fa-shopping-cart text-xl text-gray-600"></i>
-                <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
-            </button>
-            <button id="mobileMenuBtn" class="md:hidden text-gray-600">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </div>
-    </div>
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="hidden md:hidden bg-white py-2 px-4 shadow-lg">
-        <a href="#home" class="block py-2 text-gray-600 hover:text-red-600">Accueil</a>
-        <a href="#matches" class="block py-2 text-gray-600 hover:text-red-600">Matchs</a>
-        <a href="#stadiums" class="block py-2 text-gray-600 hover:text-red-600">Stades</a>
-        <a href="#about" class="block py-2 text-gray-600 hover:text-red-600">À propos</a>
-    </div>
-</header>
-
-<!-- Hero Section -->
-<section id="home" class="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
-    <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
-        <div class="md:w-1/2 mb-8 md:mb-0">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Réservez vos billets de football en Tunisie</h1>
-            <p class="text-xl mb-6">La première plateforme tunisienne pour acheter vos billets de match en ligne, simplement et en toute sécurité.</p>
-            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="#matches" class="px-6 py-3 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 text-center">Voir les matchs</a>
-                <a href="#how-it-works" class="px-6 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-red-600 text-center">Comment ça marche</a>
+            <div class="md:w-1/2 flex justify-center">
+                <img src="{{ asset('easy-ticket-logo.png')}}" alt="Football match" class="rounded-lg max-w-full h-auto" style="width:250px">
             </div>
         </div>
-        <div class="md:w-1/2 flex justify-center">
-            <img src="{{ asset('easy-ticket-logo.png')}}" alt="Football match" class="rounded-lg max-w-full h-auto" style="width:250px">
-        </div>
-    </div>
-</section>
+    </section>
 
-<!-- How it works -->
-<section id="how-it-works" class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Comment acheter vos billets</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-red-600 text-2xl font-bold">1</span>
+    <!-- How it works -->
+    <section id="how-it-works" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Comment Réserver vos billets</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-red-600 text-2xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Choisissez votre match</h3>
+                    <p class="text-gray-600">Parcourez notre calendrier de matchs et sélectionnez celui qui vous intéresse.</p>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">Choisissez votre match</h3>
-                <p class="text-gray-600">Parcourez notre calendrier de matchs et sélectionnez celui qui vous intéresse.</p>
-            </div>
-            <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-red-600 text-2xl font-bold">2</span>
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-red-600 text-2xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Sélectionnez vos places</h3>
+                    <p class="text-gray-600">Visualisez le stade et choisissez vos sièges parmi les places disponibles.</p>
                 </div>
-                <h3 class="text-xl font-semibold mb-2">Sélectionnez vos places</h3>
-                <p class="text-gray-600">Visualisez le stade et choisissez vos sièges parmi les places disponibles.</p>
-            </div>
-            <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="text-red-600 text-2xl font-bold">3</span>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Payez en ligne</h3>
-                <p class="text-gray-600">Finalisez votre achat en toute sécurité et recevez vos billets par email.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Matches Section -->
-<section id="matches" class="py-16 bg-gray-50">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="text-3xl font-bold">Prochains matchs</h2>
-            <div class="flex space-x-2">
-                <button class="px-4 py-2 bg-red-600 text-white rounded-lg">Tous</button>
-                <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Ligue 1</button>
-                <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Coupe</button>
-                <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">International</button>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Match Card 1 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
-                        <span class="text-gray-500">Ligue 1</span>
+                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-red-600 text-2xl font-bold">3</span>
                     </div>
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="text-center">
-
-                            <img src="{{ asset('uploads/logos/68093653050bd.png')}}" alt="EST" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">Espérance ST</h3>
-                        </div>
-                        <div class="text-center px-4">
-                            <div class="text-sm text-gray-500">15 May 2025</div>
-                            <div class="text-xl font-bold my-2">20:30</div>
-                            <div class="text-sm text-gray-500">Stade Hammadi Agrebi</div>
-                        </div>
-                        <div class="text-center">
-                            <img src="{{ asset('uploads/logos/68093302c3082.png')}}" alt="CA" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">Club Africain</h3>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-gray-600">À partir de</span>
-                            <span class="text-xl font-bold text-red-600">15 DT</span>
-                        </div>
-                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="EST vs CA">Acheter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match Card 2 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
-                        <span class="text-gray-500">Ligue 1</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="text-center">
-                            <img src="{{ asset('uploads/logos/68093223bbb4a.png')}}" alt="ESS" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">Étoile du Sahel</h3>
-                        </div>
-                        <div class="text-center px-4">
-                            <div class="text-sm text-gray-500">22 May 2025</div>
-                            <div class="text-xl font-bold my-2">19:00</div>
-                            <div class="text-sm text-gray-500">Stade Olympique Sousse</div>
-                        </div>
-                        <div class="text-center">
-                            <img src="{{ asset('uploads/logos/680dff85a0afb.png')}}" alt="CSS" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">CS Sfaxien</h3>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-gray-600">À partir de</span>
-                            <span class="text-xl font-bold text-red-600">12 DT</span>
-                        </div>
-                        <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="ESS vs CSS">Acheter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Match Card 3 -->
-            <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Bientôt</span>
-                        <span class="text-gray-500">Coupe de Tunisie</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="text-center">
-                            <img src="{{ asset('uploads/logos/68093138f0461.png')}}" alt="USM" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">US Monastir</h3>
-                        </div>
-                        <div class="text-center px-4">
-                            <div class="text-sm text-gray-500">29 May 2025</div>
-                            <div class="text-xl font-bold my-2">16:00</div>
-                            <div class="text-sm text-gray-500">Stade Mustapha Ben Jannet</div>
-                        </div>
-                        <div class="text-center">
-                            <img src="{{ asset('uploads/logos/680dff20799e3.png')}}" alt="ST" class="w-16 h-16 mx-auto mb-2">
-                            <h3 class="font-bold">Stade Tunisien</h3>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-gray-600">À partir de</span>
-                            <span class="text-xl font-bold text-red-600">10 DT</span>
-                        </div>
-                        <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
-                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Payez en ligne</h3>
+                    <p class="text-gray-600">Finalisez votre achat en toute sécurité et recevez vos billets par email.</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <div class="text-center mt-8">
-            <button class="px-6 py-3 border border-red-600 text-red-600 font-bold rounded-lg hover:bg-red-50">Voir tous les matchs</button>
-        </div>
-    </div>
-</section>
-
-<!-- Stadiums Section -->
-<section id="stadiums" class="py-16 bg-white">
-    <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center mb-12">Nos stades partenaires</h2>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img src="{{ asset('images/stade-rades.jpg')}}" alt="Stade Hammadi Agrebi" class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-xl font-bold mb-2">Stade Hammadi Agrebi</h3>
-                    <p class="text-gray-600 mb-4">Radès, Tunis</p>
-                    <p class="text-gray-700">Capacité: 60,000 places</p>
-                    <div class="mt-4">
-                        <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">EST, CA, ST</span>
-                    </div>
+    <!-- Matches Section -->
+    <section id="matches" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Prochains matchs</h2>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-red-600 text-white rounded-lg">Tous</button>
+                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Ligue 1</button>
+                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Coupe</button>
+                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">International</button>
                 </div>
             </div>
-            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img src="{{ asset('images/Stade-Olympique-de-Sousse.webp')}}" alt="Stade Olympique Sousse" class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-xl font-bold mb-2">Stade Olympique Sousse</h3>
-                    <p class="text-gray-600 mb-4">Sousse</p>
-                    <p class="text-gray-700">Capacité: 25,000 places</p>
-                    <div class="mt-4">
-                        <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">ESS</span>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <img src="{{ asset('images/Screenshot_20241129-214649_Facebook.jpg')}}" alt="Stade Mustapha Ben Jannet" class="w-full h-48 object-cover">
-                <div class="p-6">
-                    <h3 class="text-xl font-bold mb-2">Stade Mustapha Ben Jannet</h3>
-                    <p class="text-gray-600 mb-4">Monastir</p>
-                    <p class="text-gray-700">Capacité: 20,000 places</p>
-                    <div class="mt-4">
-                        <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">USM</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- Booking Modal -->
-<div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
-                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="md:col-span-2">
-                    <h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
-
-                    <!-- Stadium Map -->
-                    <div class="bg-gray-100 p-4 rounded-lg mb-6">
-                        <div class="text-center mb-4">
-                            <div class="w-20 h-8 bg-green-500 mx-auto mb-1"></div>
-                            <span class="text-sm">Terrain</span>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Match Card 1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
+                            <span class="text-gray-500">Ligue 1</span>
                         </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
 
-                        <!-- Tribune Nord -->
-                        <div class="stadium-section">
-                            <h5 class="font-semibold mb-3">Tribune Nord - 15 DT</h5>
-                            <div class="flex flex-wrap justify-center">
-                                <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N1">N1</div>
-                                <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N2">N2</div>
-                                <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N3">N3</div>
-                                <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N4">N4</div>
-                                <div class="stadium-seat reserved" data-section="Nord" data-price="15" data-seat="N5">N5</div>
-                                <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N6">N6</div>
-                                <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N7">N7</div>
-                                <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N8">N8</div>
+                                <img src="{{ asset('uploads/logos/68093653050bd.png')}}" alt="EST" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">Espérance ST</h3>
+                            </div>
+                            <div class="text-center px-4">
+                                <div class="text-sm text-gray-500">15 May 2025</div>
+                                <div class="text-xl font-bold my-2">20:30</div>
+                                <div class="text-sm text-gray-500">Stade Hammadi Agrebi</div>
+                            </div>
+                            <div class="text-center">
+                                <img src="{{ asset('uploads/logos/68093302c3082.png')}}" alt="CA" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">Club Africain</h3>
                             </div>
                         </div>
-
-                        <!-- Tribune Sud -->
-                        <div class="stadium-section">
-                            <h5 class="font-semibold mb-3">Tribune Sud - 15 DT</h5>
-                            <div class="flex flex-wrap justify-center">
-                                <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S1">S1</div>
-                                <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S2">S2</div>
-                                <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S3">S3</div>
-                                <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S4">S4</div>
-                                <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S5">S5</div>
-                                <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S6">S6</div>
-                                <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S7">S7</div>
-                                <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S8">S8</div>
-                            </div>
-                        </div>
-
-                        <!-- Tribune VIP -->
-                        <div class="stadium-section">
-                            <h5 class="font-semibold mb-3">Tribune VIP - 30 DT</h5>
-                            <div class="flex flex-wrap justify-center">
-                                <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V1">V1</div>
-                                <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V2">V2</div>
-                                <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V3">V3</div>
-                                <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V4">V4</div>
-                                <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V5">V5</div>
-                                <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V6">V6</div>
-                                <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V7">V7</div>
-                                <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V8">V8</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-red-50 p-4 rounded-lg">
-                        <h5 class="font-semibold mb-2">Légende :</h5>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex items-center">
-                                <div class="stadium-seat available mr-2"></div>
-                                <span>Disponible</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="stadium-seat selected mr-2"></div>
-                                <span>Sélectionné</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="stadium-seat sold mr-2"></div>
-                                <span>Vendu</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="stadium-seat reserved mr-2"></div>
-                                <span>Réservé</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="md:col-span-1">
-                    <div class="bg-gray-50 p-6 rounded-lg sticky top-4">
-                        <h4 class="text-lg font-semibold mb-4">Votre sélection</h4>
-
-                        <div id="selectedSeats" class="mb-6">
-                            <p class="text-gray-500">Aucune place sélectionnée</p>
-                        </div>
-
-                        <div class="border-t border-gray-200 pt-4 mb-4">
-                            <div class="flex justify-between mb-2">
-                                <span class="text-gray-600">Total :</span>
-                                <span id="totalPrice" class="font-bold">0 DT</span>
-                            </div>
-                        </div>
-
-                        <button id="addToCart" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-3">Ajouter au panier</button>
-                        <button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Payer maintenant</button>
-
-                        <div class="mt-4 text-sm text-gray-500">
-                            <p>Les billets seront envoyés par email après paiement.</p>
-                            <p>Annulation possible jusqu'à 24h avant le match.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Login Modal -->
-<div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Connexion</h3>
-                <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            <form id="loginForm">
-                <div class="mb-4">
-                    <label for="loginEmail" class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="loginEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-6">
-                    <label for="loginPassword" class="block text-gray-700 font-medium mb-2">Mot de passe</label>
-                    <input type="password" id="loginPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-4">Se connecter</button>
-            </form>
-
-            <div class="text-center">
-                <p class="text-gray-600">Pas encore de compte ? <button id="showRegister" class="text-red-600 hover:underline">S'inscrire</button></p>
-                <button class="text-red-600 hover:underline mt-4">Mot de passe oublié ?</button>
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-gray-200">
-                <p class="text-center text-gray-600 mb-4">Ou connectez-vous avec</p>
-                <div class="flex justify-center space-x-4">
-                    <button class="px-4 py-2 border border-gray-300 rounded-lg flex items-center hover:bg-gray-50">
-                        <i class="fab fa-google text-red-500 mr-2"></i>
-                        <span>Google</span>
-                    </button>
-                    <button class="px-4 py-2 border border-gray-300 rounded-lg flex items-center hover:bg-gray-50">
-                        <i class="fab fa-facebook-f text-blue-600 mr-2"></i>
-                        <span>Facebook</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Register Modal -->
-<div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Inscription</h3>
-                <button id="closeRegisterModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            <form id="registerForm">
-                <div class="mb-4">
-                    <label for="registerName" class="block text-gray-700 font-medium mb-2">Nom complet</label>
-                    <input type="text" id="registerName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-4">
-                    <label for="registerEmail" class="block text-gray-700 font-medium mb-2">Email</label>
-                    <input type="email" id="registerEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-4">
-                    <label for="registerPhone" class="block text-gray-700 font-medium mb-2">Téléphone</label>
-                    <input type="tel" id="registerPhone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-4">
-                    <label for="registerPassword" class="block text-gray-700 font-medium mb-2">Mot de passe</label>
-                    <input type="password" id="registerPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-6">
-                    <label for="registerConfirmPassword" class="block text-gray-700 font-medium mb-2">Confirmer le mot de passe</label>
-                    <input type="password" id="registerConfirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" required>
-                </div>
-                <div class="mb-4 flex items-center">
-                    <input type="checkbox" id="registerTerms" class="mr-2" required>
-                    <label for="registerTerms" class="text-gray-700">J'accepte les <a href="#" class="text-red-600 hover:underline">conditions générales</a></label>
-                </div>
-                <button type="submit" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-4">S'inscrire</button>
-            </form>
-
-            <div class="text-center">
-                <p class="text-gray-600">Déjà un compte ? <button id="showLogin" class="text-red-600 hover:underline">Se connecter</button></p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Cart Sidebar -->
-<div id="cartSidebar" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
-    <div class="h-full flex flex-col">
-        <div class="p-6 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-                <h3 class="text-xl font-bold">Votre panier</h3>
-                <button id="closeCart" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-        </div>
-
-        <div id="cartItems" class="flex-1 overflow-y-auto p-6">
-            <!-- Cart items will be added here dynamically -->
-            <div class="text-center py-8">
-                <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-                <p class="text-gray-500">Votre panier est empty</p>
-            </div>
-        </div>
-
-        <div class="p-6 border-t border-gray-200">
-            <div class="flex justify-between mb-4">
-                <span class="text-lg font-semibold">Total :</span>
-                <span id="cartTotal" class="text-lg font-bold">0 DT</span>
-            </div>
-            <button id="proceedCheckout" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 mb-3">Passer au paiement</button>
-            <button id="continueShopping" class="w-full py-3 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">Continuer mes achats</button>
-        </div>
-    </div>
-</div>
-
-<!-- Checkout Modal -->
-<div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
-        <div class="p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold">Paiement sécurisé</h3>
-                <button id="closeCheckoutModal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-8">
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Votre commande</h4>
-                    <div id="checkoutItems" class="mb-6">
-                        <!-- Order items will be added here dynamically -->
-                    </div>
-
-                    <div class="border-t border-gray-200 pt-4">
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Sous-total :</span>
-                            <span id="checkoutSubtotal" class="font-bold">0 DT</span>
-                        </div>
-                        <div class="flex justify-between mb-2">
-                            <span class="text-gray-600">Frais de service :</span>
-                            <span class="font-bold">2 DT</span>
-                        </div>
-                        <div class="flex justify-between text-lg font-bold mt-4">
-                            <span>Total :</span>
-                            <span id="checkoutTotal">0 DT</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Méthode de paiement</h4>
-
-                    <div class="mb-6">
-                        <div class="flex items-center mb-4">
-                            <input type="radio" id="paypal" name="payment" class="mr-2" checked>
-                            <label for="paypal" class="flex items-center">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6 mr-2">
-                                PayPal
-                            </label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="radio" id="stripe" name="payment" class="mr-2">
-                            <label for="stripe" class="flex items-center">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Stripe_logo%2C_revised_2016.svg" alt="Stripe" class="h-6 mr-2">
-                                Stripe
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="bg-red-50 p-4 rounded-lg mb-6">
-                        <h5 class="font-semibold mb-2">Billets numériques</h5>
-                        <p class="text-sm text-gray-600">Vos billets seront envoyés par email après confirmation du paiement. Vous pouvez également les télécharger depuis votre compte.</p>
-                    </div>
-
-                    <button id="confirmPayment" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Confirmer le paiement</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div class="p-8 text-center">
-            <div class="mb-6">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Paiement confirmé !</h3>
-                <p class="text-gray-600">Merci pour votre achat. Vos billets ont été envoyés à votre adresse email.</p>
-            </div>
-
-            <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                <div class="flex justify-center mb-4">
-                    <div class="qr-code">
-                        <!-- QR Code would be generated here in a real app -->
-                        <div class="flex items-center justify-center h-full">
-                            <i class="fas fa-qrcode text-4xl text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-                <p class="text-sm font-semibold">EST vs CA - 15 May 2025</p>
-                <p class="text-sm text-gray-600">Tribune Nord - Place N4</p>
-            </div>
-
-            <div class="flex flex-col space-y-3">
-                <button id="viewTickets" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">Voir mes billets</button>
-                <button id="closeConfirmation" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">Retour à l'accueil</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Footer -->
-<footer class="bg-gray-800 text-white py-12">
-    <div class="container mx-auto px-4">
-        <div class="grid md:grid-cols-4 gap-8">
-            <div>
-                <h3 class="text-xl font-bold mb-4">EasyTicket</h3>
-                <p class="text-gray-400">La première plateforme tunisienne de billetterie en ligne pour les matchs de football.</p>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Liens utiles</h4>
-                <ul class="space-y-2">
-                    <li><a href="#" class="text-gray-400 hover:text-white">Matchs à venir</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">Stades</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">Conditions générales</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Contact</h4>
-                <ul class="space-y-2">
-                    <li class="flex items-center">
-                        <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
-                        <span class="text-gray-400">Tunis, Tunisie</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i class="fas fa-phone mr-2 text-gray-400"></i>
-                        <span class="text-gray-400">+216 70 000 000</span>
-                    </li>
-                    <li class="flex items-center">
-                        <i class="fas fa-envelope mr-2 text-gray-400"></i>
-                        <span class="text-gray-400">contact@easyticket.tn</span>
-                    </li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Newsletter</h4>
-                <p class="text-gray-400 mb-4">Abonnez-vous pour recevoir les dernières actualités et offres spéciales.</p>
-                <div class="flex">
-                    <input type="email" placeholder="Votre email" class="px-4 py-2 rounded-l-lg w-full focus:outline-none text-gray-800">
-                    <button class="px-4 py-2 bg-red-600 rounded-r-lg hover:bg-red-700">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-                <div class="flex space-x-4 mt-4">
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-x"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 EasyTicket. Tous droits réservés.</p>
-        </div>
-    </div>
-</footer>
-
-<script>
-    // DOM Elements
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerBtn = document.getElementById('registerBtn');
-    const userMenu = document.getElementById('userMenu');
-    const cartBtn = document.getElementById('cartBtn');
-    const cartCount = document.getElementById('cartCount');
-    const cartSidebar = document.getElementById('cartSidebar');
-    const closeCart = document.getElementById('closeCart');
-    const bookingModal = document.getElementById('bookingModal');
-    const closeModal = document.getElementById('closeModal');
-    const bookBtns = document.querySelectorAll('.book-btn');
-    const loginModal = document.getElementById('loginModal');
-    const closeLoginModal = document.getElementById('closeLoginModal');
-    const registerModal = document.getElementById('registerModal');
-    const closeRegisterModal = document.getElementById('closeRegisterModal');
-    const showRegister = document.getElementById('showRegister');
-    const showLogin = document.getElementById('showLogin');
-    const checkoutModal = document.getElementById('checkoutModal');
-    const closeCheckoutModal = document.getElementById('closeCheckoutModal');
-    const confirmationModal = document.getElementById('confirmationModal');
-    const closeConfirmation = document.getElementById('closeConfirmation');
-    const proceedCheckout = document.getElementById('proceedCheckout');
-    const continueShopping = document.getElementById('continueShopping');
-    const confirmPayment = document.getElementById('confirmPayment');
-    const viewTickets = document.getElementById('viewTickets');
-
-    // State
-    let selectedSeats = [];
-    let cartItems = [];
-    let isLoggedIn = false;
-
-    // Event Listeners
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-
-    loginBtn.addEventListener('click', () => {
-        loginModal.classList.remove('hidden');
-    });
-
-    registerBtn.addEventListener('click', () => {
-        registerModal.classList.remove('hidden');
-    });
-
-    cartBtn.addEventListener('click', () => {
-        cartSidebar.classList.remove('translate-x-full');
-        document.body.style.overflow = 'hidden';
-    });
-
-    closeCart.addEventListener('click', () => {
-        cartSidebar.classList.add('translate-x-full');
-        document.body.style.overflow = 'auto';
-    });
-
-    closeModal.addEventListener('click', () => {
-        bookingModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    closeLoginModal.addEventListener('click', () => {
-        loginModal.classList.add('hidden');
-    });
-
-    closeRegisterModal.addEventListener('click', () => {
-        registerModal.classList.add('hidden');
-    });
-
-    closeCheckoutModal.addEventListener('click', () => {
-        checkoutModal.classList.add('hidden');
-    });
-
-    closeConfirmation.addEventListener('click', () => {
-        confirmationModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    showRegister.addEventListener('click', () => {
-        loginModal.classList.add('hidden');
-        registerModal.classList.remove('hidden');
-    });
-
-    showLogin.addEventListener('click', () => {
-        registerModal.classList.add('hidden');
-        loginModal.classList.remove('hidden');
-    });
-
-    proceedCheckout.addEventListener('click', () => {
-        cartSidebar.classList.add('translate-x-full');
-        checkoutModal.classList.remove('hidden');
-        updateCheckoutItems();
-    });
-
-    continueShopping.addEventListener('click', () => {
-        cartSidebar.classList.add('translate-x-full');
-        document.body.style.overflow = 'auto';
-    });
-
-    confirmPayment.addEventListener('click', () => {
-        checkoutModal.classList.add('hidden');
-        confirmationModal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-
-        // Clear cart after payment
-        cartItems = [];
-        updateCartCount();
-        updateCartItems();
-    });
-
-    viewTickets.addEventListener('click', () => {
-        // In a real app, this would redirect to the user's tickets page
-        alert('Redirection vers la page "Mes billets"');
-        confirmationModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    });
-
-    // Book buttons
-    bookBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (!isLoggedIn) {
-                loginModal.classList.remove('hidden');
-                return;
-            }
-
-            const match = e.target.getAttribute('data-match');
-            document.getElementById('modalMatchTitle').textContent = match;
-            bookingModal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-
-            // Reset selected seats
-            selectedSeats = [];
-            updateSelectedSeatsDisplay();
-        });
-    });
-
-    // Seat selection
-    document.querySelectorAll('.stadium-seat.available').forEach(seat => {
-        seat.addEventListener('click', () => {
-            if (seat.classList.contains('available')) {
-                seat.classList.remove('available');
-                seat.classList.add('selected');
-
-                const section = seat.getAttribute('data-section');
-                const price = parseInt(seat.getAttribute('data-price'));
-                const seatNumber = seat.getAttribute('data-seat');
-
-                selectedSeats.push({ section, price, seatNumber });
-                updateSelectedSeatsDisplay();
-            } else if (seat.classList.contains('selected')) {
-                seat.classList.remove('selected');
-                seat.classList.add('available');
-
-                const seatNumber = seat.getAttribute('data-seat');
-                selectedSeats = selectedSeats.filter(seat => seat.seatNumber !== seatNumber);
-                updateSelectedSeatsDisplay();
-            }
-        });
-    });
-
-    // Add to cart
-    document.getElementById('addToCart').addEventListener('click', () => {
-        if (selectedSeats.length === 0) {
-            alert('Veuillez sélectionner au moins une place');
-            return;
-        }
-
-        const match = document.getElementById('modalMatchTitle').textContent;
-
-        selectedSeats.forEach(seat => {
-            cartItems.push({
-                match,
-                section: seat.section,
-                seatNumber: seat.seatNumber,
-                price: seat.price
-            });
-        });
-
-        updateCartCount();
-        updateCartItems();
-        bookingModal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-
-        // Show cart sidebar
-        cartSidebar.classList.remove('translate-x-full');
-        document.body.style.overflow = 'hidden';
-
-        // Reset selection
-        selectedSeats = [];
-        document.querySelectorAll('.stadium-seat.selected').forEach(seat => {
-            seat.classList.remove('selected');
-            seat.classList.add('available');
-        });
-        updateSelectedSeatsDisplay();
-    });
-
-    // Checkout directly
-    document.getElementById('checkoutBtn').addEventListener('click', () => {
-        if (selectedSeats.length === 0) {
-            alert('Veuillez sélectionner au moins une place');
-            return;
-        }
-
-        const match = document.getElementById('modalMatchTitle').textContent;
-
-        // Add to cart temporarily
-        selectedSeats.forEach(seat => {
-            cartItems.push({
-                match,
-                section: seat.section,
-                seatNumber: seat.seatNumber,
-                price: seat.price
-            });
-        });
-
-        updateCartCount();
-        bookingModal.classList.add('hidden');
-        checkoutModal.classList.remove('hidden');
-        updateCheckoutItems();
-
-        // Reset selection
-        selectedSeats = [];
-        document.querySelectorAll('.stadium-seat.selected').forEach(seat => {
-            seat.classList.remove('selected');
-            seat.classList.add('available');
-        });
-        updateSelectedSeatsDisplay();
-    });
-
-    // Login form
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // In a real app, this would validate credentials with a backend
-        isLoggedIn = true;
-        loginBtn.classList.add('hidden');
-        registerBtn.classList.add('hidden');
-        userMenu.classList.remove('hidden');
-        loginModal.classList.add('hidden');
-    });
-
-    // Register form
-    document.getElementById('registerForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        // In a real app, this would send data to a backend
-        isLoggedIn = true;
-        loginBtn.classList.add('hidden');
-        registerBtn.classList.add('hidden');
-        userMenu.classList.remove('hidden');
-        registerModal.classList.add('hidden');
-    });
-
-    // Helper functions
-    function updateSelectedSeatsDisplay() {
-        const selectedSeatsContainer = document.getElementById('selectedSeats');
-        const totalPriceElement = document.getElementById('totalPrice');
-
-        if (selectedSeats.length === 0) {
-            selectedSeatsContainer.innerHTML = '<p class="text-gray-500">Aucune place sélectionnée</p>';
-            totalPriceElement.textContent = '0 DT';
-            return;
-        }
-
-        let html = '';
-        let total = 0;
-
-        selectedSeats.forEach(seat => {
-            html += `
-                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                        <div>
-                            <span class="font-medium">${seat.section} - ${seat.seatNumber}</span>
-                        </div>
-                        <span class="font-bold">${seat.price} DT</span>
-                    </div>
-                `;
-            total += seat.price;
-        });
-
-        selectedSeatsContainer.innerHTML = html;
-        totalPriceElement.textContent = `${total} DT`;
-    }
-
-    function updateCartCount() {
-        if (cartItems.length > 0) {
-            cartCount.textContent = cartItems.length;
-            cartCount.classList.remove('hidden');
-        } else {
-            cartCount.classList.add('hidden');
-        }
-    }
-
-    function updateCartItems() {
-        const cartItemsContainer = document.getElementById('cartItems');
-        const cartTotalElement = document.getElementById('cartTotal');
-
-        if (cartItems.length === 0) {
-            cartItemsContainer.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">Votre panier est vide</p>
-                    </div>
-                `;
-            cartTotalElement.textContent = '0 DT';
-            return;
-        }
-
-        let html = '';
-        let total = 0;
-
-        // Group items by match
-        const matches = {};
-        cartItems.forEach(item => {
-            if (!matches[item.match]) {
-                matches[item.match] = [];
-            }
-            matches[item.match].push(item);
-        });
-
-        // Display grouped items
-        Object.keys(matches).forEach(match => {
-            html += `
-                    <div class="mb-6 pb-6 border-b border-gray-200">
-                        <h4 class="font-semibold mb-3">${match}</h4>
-                `;
-
-            let matchTotal = 0;
-
-            matches[match].forEach(item => {
-                html += `
-                        <div class="flex justify-between items-center py-2">
+                        <div class="flex justify-between items-center">
                             <div>
-                                <span class="text-gray-600">${item.section} - ${item.seatNumber}</span>
+                                <span class="text-gray-600">À partir de</span>
+                                <span class="text-xl font-bold text-red-600">15 DT</span>
                             </div>
-                            <div class="flex items-center">
-                                <span class="font-bold mr-4">${item.price} DT</span>
-                                <button class="text-red-500 hover:text-red-700 remove-item" data-match="${match}" data-section="${item.section}" data-seat="${item.seatNumber}">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                matchTotal += item.price;
-                total += item.price;
-            });
-
-            html += `
-                        <div class="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
-                            <span class="font-medium">Total pour ce match :</span>
-                            <span class="font-bold">${matchTotal} DT</span>
+                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="EST vs CA">Réserver</button>
                         </div>
                     </div>
-                `;
-        });
+                </div>
 
-        cartItemsContainer.innerHTML = html;
-        cartTotalElement.textContent = `${total} DT`;
+                <!-- Match Card 2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
+                            <span class="text-gray-500">Ligue 1</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
+                                <img src="{{ asset('uploads/logos/68093223bbb4a.png')}}" alt="ESS" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">Étoile du Sahel</h3>
+                            </div>
+                            <div class="text-center px-4">
+                                <div class="text-sm text-gray-500">22 May 2025</div>
+                                <div class="text-xl font-bold my-2">19:00</div>
+                                <div class="text-sm text-gray-500">Stade Olympique Sousse</div>
+                            </div>
+                            <div class="text-center">
+                                <img src="{{ asset('uploads/logos/680dff85a0afb.png')}}" alt="CSS" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">CS Sfaxien</h3>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-gray-600">À partir de</span>
+                                <span class="text-xl font-bold text-red-600">12 DT</span>
+                            </div>
+                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="ESS vs CSS">Réserver</button>
+                        </div>
+                    </div>
+                </div>
 
-        // Add event listeners to remove buttons
-        document.querySelectorAll('.remove-item').forEach(btn => {
+                <!-- Match Card 3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Bientôt</span>
+                            <span class="text-gray-500">Coupe de Tunisie</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="text-center">
+                                <img src="{{ asset('uploads/logos/68093138f0461.png')}}" alt="USM" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">US Monastir</h3>
+                            </div>
+                            <div class="text-center px-4">
+                                <div class="text-sm text-gray-500">29 May 2025</div>
+                                <div class="text-xl font-bold my-2">16:00</div>
+                                <div class="text-sm text-gray-500">Stade Mustapha Ben Jannet</div>
+                            </div>
+                            <div class="text-center">
+                                <img src="{{ asset('uploads/logos/680dff20799e3.png')}}" alt="ST" class="w-16 h-16 mx-auto mb-2">
+                                <h3 class="font-bold">Stade Tunisien</h3>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-gray-600">À partir de</span>
+                                <span class="text-xl font-bold text-red-600">10 DT</span>
+                            </div>
+                            <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-8">
+                <a href="{{ path('app_customer_matchs') }}" class="btn px-6 py-3 border border-red-600 text-red-600 font-bold rounded-lg hover:bg-red-50">Voir tous les matchs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stadiums Section -->
+    <section id="stadiums" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Nos stades partenaires</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <img src="{{ asset('images/stade-rades.jpg')}}" alt="Stade Hammadi Agrebi" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Stade Hammadi Agrebi</h3>
+                        <p class="text-gray-600 mb-4">Radès, Tunis</p>
+                        <p class="text-gray-700">Capacité: 60,000 places</p>
+                        <div class="mt-4">
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">EST, CA, ST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <img src="{{ asset('images/Stade-Olympique-de-Sousse.webp')}}" alt="Stade Olympique Sousse" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Stade Olympique Sousse</h3>
+                        <p class="text-gray-600 mb-4">Sousse</p>
+                        <p class="text-gray-700">Capacité: 25,000 places</p>
+                        <div class="mt-4">
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">ESS</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    <img src="{{ asset('images/Screenshot_20241129-214649_Facebook.jpg')}}" alt="Stade Mustapha Ben Jannet" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Stade Mustapha Ben Jannet</h3>
+                        <p class="text-gray-600 mb-4">Monastir</p>
+                        <p class="text-gray-700">Capacité: 20,000 places</p>
+                        <div class="mt-4">
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">USM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
+
+                        <!-- Stadium Map -->
+                        <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                            <div class="text-center mb-4">
+                                <div class="w-20 h-8 bg-green-500 mx-auto mb-1"></div>
+                                <span class="text-sm">Terrain</span>
+                            </div>
+
+                            <!-- Tribune Nord -->
+                            <div class="stadium-section">
+                                <h5 class="font-semibold mb-3">Tribune Nord - 15 DT</h5>
+                                <div class="flex flex-wrap justify-center">
+                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N1">N1</div>
+                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N2">N2</div>
+                                    <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N3">N3</div>
+                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N4">N4</div>
+                                    <div class="stadium-seat reserved" data-section="Nord" data-price="15" data-seat="N5">N5</div>
+                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N6">N6</div>
+                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N7">N7</div>
+                                    <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N8">N8</div>
+                                </div>
+                            </div>
+
+                            <!-- Tribune Sud -->
+                            <div class="stadium-section">
+                                <h5 class="font-semibold mb-3">Tribune Sud - 15 DT</h5>
+                                <div class="flex flex-wrap justify-center">
+                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S1">S1</div>
+                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S2">S2</div>
+                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S3">S3</div>
+                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S4">S4</div>
+                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S5">S5</div>
+                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S6">S6</div>
+                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S7">S7</div>
+                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S8">S8</div>
+                                </div>
+                            </div>
+
+                            <!-- Tribune VIP -->
+                            <div class="stadium-section">
+                                <h5 class="font-semibold mb-3">Tribune VIP - 30 DT</h5>
+                                <div class="flex flex-wrap justify-center">
+                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V1">V1</div>
+                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V2">V2</div>
+                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V3">V3</div>
+                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V4">V4</div>
+                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V5">V5</div>
+                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V6">V6</div>
+                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V7">V7</div>
+                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V8">V8</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h5 class="font-semibold mb-2">Légende :</h5>
+                            <div class="flex flex-wrap gap-4">
+                                <div class="flex items-center">
+                                    <div class="stadium-seat available mr-2"></div>
+                                    <span>Disponible</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="stadium-seat selected mr-2"></div>
+                                    <span>Sélectionné</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="stadium-seat sold mr-2"></div>
+                                    <span>Vendu</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="stadium-seat reserved mr-2"></div>
+                                    <span>Réservé</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-1">
+                        <div class="bg-gray-50 p-6 rounded-lg sticky top-4">
+                            <h4 class="text-lg font-semibold mb-4">Votre sélection</h4>
+
+                            <div id="selectedSeats" class="mb-6">
+                                <p class="text-gray-500">Aucune place sélectionnée</p>
+                            </div>
+
+                            <div class="border-t border-gray-200 pt-4 mb-4">
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-gray-600">Total :</span>
+                                    <span id="totalPrice" class="font-bold">0 DT</span>
+                                </div>
+                            </div>
+
+                            <button id="addToCart" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-3">Ajouter au panier</button>
+                            <button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Payer maintenant</button>
+
+                            <div class="mt-4 text-sm text-gray-500">
+                                <p>Les billets seront envoyés par email après paiement.</p>
+                                <p>Annulation possible jusqu'à 24h avant le match.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Dans les boutons "Réserver" de la page d'accueil :
+        document.querySelectorAll('.book-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const match = e.target.closest('button').getAttribute('data-match');
-                const section = e.target.closest('button').getAttribute('data-section');
-                const seat = e.target.closest('button').getAttribute('data-seat');
-
-                cartItems = cartItems.filter(item =>
-                    !(item.match === match && item.section === section && item.seatNumber === seat)
-                );
-
-                updateCartCount();
-                updateCartItems();
+                const match = e.target.getAttribute('data-match');
+                // Ouvrir la modal de réservation
+                bookingModal.classList.remove('hidden');
+                document.getElementById('modalMatchTitle').textContent = match;
             });
         });
-    }
 
-    function updateCheckoutItems() {
-        const checkoutItemsContainer = document.getElementById('checkoutItems');
-        const checkoutSubtotalElement = document.getElementById('checkoutSubtotal');
-        const checkoutTotalElement = document.getElementById('checkoutTotal');
+        // Dans le bouton "Ajouter au panier" :
+        document.getElementById('addToCart').addEventListener('click', () => {
+            const selectedSeats = []; // Récupérer les sièges sélectionnés
+            const match = document.getElementById('modalMatchTitle').textContent;
 
-        if (cartItems.length === 0) {
-            checkoutItemsContainer.innerHTML = '<p class="text-gray-500">Aucun article dans votre commande</p>';
-            checkoutSubtotalElement.textContent = '0 DT';
-            checkoutTotalElement.textContent = '0 DT';
-            return;
-        }
-
-        let html = '';
-        let subtotal = 0;
-
-        // Group items by match
-        const matches = {};
-        cartItems.forEach(item => {
-            if (!matches[item.match]) {
-                matches[item.match] = [];
-            }
-            matches[item.match].push(item);
-        });
-
-        // Display grouped items
-        Object.keys(matches).forEach(match => {
-            html += `
-                    <div class="mb-4 pb-4 border-b border-gray-200">
-                        <h5 class="font-semibold mb-2">${match}</h5>
-                `;
-
-            matches[match].forEach(item => {
-                html += `
-                        <div class="flex justify-between items-center py-1">
-                            <div>
-                                <span class="text-gray-600">${item.section} - ${item.seatNumber}</span>
-                            </div>
-                            <span class="font-bold">${item.price} DT</span>
-                        </div>
-                    `;
-                subtotal += item.price;
+            selectedSeats.forEach(seat => {
+                window.addToCart({
+                    match: match,
+                    section: seat.section,
+                    seatNumber: seat.seatNumber,
+                    price: seat.price
+                });
             });
 
-            html += `</div>`;
+            bookingModal.classList.add('hidden');
         });
-
-        checkoutItemsContainer.innerHTML = html;
-        checkoutSubtotalElement.textContent = `${subtotal} DT`;
-        checkoutTotalElement.textContent = `${subtotal + 2} DT`;
-    }
-
-    // Initialize
-    updateCartCount();
-    updateCartItems();
-</script>
-</body>
-</html>
+    </script>
+{% endblock %}

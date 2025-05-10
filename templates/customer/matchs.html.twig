@@ -1,0 +1,241 @@
+{% extends 'Customer/layout.html.twig' %}
+
+{% block title %}Matchs - EasyTicket{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(207, 36, 36, 0.15);
+        }
+        .filter-section {
+            background: linear-gradient(135deg, rgba(207, 36, 36, 0.16) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+        .remaining-places {
+            position: relative;
+        }
+        .remaining-places::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            height: 8px;
+            background: rgba(207, 36, 36, 0.1);
+            border-radius: 4px;
+        }
+        .remaining-places span {
+            position: relative;
+            z-index: 1;
+        }
+        .progress-bar {
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            height: 8px;
+            background-color: #cf2424;
+            border-radius: 4px;
+            z-index: 1;
+        }
+        .date-tab.active {
+            background-color: #cf2424;
+            color: white;
+        }
+        .date-tab:not(.active):hover {
+            background-color: rgba(207, 36, 36, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="container mx-auto px-4 py-8">
+        <div class="mb-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Matchs de Football en Tunisie</h2>
+            <p class="text-gray-600">Réservez vos places pour les prochains matchs</p>
+        </div>
+        <!-- Date Navigation -->
+        <div class="flex overflow-x-auto mb-6 pb-2 hide-scrollbar justify-center">
+            <div class="flex space-x-2">
+                {% set dateTabs = {
+                    'today': "Aujourd'hui",
+                    'tomorrow': "Demain",
+                    'week': "Cette semaine",
+                    'weekend': "Week-end",
+                    'next-week': "Semaine prochaine"
+                } %}
+
+                {% for tab, label in dateTabs %}
+                    <button
+                            class="date-tab px-4 py-2 rounded-full border text-sm font-medium border-gray-300"
+                            data-date="{{ tab }}"
+                    >
+                        {{ label }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Filter Section -->
+        <form method="get" action="{{ path('app_customer_matchs') }}">
+            <div class="filter-section rounded-lg p-6 mb-8 shadow-sm border border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Filtrer les matchs</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Filtre équipe -->
+                    <div>
+                        <label for="team-filter" class="block text-sm font-medium text-gray-700 mb-1">Équipe</label>
+                        <select name="equipe" id="team-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                            <option value="">Toutes les équipes</option>
+                            {% for equipe in equipes %}
+                                <option value="{{ equipe.id }}" {% if filters.equipe == equipe.id %}selected{% endif %}>
+                                    {{ equipe.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Filtre date -->
+                    <div>
+                        <label for="date-filter" class="block text-sm font-medium text-gray-700 mb-1">Date spécifique</label>
+                        <input type="date" name="date" id="date-filter" value="{{ filters.date|default('') }}" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                    </div>
+
+                    <!-- Filtre stade -->
+                    <div>
+                        <label for="stadium-filter" class="block text-sm font-medium text-gray-700 mb-1">Stade</label>
+                        <select name="stade" id="stadium-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                            <option value="">Tous les stades</option>
+                            {% for stade in stades %}
+                                <option value="{{ stade.id }}" {% if filters.stade == stade.id %}selected{% endif %}>
+                                    {{ stade.nom }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-end">
+                    <a href="{{ path('app_customer_matchs') }}" class="px-4 py-2 text-gray-600 font-medium rounded hover:bg-gray-100 mr-2">
+                        Réinitialiser
+                    </a>
+                    <button id="apply-filters" type="submit" class="px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700">
+                        Appliquer
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div id="matches-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% if matchs is empty %}
+                <p class="text-center text-gray-500 col-span-3">Aucun match disponible pour le moment.</p>
+            {% else %}
+                {% include 'customer/_match_cards.html.twig' with { matchs: matchs } %}
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobileMenu');
+            menu?.classList.toggle('hidden');
+        });
+
+        // Activer le filtre par défaut UNIQUEMENT si aucun filtre manuel
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasManualFilters = urlParams.has('equipe') || urlParams.has('stade') || urlParams.has('date');
+
+            if (!hasManualFilters) {
+                document.querySelector('[data-date="week"]')?.click();
+            }
+
+            // Désactiver visuellement les onglets si filtres manuels actifs
+            if (hasManualFilters) {
+                document.querySelectorAll('.date-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+            }
+        });
+
+        // Gestion des onglets de date
+        const dateTabs = document.querySelectorAll('.date-tab');
+        dateTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Nettoyer l'URL des filtres manuels
+                const url = new URL(window.location);
+                url.searchParams.delete('equipe');
+                url.searchParams.delete('stade');
+                url.searchParams.delete('date');
+                window.history.replaceState({}, '', url);
+
+                // Désactiver tous les onglets et réinitialiser le formulaire
+                dateTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.disabled = false;
+                });
+
+                // Activer l'onglet cliqué
+                this.classList.add('active');
+                document.getElementById('team-filter').value = '';
+                document.getElementById('date-filter').value = '';
+                document.getElementById('stadium-filter').value = '';
+
+                // Appel AJAX
+                const selected = this.dataset.date;
+                fetch(`/matchs/date-filter?range=${selected}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        document.querySelector('#matches-list').innerHTML = html;
+                    });
+            });
+        });
+
+        // Gestion de la soumission du formulaire
+        document.querySelector('form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Nettoyer l'URL des filtres de date
+            const url = new URL(window.location);
+            url.searchParams.delete('range');
+            window.history.replaceState({}, '', url);
+
+            // Désactiver les onglets de date
+            dateTabs.forEach(t => {
+                t.classList.remove('active');
+            });
+
+            // Soumettre le formulaire normalement
+            this.submit();
+        });
+
+        // Reset filters
+        document.getElementById('reset-filters')?.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Réactiver le filtre par défaut (cette semaine)
+            const url = new URL(window.location);
+            url.search = '';
+            window.location.href = url.toString();
+        });
+
+        // Match card hover effect
+        const matchCards = document.querySelectorAll('.match-card');
+        matchCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 10px 25px rgba(207, 36, 36, 0.15)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Protection contre les erreurs si éléments non trouvés
+        const safeQuery = (selector, callback) => {
+            const el = document.querySelector(selector);
+            if (el) callback(el);
+        };
+    </script>
+{% endblock %}

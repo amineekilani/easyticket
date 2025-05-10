@@ -1,0 +1,478 @@
+{# templates/Client/clientLayout.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}EasyTicket Client{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block stylesheets %}
+        <style>
+            /* Layout global */
+            .nav-link:hover {
+                color: #ef4444;
+            }
+            .nav-link.active {
+                color: #ef4444;
+                border-bottom: 2px solid #ef4444;
+            }
+            /* Panier */
+            .qr-code {
+                width: 150px;
+                height: 150px;
+                background-color: #fff;
+                padding: 10px;
+                border: 1px solid #ddd;
+            }
+            /* Footer (ajoutez vos classes spécifiques ici) */
+            .footer-link:hover {
+                text-decoration: underline;
+            }
+        </style>{% endblock %}
+</head>
+<body class="bg-gray-50">
+
+{# --- HEADER --- #}
+<header class="bg-white shadow-md">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-futbol text-3xl text-red-600"></i>
+            <h1 class="text-2xl font-bold text-gray-800">EasyTicket</h1>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+            <a href="{{ path('app_customer') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Accueil</a>
+            <a href="{{ path('app_customer_matchs') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Matchs</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">Stades</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">À propos</a>
+        </nav>
+        <div class="flex items-center space-x-4">
+            {% if app.user %}
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user text-red-600"></i>
+                    <span class="text-gray-600 font-medium">{{ app.user.name }}</span>
+                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:underline ml-3">Déconnexion</a>
+                </div>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="text-red-600 hover:underline">Connexion</a>
+                <a href="{{ path('app_register') }}" class="bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700">Inscription</a>
+            {% endif %}
+            <a href="#" id="cartBtn" class="relative">
+                <i class="fas fa-shopping-cart text-xl text-gray-600"></i>
+                <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+            </a>
+
+        </div>
+    </div>
+</header>
+
+{# --- CONTENU PRINCIPAL --- #}
+<main>
+    {% block body %}{% endblock %}
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="h-full flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold">Votre panier</h3>
+                    <button id="closeCart" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="cartItems" class="flex-1 overflow-y-auto p-6">
+                <!-- Cart items will be added here dynamically -->
+                <div class="text-center py-8">
+                    <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Votre panier est empty</p>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex justify-between mb-4">
+                    <span class="text-lg font-semibold">Total :</span>
+                    <span id="cartTotal" class="text-lg font-bold">0 DT</span>
+                </div>
+                <button id="proceedCheckout" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 mb-3">Passer au paiement</button>
+                <button id="continueShopping" class="w-full py-3 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">Continuer mes achats</button>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold">Paiement sécurisé</h3>
+                    <button id="closeCheckoutModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Votre commande</h4>
+                        <div id="checkoutItems" class="mb-6">
+                            <!-- Order items will be added here dynamically -->
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Sous-total :</span>
+                                <span id="checkoutSubtotal" class="font-bold">0 DT</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">Frais de service :</span>
+                                <span class="font-bold">2 DT</span>
+                            </div>
+                            <div class="flex justify-between text-lg font-bold mt-4">
+                                <span>Total :</span>
+                                <span id="checkoutTotal">0 DT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Méthode de paiement</h4>
+
+                        <div class="mb-6">
+                            <div class="flex items-center mb-4">
+                                <input type="radio" id="paypal" name="payment" class="mr-2" checked>
+                                <label for="paypal" class="flex items-center">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6 mr-2">
+                                    PayPal
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="stripe" name="payment" class="mr-2">
+                                <label for="stripe" class="flex items-center">
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Stripe_logo%2C_revised_2016.svg" alt="Stripe" class="h-6 mr-2">
+                                    Stripe
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 p-4 rounded-lg mb-6">
+                            <h5 class="font-semibold mb-2">Billets numériques</h5>
+                            <p class="text-sm text-gray-600">Vos billets seront envoyés par email après confirmation du paiement. Vous pouvez également les télécharger depuis votre compte.</p>
+                        </div>
+
+                        <button id="confirmPayment" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Confirmer le paiement</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-8 text-center">
+                <div class="mb-6">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Paiement confirmé !</h3>
+                    <p class="text-gray-600">Merci pour votre achat. Vos billets ont été envoyés à votre adresse email.</p>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <div class="flex justify-center mb-4">
+                        <div class="qr-code">
+                            <!-- QR Code would be generated here in a real app -->
+                            <div class="flex items-center justify-center h-full">
+                                <i class="fas fa-qrcode text-4xl text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-sm font-semibold">EST vs CA - 15 May 2025</p>
+                    <p class="text-sm text-gray-600">Tribune Nord - Place N4</p>
+                </div>
+
+                <div class="flex flex-col space-y-3">
+                    <button id="viewTickets" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">Voir mes billets</button>
+                    <button id="closeConfirmation" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">Retour à l'accueil</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{# --- FOOTER --- #}
+<footer class="bg-gray-800 text-white py-12 mt-10">
+    <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4">EasyTicket</h3>
+                <p class="text-gray-400">Plateforme tunisienne de billetterie pour le football.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-4">Liens</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">Matchs</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-4">Contact</h4>
+                <ul class="space-y-2 text-gray-400">
+                    <li><i class="fas fa-map-marker-alt mr-2"></i> Tunis</li>
+                    <li><i class="fas fa-phone mr-2"></i> +216 70 000 000</li>
+                    <li><i class="fas fa-envelope mr-2"></i> contact@easyticket.tn</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-4">Suivez-nous</h4>
+                <div class="flex space-x-4">
+                    <a href="#"><i class="fab fa-facebook-f text-gray-400 hover:text-white"></i></a>
+                    <a href="#"><i class="fab fa-instagram text-gray-400 hover:text-white"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 EasyTicket. Tous droits réservés.</p>
+        </div>
+    </div>
+</footer>
+
+{% block javascripts %}
+    <script>
+        // Éléments DOM globaux
+        const cartBtn = document.getElementById('cartBtn');
+        const cartCount = document.getElementById('cartCount');
+        const cartSidebar = document.getElementById('cartSidebar');
+        const closeCart = document.getElementById('closeCart');
+        const cartItemsContainer = document.getElementById('cartItems');
+        const cartTotalElement = document.getElementById('cartTotal');
+        const proceedCheckout = document.getElementById('proceedCheckout');
+        const continueShopping = document.getElementById('continueShopping');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const closeCheckoutModal = document.getElementById('closeCheckoutModal');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const closeConfirmation = document.getElementById('closeConfirmation');
+        const confirmPayment = document.getElementById('confirmPayment');
+        const viewTickets = document.getElementById('viewTickets');
+        const checkoutItemsContainer = document.getElementById('checkoutItems');
+        const checkoutSubtotalElement = document.getElementById('checkoutSubtotal');
+        const checkoutTotalElement = document.getElementById('checkoutTotal');
+
+        // État global du panier
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+            updateCartItems();
+        });
+
+        // Gestion du panier
+        if (cartBtn && cartSidebar) {
+            cartBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                cartSidebar.classList.remove('translate-x-full');
+                document.body.style.overflow = 'hidden';
+            });
+        }
+
+        if (closeCart) {
+            closeCart.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        // Passage au paiement
+        if (proceedCheckout) {
+            proceedCheckout.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                checkoutModal.classList.remove('hidden');
+                updateCheckoutItems();
+            });
+        }
+
+        // Continuer les achats
+        if (continueShopping) {
+            continueShopping.addEventListener('click', () => {
+                cartSidebar.classList.add('translate-x-full');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        // Fermeture modales
+        if (closeCheckoutModal) {
+            closeCheckoutModal.addEventListener('click', () => {
+                checkoutModal.classList.add('hidden');
+            });
+        }
+
+        if (closeConfirmation) {
+            closeConfirmation.addEventListener('click', () => {
+                confirmationModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            });
+        }
+
+        // Confirmation paiement
+        if (confirmPayment) {
+            confirmPayment.addEventListener('click', () => {
+                checkoutModal.classList.add('hidden');
+                confirmationModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Vider le panier après paiement
+                cartItems = [];
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                updateCartCount();
+                updateCartItems();
+            });
+        }
+
+        // Voir les billets
+        if (viewTickets) {
+            viewTickets.addEventListener('click', () => {
+                confirmationModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                window.location.href = "#"; // Adaptez cette route
+            });
+        }
+
+        // Fonctions utilitaires
+        function updateCartCount() {
+            if (cartCount) {
+                cartCount.textContent = cartItems.length;
+                cartItems.length > 0
+                    ? cartCount.classList.remove('hidden')
+                    : cartCount.classList.add('hidden');
+            }
+        }
+
+        function updateCartItems() {
+            if (!cartItemsContainer || !cartTotalElement) return;
+
+            if (cartItems.length === 0) {
+                cartItemsContainer.innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
+                    <p class="text-gray-500">Votre panier est vide</p>
+                </div>
+            `;
+                cartTotalElement.textContent = '0 DT';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+            const matches = {};
+
+            cartItems.forEach(item => {
+                if (!matches[item.match]) matches[item.match] = [];
+                matches[item.match].push(item);
+            });
+
+            Object.keys(matches).forEach(match => {
+                html += `<div class="mb-6 pb-6 border-b border-gray-200">
+                <h4 class="font-semibold mb-3">${match}</h4>`;
+
+                let matchTotal = 0;
+
+                matches[match].forEach(item => {
+                    html += `
+                    <div class="flex justify-between items-center py-2">
+                        <div>
+                            <span class="text-gray-600">${item.section} - ${item.seatNumber}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="font-bold mr-4">${item.price} DT</span>
+                            <button class="text-red-500 hover:text-red-700 remove-item"
+                                    data-match="${match}"
+                                    data-section="${item.section}"
+                                    data-seat="${item.seatNumber}">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                    matchTotal += item.price;
+                    total += item.price;
+                });
+
+                html += `<div class="flex justify-between pt-2 mt-2 border-t border-gray-200">
+                <span class="font-medium">Total pour ce match :</span>
+                <span class="font-bold">${matchTotal} DT</span>
+            </div></div>`;
+            });
+
+            cartItemsContainer.innerHTML = html;
+            cartTotalElement.textContent = `${total} DT`;
+
+            // Gestion suppression éléments
+            document.querySelectorAll('.remove-item').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const match = e.target.closest('button').getAttribute('data-match');
+                    const section = e.target.closest('button').getAttribute('data-section');
+                    const seat = e.target.closest('button').getAttribute('data-seat');
+
+                    cartItems = cartItems.filter(item =>
+                        !(item.match === match && item.section === section && item.seatNumber === seat)
+                    );
+
+                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                    updateCartCount();
+                    updateCartItems();
+                });
+            });
+        }
+
+        function updateCheckoutItems() {
+            if (!checkoutItemsContainer || !checkoutSubtotalElement || !checkoutTotalElement) return;
+
+            if (cartItems.length === 0) {
+                checkoutItemsContainer.innerHTML = '<p class="text-gray-500">Aucun article dans votre commande</p>';
+                checkoutSubtotalElement.textContent = '0 DT';
+                checkoutTotalElement.textContent = '0 DT';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+            const matches = {};
+
+            cartItems.forEach(item => {
+                if (!matches[item.match]) matches[item.match] = [];
+                matches[item.match].push(item);
+            });
+
+            Object.keys(matches).forEach(match => {
+                html += `<div class="mb-4 pb-4 border-b border-gray-200">
+                <h5 class="font-semibold mb-2">${match}</h5>`;
+
+                matches[match].forEach(item => {
+                    html += `
+                    <div class="flex justify-between items-center py-1">
+                        <div>
+                            <span class="text-gray-600">${item.section} - ${item.seatNumber}</span>
+                        </div>
+                        <span class="font-bold">${item.price} DT</span>
+                    </div>`;
+                    subtotal += item.price;
+                });
+
+                html += `</div>`;
+            });
+
+            checkoutItemsContainer.innerHTML = html;
+            checkoutSubtotalElement.textContent = `${subtotal} DT`;
+            checkoutTotalElement.textContent = `${subtotal + 2} DT`;
+        }
+
+        // Fonction pour ajouter des items au panier (à appeler depuis les pages)
+        window.addToCart = function(item) {
+            cartItems.push(item);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCartCount();
+            updateCartItems();
+        };
+    </script>
+{% endblock %}
+</body>
+</html>

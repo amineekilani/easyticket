@@ -33,7 +33,7 @@ class ResetPasswordFormType extends AbstractType
                         'class' => 'block text-sm font-medium text-gray-700 mb-1',
                     ],
                     'attr' => [
-                        'class' => 'w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition',
+                        'class' => 'w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition',
                     ],
                 ],
                 'second_options' => [
@@ -42,7 +42,7 @@ class ResetPasswordFormType extends AbstractType
                         'class' => 'block text-sm font-medium text-gray-700 mb-1',
                     ],
                     'attr' => [
-                        'class' => 'w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition',
+                        'class' => 'w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition',
                     ],
                 ],
                 'invalid_message' => 'Les champs du mot de passe doivent correspondre.',

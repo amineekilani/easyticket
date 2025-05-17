@@ -67,37 +67,37 @@ class MatchFootballType extends AbstractType
             ->add('nbrBilletsVirage', IntegerType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le nombre de billets est obligatoire']),
-                    new Assert\Positive(['message' => 'Le nombre doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le nombre doit être positif']),
                 ],
             ])
             ->add('prixBilletVirage', NumberType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le prix est obligatoire']),
-                    new Assert\Positive(['message' => 'Le prix doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le prix doit être positif']),
                 ],
             ])
             ->add('nbrBilletsPelouse', IntegerType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le nombre de billets est obligatoire']),
-                    new Assert\Positive(['message' => 'Le nombre doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le nombre doit être positif']),
                 ],
             ])
             ->add('prixBilletPelouse', NumberType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le prix est obligatoire']),
-                    new Assert\Positive(['message' => 'Le prix doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le prix doit être positif']),
                 ],
             ])
             ->add('nbrBilletsEnceinte', IntegerType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le nombre de billets est obligatoire']),
-                    new Assert\Positive(['message' => 'Le nombre doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le nombre doit être positif']),
                 ],
             ])
             ->add('prixBilletEnceinte', NumberType::class, [
                 'constraints' => [
                     new Assert\NotNull(['message' => 'Le prix est obligatoire']),
-                    new Assert\Positive(['message' => 'Le prix doit être positif']),
+                    new Assert\PositiveOrZero(['message' => 'Le prix doit être positif']),
                 ],
             ]);
 

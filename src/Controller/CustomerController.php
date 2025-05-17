@@ -13,12 +13,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CustomerController extends AbstractController
 {
     #[Route('/', name: 'app_customer')]
-    public function index(): Response
+    public function index(MatchFootballRepository $matchFootballRepository): Response
     {
+        // Récupérer les 3 prochains matchs à venir
+        $prochainMatchs = $matchFootballRepository->findNextMatches(3);
+
         return $this->render('customer/acceuil.html.twig', [
-            'controller_name' => 'CustomerController',
+            'prochainMatchs' => $prochainMatchs,
         ]);
     }
+
     #[Route('/layout', name: 'app_customer_layout')]
     public function index2(): Response
     {
@@ -70,5 +74,4 @@ final class CustomerController extends AbstractController
             'matchs' => $matchs
         ]);
     }
-
 }

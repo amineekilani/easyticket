@@ -1,403 +1,361 @@
 {% extends 'Customer/layout.html.twig' %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <style>
-        /* Réservation de sièges */
-        .stadium-seat {
-            width: 30px;
-            height: 30px;
-            margin: 2px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-        .stadium-seat:hover {
-            transform: scale(1.1);
-        }
-        .available {
-            background-color: #86efac;
-        }
-        .selected {
-            background-color: #f87171;
-        }
-        .sold {
-            background-color: #f87171;
-            cursor: not-allowed;
-        }
-        .reserved {
-            background-color: #fbbf24;
-            cursor: not-allowed;
-        }
-        .stadium-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #f3f4f6;
-        }
+	{{ parent() }}
+	<style>
+		/* Réservation de sièges */
+		.stadium-seat {
+			width: 30px;
+			height: 30px;
+			margin: 2px;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			cursor: pointer;
+			border-radius: 4px;
+			transition: all 0.2s;
+		}
+		.stadium-seat:hover {
+			transform: scale(1.1);
+		}
+		.available {
+			background-color: #86efac;
+		}
+		.selected {
+			background-color: #f87171;
+		}
+		.sold {
+			background-color: #f87171;
+			cursor: not-allowed;
+		}
+		.reserved {
+			background-color: #fbbf24;
+			cursor: not-allowed;
+		}
+		.stadium-section {
+			margin-bottom: 20px;
+			padding: 15px;
+			border-radius: 8px;
+			background-color: #f3f4f6;
+		}
 
-        /* Cartes de match */
-        .match-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+		/* Cartes de match */
+		.match-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+		}
+	</style>
 {% endblock %}
 {% block body %}
 
-    <!-- Hero Section -->
-    <section id="home" class="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
-        <div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
-            <div class="md:w-1/2 mb-8 md:mb-0">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">Réservez vos billets de football en Tunisie</h1>
-                <p class="text-xl mb-6">La première plateforme tunisienne pour Réserver vos billets de match en ligne, simplement et en toute sécurité.</p>
-                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                    <a href="{{ path("app_customer_matchs") }}" class="px-6 py-3 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 text-center">Voir les matchs</a>
-                    <a href="#how-it-works" class="px-6 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-red-600 text-center">Comment ça marche</a>
-                </div>
-            </div>
-            <div class="md:w-1/2 flex justify-center">
-                <img src="{{ asset('easy-ticket-logo.png')}}" alt="Football match" class="rounded-lg max-w-full h-auto" style="width:250px">
-            </div>
-        </div>
-    </section>
+	<!-- Hero Section -->
+	<section id="home" class="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
+		<div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
+			<div class="md:w-1/2 mb-8 md:mb-0">
+				<h1 class="text-4xl md:text-5xl font-bold mb-4">Réservez vos billets de football en Tunisie</h1>
+				<p class="text-xl mb-6">La première plateforme tunisienne pour Réserver vos billets de match en ligne, simplement et en toute sécurité.</p>
+				<div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+					<a href="{{ path("app_customer_matchs") }}" class="px-6 py-3 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 text-center">Voir les matchs</a>
+					<a href="#how-it-works" class="px-6 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-red-600 text-center">Comment ça marche</a>
+				</div>
+			</div>
+			<div class="md:w-1/2 flex justify-center">
+				<img src="{{ asset('easy-ticket-logo.png')}}" alt="Football match" class="rounded-lg max-w-full h-auto" style="width:250px">
+			</div>
+		</div>
+	</section>
 
-    <!-- How it works -->
-    <section id="how-it-works" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">Comment Réserver vos billets</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-red-600 text-2xl font-bold">1</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Choisissez votre match</h3>
-                    <p class="text-gray-600">Parcourez notre calendrier de matchs et sélectionnez celui qui vous intéresse.</p>
-                </div>
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-red-600 text-2xl font-bold">2</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Sélectionnez vos places</h3>
-                    <p class="text-gray-600">Visualisez le stade et choisissez vos sièges parmi les places disponibles.</p>
-                </div>
-                <div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
-                    <div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <span class="text-red-600 text-2xl font-bold">3</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Payez en ligne</h3>
-                    <p class="text-gray-600">Finalisez votre achat en toute sécurité et recevez vos billets par email.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+	<!-- How it works -->
+	<section id="how-it-works" class="py-16 bg-white">
+		<div class="container mx-auto px-4">
+			<h2 class="text-3xl font-bold text-center mb-12">Comment Réserver vos billets</h2>
+			<div class="grid md:grid-cols-3 gap-8">
+				<div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+					<div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+						<span class="text-red-600 text-2xl font-bold">1</span>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Choisissez votre match</h3>
+					<p class="text-gray-600">Parcourez notre calendrier de matchs et sélectionnez celui qui vous intéresse.</p>
+				</div>
+				<div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+					<div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+						<span class="text-red-600 text-2xl font-bold">2</span>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Sélectionnez vos places</h3>
+					<p class="text-gray-600">Visualisez le stade et choisissez vos sièges parmi les places disponibles.</p>
+				</div>
+				<div class="text-center p-6 rounded-lg hover:shadow-lg transition-shadow">
+					<div class="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+						<span class="text-red-600 text-2xl font-bold">3</span>
+					</div>
+					<h3 class="text-xl font-semibold mb-2">Payez en ligne</h3>
+					<p class="text-gray-600">Finalisez votre achat en toute sécurité et recevez vos billets par email.</p>
+				</div>
+			</div>
+		</div>
+	</section>
 
-    <!-- Matches Section -->
-    <section id="matches" class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-3xl font-bold">Prochains matchs</h2>
-            </div>
+	<!-- Matches Section -->
+	<section id="matches" class="py-16 bg-gray-50">
+		<div class="container mx-auto px-4">
+			<div class="flex justify-between items-center mb-8">
+				<h2 class="text-3xl font-bold">Prochains matchs</h2>
+			</div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Match Card 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
-                            <span class="text-gray-500">Ligue 1</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="text-center">
+			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+				{% for match in prochainMatchs %}
+					<!-- Match Card -->
+					<div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
+						<div class="p-6">
+							<div class="flex justify-between items-center mb-4">
+								{% set dateMatch = match.dateEtHeure %}
+								{% set now = "now"|date("U") %}
+								{% set matchTime = dateMatch|date("U") %}
+								{% if (matchTime - now) < 86400 %}
+									<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
+								{% elseif (matchTime - now) < 259200 %}
+									<span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Bientôt</span>
+								{% else %}
+									<span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
+								{% endif %}
+								<span class="text-gray-500">Ligue 1</span>
+							</div>
+							<div class="flex justify-between items-center mb-6">
+								<div class="text-center">
+									<img src="{{ asset('uploads/logos/' ~ match.equipe1.logo) }}" alt="{{ match.equipe1.nom }}" class="w-16 h-16 mx-auto mb-2">
+									<h3 class="font-bold">{{ match.equipe1.abreviation }}</h3>
+								</div>
+								<div class="text-center px-4">
+									<div class="text-sm text-gray-500">{{ match.dateEtHeure|date('d M Y') }}</div>
+									<div class="text-xl font-bold my-2">{{ match.dateEtHeure|date('H:i') }}</div>
+									<div class="text-sm text-gray-500">{{ match.stade.nom }}</div>
+								</div>
+								<div class="text-center">
+									<img src="{{ asset('uploads/logos/' ~ match.equipe2.logo) }}" alt="{{ match.equipe2.nom }}" class="w-16 h-16 mx-auto mb-2">
+									<h3 class="font-bold">{{ match.equipe2.abreviation }}</h3>
+								</div>
+							</div>
+							<div class="flex justify-between items-center">
+								<div>
+									<span class="text-gray-600">À partir de</span>
+									{% set minPrice = min([
+                                        match.prixBilletVirage ?: 999999,
+                                        match.prixBilletPelouse ?: 999999,
+                                        match.prixBilletEnceinte ?: 999999
+                                    ]) %}
+									{% if minPrice == 999999 %}
+										{% set minPrice = 0 %}
+									{% endif %}
+									<span class="text-xl font-bold text-red-600">{{ minPrice }}
+										DT</span>
+								</div>
+								{% if (matchTime - now) < 259200 %}
+									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}">Réserver</button>
+								{% else %}
+									<button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				{% else %}
+					<div class="col-span-3 text-center py-8">
+						<p class="text-gray-500">Aucun match à venir pour le moment.</p>
+					</div>
+				{% endfor %}
+			</div>
 
-                                <img src="{{ asset('uploads/logos/68093653050bd.png')}}" alt="EST" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">Espérance ST</h3>
-                            </div>
-                            <div class="text-center px-4">
-                                <div class="text-sm text-gray-500">15 May 2025</div>
-                                <div class="text-xl font-bold my-2">20:30</div>
-                                <div class="text-sm text-gray-500">Stade Hammadi Agrebi</div>
-                            </div>
-                            <div class="text-center">
-                                <img src="{{ asset('uploads/logos/68093302c3082.png')}}" alt="CA" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">Club Africain</h3>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-gray-600">À partir de</span>
-                                <span class="text-xl font-bold text-red-600">15 DT</span>
-                            </div>
-                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="EST vs CA">Réserver</button>
-                        </div>
-                    </div>
-                </div>
+			<div class="text-center mt-8">
+				<a href="{{ path('app_customer_matchs') }}" class="btn px-6 py-3 border border-red-600 text-red-600 font-bold rounded-lg hover:bg-red-50">Voir tous les matchs</a>
+			</div>
+		</div>
+	</section>
 
-                <!-- Match Card 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Disponible</span>
-                            <span class="text-gray-500">Ligue 1</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="text-center">
-                                <img src="{{ asset('uploads/logos/68093223bbb4a.png')}}" alt="ESS" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">Étoile du Sahel</h3>
-                            </div>
-                            <div class="text-center px-4">
-                                <div class="text-sm text-gray-500">22 May 2025</div>
-                                <div class="text-xl font-bold my-2">19:00</div>
-                                <div class="text-sm text-gray-500">Stade Olympique Sousse</div>
-                            </div>
-                            <div class="text-center">
-                                <img src="{{ asset('uploads/logos/680dff85a0afb.png')}}" alt="CSS" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">CS Sfaxien</h3>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-gray-600">À partir de</span>
-                                <span class="text-xl font-bold text-red-600">12 DT</span>
-                            </div>
-                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="ESS vs CSS">Réserver</button>
-                        </div>
-                    </div>
-                </div>
+	<!-- Stadiums Section -->
+	<section id="stadiums" class="py-16 bg-white">
+		<div class="container mx-auto px-4">
+			<h2 class="text-3xl font-bold text-center mb-12">Nos stades partenaires</h2>
+			<div class="grid md:grid-cols-3 gap-8">
+				<div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+					<img src="{{ asset('images/stade-rades.jpg')}}" alt="Stade Hammadi Agrebi" class="w-full h-48 object-cover">
+					<div class="p-6">
+						<h3 class="text-xl font-bold mb-2">Stade Hammadi Agrebi</h3>
+						<p class="text-gray-600 mb-4">Radès, Tunis</p>
+						<p class="text-gray-700">Capacité: 60,000 places</p>
+						<div class="mt-4">
+							<span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">EST, CA, ST</span>
+						</div>
+					</div>
+				</div>
+				<div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+					<img src="{{ asset('images/Stade-Olympique-de-Sousse.webp')}}" alt="Stade Olympique Sousse" class="w-full h-48 object-cover">
+					<div class="p-6">
+						<h3 class="text-xl font-bold mb-2">Stade Olympique Sousse</h3>
+						<p class="text-gray-600 mb-4">Sousse</p>
+						<p class="text-gray-700">Capacité: 25,000 places</p>
+						<div class="mt-4">
+							<span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">ESS</span>
+						</div>
+					</div>
+				</div>
+				<div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+					<img src="{{ asset('images/Screenshot_20241129-214649_Facebook.jpg')}}" alt="Stade Mustapha Ben Jannet" class="w-full h-48 object-cover">
+					<div class="p-6">
+						<h3 class="text-xl font-bold mb-2">Stade Mustapha Ben Jannet</h3>
+						<p class="text-gray-600 mb-4">Monastir</p>
+						<p class="text-gray-700">Capacité: 20,000 places</p>
+						<div class="mt-4">
+							<span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">USM</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-                <!-- Match Card 3 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden match-card transition-all duration-300">
-                    <div class="p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Bientôt</span>
-                            <span class="text-gray-500">Coupe de Tunisie</span>
-                        </div>
-                        <div class="flex justify-between items-center mb-6">
-                            <div class="text-center">
-                                <img src="{{ asset('uploads/logos/68093138f0461.png')}}" alt="USM" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">US Monastir</h3>
-                            </div>
-                            <div class="text-center px-4">
-                                <div class="text-sm text-gray-500">29 May 2025</div>
-                                <div class="text-xl font-bold my-2">16:00</div>
-                                <div class="text-sm text-gray-500">Stade Mustapha Ben Jannet</div>
-                            </div>
-                            <div class="text-center">
-                                <img src="{{ asset('uploads/logos/680dff20799e3.png')}}" alt="ST" class="w-16 h-16 mx-auto mb-2">
-                                <h3 class="font-bold">Stade Tunisien</h3>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-gray-600">À partir de</span>
-                                <span class="text-xl font-bold text-red-600">10 DT</span>
-                            </div>
-                            <button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+	<!-- Booking Modal -->
+	<div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+		<div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
+			<div class="p-6">
+				<div class="flex justify-between items-center mb-6">
+					<h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
+					<button id="closeModal" class="text-gray-500 hover:text-gray-700">
+						<i class="fas fa-times text-2xl"></i>
+					</button>
+				</div>
 
-            <div class="text-center mt-8">
-                <a href="{{ path('app_customer_matchs') }}" class="btn px-6 py-3 border border-red-600 text-red-600 font-bold rounded-lg hover:bg-red-50">Voir tous les matchs</a>
-            </div>
-        </div>
-    </section>
+				<div class="grid md:grid-cols-3 gap-6">
+					<div class="md:col-span-2">
+						<h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
 
-    <!-- Stadiums Section -->
-    <section id="stadiums" class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center mb-12">Nos stades partenaires</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="{{ asset('images/stade-rades.jpg')}}" alt="Stade Hammadi Agrebi" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Stade Hammadi Agrebi</h3>
-                        <p class="text-gray-600 mb-4">Radès, Tunis</p>
-                        <p class="text-gray-700">Capacité: 60,000 places</p>
-                        <div class="mt-4">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">EST, CA, ST</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="{{ asset('images/Stade-Olympique-de-Sousse.webp')}}" alt="Stade Olympique Sousse" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Stade Olympique Sousse</h3>
-                        <p class="text-gray-600 mb-4">Sousse</p>
-                        <p class="text-gray-700">Capacité: 25,000 places</p>
-                        <div class="mt-4">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">ESS</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="{{ asset('images/Screenshot_20241129-214649_Facebook.jpg')}}" alt="Stade Mustapha Ben Jannet" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Stade Mustapha Ben Jannet</h3>
-                        <p class="text-gray-600 mb-4">Monastir</p>
-                        <p class="text-gray-700">Capacité: 20,000 places</p>
-                        <div class="mt-4">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">USM</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+						<!-- Stadium Map -->
+						<div class="bg-gray-100 p-4 rounded-lg mb-6">
+							<div class="text-center mb-4">
+								<div class="w-20 h-8 bg-green-500 mx-auto mb-1"></div>
+								<span class="text-sm">Terrain</span>
+							</div>
 
-    <!-- Booking Modal -->
-    <div id="bookingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
-                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-2xl"></i>
-                    </button>
-                </div>
+							<!-- Tribune Nord -->
+							<div class="stadium-section">
+								<h5 class="font-semibold mb-3">Tribune Nord - 15 DT</h5>
+								<div class="flex flex-wrap justify-center">
+									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N1">N1</div>
+									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N2">N2</div>
+									<div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N3">N3</div>
+									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N4">N4</div>
+									<div class="stadium-seat reserved" data-section="Nord" data-price="15" data-seat="N5">N5</div>
+									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N6">N6</div>
+									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N7">N7</div>
+									<div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N8">N8</div>
+								</div>
+							</div>
 
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div class="md:col-span-2">
-                        <h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
+							<!-- Tribune Sud -->
+							<div class="stadium-section">
+								<h5 class="font-semibold mb-3">Tribune Sud - 15 DT</h5>
+								<div class="flex flex-wrap justify-center">
+									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S1">S1</div>
+									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S2">S2</div>
+									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S3">S3</div>
+									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S4">S4</div>
+									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S5">S5</div>
+									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S6">S6</div>
+									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S7">S7</div>
+									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S8">S8</div>
+								</div>
+							</div>
 
-                        <!-- Stadium Map -->
-                        <div class="bg-gray-100 p-4 rounded-lg mb-6">
-                            <div class="text-center mb-4">
-                                <div class="w-20 h-8 bg-green-500 mx-auto mb-1"></div>
-                                <span class="text-sm">Terrain</span>
-                            </div>
+							<!-- Tribune VIP -->
+							<div class="stadium-section">
+								<h5 class="font-semibold mb-3">Tribune VIP - 30 DT</h5>
+								<div class="flex flex-wrap justify-center">
+									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V1">V1</div>
+									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V2">V2</div>
+									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V3">V3</div>
+									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V4">V4</div>
+									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V5">V5</div>
+									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V6">V6</div>
+									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V7">V7</div>
+									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V8">V8</div>
+								</div>
+							</div>
+						</div>
 
-                            <!-- Tribune Nord -->
-                            <div class="stadium-section">
-                                <h5 class="font-semibold mb-3">Tribune Nord - 15 DT</h5>
-                                <div class="flex flex-wrap justify-center">
-                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N1">N1</div>
-                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N2">N2</div>
-                                    <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N3">N3</div>
-                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N4">N4</div>
-                                    <div class="stadium-seat reserved" data-section="Nord" data-price="15" data-seat="N5">N5</div>
-                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N6">N6</div>
-                                    <div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N7">N7</div>
-                                    <div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N8">N8</div>
-                                </div>
-                            </div>
+						<div class="bg-red-50 p-4 rounded-lg">
+							<h5 class="font-semibold mb-2">Légende :</h5>
+							<div class="flex flex-wrap gap-4">
+								<div class="flex items-center">
+									<div class="stadium-seat available mr-2"></div>
+									<span>Disponible</span>
+								</div>
+								<div class="flex items-center">
+									<div class="stadium-seat selected mr-2"></div>
+									<span>Sélectionné</span>
+								</div>
+								<div class="flex items-center">
+									<div class="stadium-seat sold mr-2"></div>
+									<span>Vendu</span>
+								</div>
+								<div class="flex items-center">
+									<div class="stadium-seat reserved mr-2"></div>
+									<span>Réservé</span>
+								</div>
+							</div>
+						</div>
+					</div>
 
-                            <!-- Tribune Sud -->
-                            <div class="stadium-section">
-                                <h5 class="font-semibold mb-3">Tribune Sud - 15 DT</h5>
-                                <div class="flex flex-wrap justify-center">
-                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S1">S1</div>
-                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S2">S2</div>
-                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S3">S3</div>
-                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S4">S4</div>
-                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S5">S5</div>
-                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S6">S6</div>
-                                    <div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S7">S7</div>
-                                    <div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S8">S8</div>
-                                </div>
-                            </div>
+					<div class="md:col-span-1">
+						<div class="bg-gray-50 p-6 rounded-lg sticky top-4">
+							<h4 class="text-lg font-semibold mb-4">Votre sélection</h4>
 
-                            <!-- Tribune VIP -->
-                            <div class="stadium-section">
-                                <h5 class="font-semibold mb-3">Tribune VIP - 30 DT</h5>
-                                <div class="flex flex-wrap justify-center">
-                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V1">V1</div>
-                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V2">V2</div>
-                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V3">V3</div>
-                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V4">V4</div>
-                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V5">V5</div>
-                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V6">V6</div>
-                                    <div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V7">V7</div>
-                                    <div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V8">V8</div>
-                                </div>
-                            </div>
-                        </div>
+							<div id="selectedSeats" class="mb-6">
+								<p class="text-gray-500">Aucune place sélectionnée</p>
+							</div>
 
-                        <div class="bg-red-50 p-4 rounded-lg">
-                            <h5 class="font-semibold mb-2">Légende :</h5>
-                            <div class="flex flex-wrap gap-4">
-                                <div class="flex items-center">
-                                    <div class="stadium-seat available mr-2"></div>
-                                    <span>Disponible</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="stadium-seat selected mr-2"></div>
-                                    <span>Sélectionné</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="stadium-seat sold mr-2"></div>
-                                    <span>Vendu</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <div class="stadium-seat reserved mr-2"></div>
-                                    <span>Réservé</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+							<div class="border-t border-gray-200 pt-4 mb-4">
+								<div class="flex justify-between mb-2">
+									<span class="text-gray-600">Total :</span>
+									<span id="totalPrice" class="font-bold">0 DT</span>
+								</div>
+							</div>
 
-                    <div class="md:col-span-1">
-                        <div class="bg-gray-50 p-6 rounded-lg sticky top-4">
-                            <h4 class="text-lg font-semibold mb-4">Votre sélection</h4>
+							<button id="addToCart" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-3">Ajouter au panier</button>
+							<button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Payer maintenant</button>
 
-                            <div id="selectedSeats" class="mb-6">
-                                <p class="text-gray-500">Aucune place sélectionnée</p>
-                            </div>
-
-                            <div class="border-t border-gray-200 pt-4 mb-4">
-                                <div class="flex justify-between mb-2">
-                                    <span class="text-gray-600">Total :</span>
-                                    <span id="totalPrice" class="font-bold">0 DT</span>
-                                </div>
-                            </div>
-
-                            <button id="addToCart" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-3">Ajouter au panier</button>
-                            <button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Payer maintenant</button>
-
-                            <div class="mt-4 text-sm text-gray-500">
-                                <p>Les billets seront envoyés par email après paiement.</p>
-                                <p>Annulation possible jusqu'à 24h avant le match.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+							<div class="mt-4 text-sm text-gray-500">
+								<p>Les billets seront envoyés par email après paiement.</p>
+								<p>Annulation possible jusqu'à 24h avant le match.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
 {% endblock %}
 {% block javascripts %}
-    {{ parent() }}
-    <script>
-        // Dans les boutons "Réserver" de la page d'accueil :
-        document.querySelectorAll('.book-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const match = e.target.getAttribute('data-match');
-                // Ouvrir la modal de réservation
-                bookingModal.classList.remove('hidden');
-                document.getElementById('modalMatchTitle').textContent = match;
-            });
-        });
+	{{ parent() }}
+	<script>
+		// Dans les boutons "Réserver" de la page d'accueil :
+document.querySelectorAll('.book-btn').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const match = e.target.getAttribute('data-match');
+// Ouvrir la modal de réservation
+bookingModal.classList.remove('hidden');
+document.getElementById('modalMatchTitle').textContent = match;
+});
+});
 
-        // Dans le bouton "Ajouter au panier" :
-        document.getElementById('addToCart').addEventListener('click', () => {
-            const selectedSeats = []; // Récupérer les sièges sélectionnés
-            const match = document.getElementById('modalMatchTitle').textContent;
+// Dans le bouton "Ajouter au panier" :
+document.getElementById('addToCart').addEventListener('click', () => {
+const selectedSeats = []; // Récupérer les sièges sélectionnés
+const match = document.getElementById('modalMatchTitle').textContent;
 
-            selectedSeats.forEach(seat => {
-                window.addToCart({
-                    match: match,
-                    section: seat.section,
-                    seatNumber: seat.seatNumber,
-                    price: seat.price
-                });
-            });
+selectedSeats.forEach(seat => {
+window.addToCart({match: match, section: seat.section, seatNumber: seat.seatNumber, price: seat.price});
+});
 
-            bookingModal.classList.add('hidden');
-        });
-    </script>
+bookingModal.classList.add('hidden');
+});
+	</script>
 {% endblock %}

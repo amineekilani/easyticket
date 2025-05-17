@@ -3,7 +3,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}EasyTicket Client{% endblock %}</title>
+    <title>{% block title %}EasyTicket{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -43,7 +43,7 @@
         <nav class="hidden md:flex space-x-8">
             <a href="{{ path('app_customer') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Accueil</a>
             <a href="{{ path('app_customer_matchs') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Matchs</a>
-            <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">Stades</a>
+            <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">Mes Billets</a>
             <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">À propos</a>
         </nav>
         <div class="flex items-center space-x-4">

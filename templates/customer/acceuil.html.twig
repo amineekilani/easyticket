@@ -1,6 +1,5 @@
 {% extends 'Customer/layout.html.twig' %}
 
-{% block title %}Accueil | EasyTicket{% endblock %}
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -101,12 +100,6 @@
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-3xl font-bold">Prochains matchs</h2>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-2 bg-red-600 text-white rounded-lg">Tous</button>
-                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Ligue 1</button>
-                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">Coupe</button>
-                    <button class="px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100">International</button>
-                </div>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

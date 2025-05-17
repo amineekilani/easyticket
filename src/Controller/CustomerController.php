@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class CustomerController extends AbstractController
 {
-    #[Route('/acceuil', name: 'app_customer')]
+    #[Route('/', name: 'app_customer')]
     public function index(): Response
     {
         return $this->render('customer/acceuil.html.twig', [

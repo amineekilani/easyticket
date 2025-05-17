@@ -30,4 +30,19 @@ class EmailService
 
         $this->mailer->send($email);
     }
+
+    public function sendPasswordResetEmail(string $to, string $name, string $resetUrl): void
+    {
+        $this->send(
+            'aminekilani901@gmail.com',
+            $to,
+            'Réinitialisation de votre mot de passe - EasyTicket',
+            'emails/reset_password.html.twig',
+            [
+                'resetUrl' => $resetUrl,
+                'name' => $name,
+                'expireTime' => '1 heure'
+            ]
+        );
+    }
 }

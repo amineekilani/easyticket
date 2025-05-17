@@ -1,0 +1,77 @@
+{# filepath: d:\FAC\L2\Radès\Semestre 2\Projet d'intégration\EasyTicket\templates\reset_password\reset.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyTicket | Réinitialisation du mot de passe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Header with floating icon -->
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-600 p-6 text-white text-center relative">
+                <div class="animate-float inline-block">
+                    <i class="fas fa-lock-open text-5xl text-white opacity-90"></i>
+                </div>
+                <h1 class="text-2xl font-bold mt-4">Nouveau mot de passe</h1>
+                <p class="text-blue-100 text-sm mt-2">Choisissez un mot de passe sécurisé</p>
+            </div>
+
+            <!-- Flash messages -->
+            <div class="px-6 pt-4 space-y-2">
+                {% for message in app.flashes('danger') %}
+                    <div class="flex items-center bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span class="text-sm">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Form -->
+            <div class="p-6">
+                <p class="mb-6 text-gray-600 text-sm">
+                    Veuillez entrer votre nouveau mot de passe ci-dessous.
+                </p>
+
+                {{ form_start(resetForm, {'attr': {'class': 'space-y-4'}}) }}
+                <div>
+                    {{ form_label(resetForm.plainPassword.first) }}
+                    <div class="relative">
+                        {{ form_widget(resetForm.plainPassword.first) }}
+                        <i class="fas fa-lock absolute left-3 top-3.5 text-gray-400"></i>
+                    </div>
+                    {{ form_errors(resetForm.plainPassword.first) }}
+                </div>
+
+                <div>
+                    {{ form_label(resetForm.plainPassword.second) }}
+                    <div class="relative">
+                        {{ form_widget(resetForm.plainPassword.second) }}
+                        <i class="fas fa-lock absolute left-3 top-3.5 text-gray-400"></i>
+                    </div>
+                    {{ form_errors(resetForm.plainPassword.second) }}
+                </div>
+
+                <!-- Submit button -->
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 shadow-md hover:shadow-lg transform hover:scale-[1.01]">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Réinitialiser le mot de passe
+                </button>
+                {{ form_end(resetForm) }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

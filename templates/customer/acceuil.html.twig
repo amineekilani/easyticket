@@ -341,7 +341,16 @@
 										DT</span>
 								</div>
 								{% if (matchTime - now) < 259200 %}
-									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-date="{{ match.dateEtHeure|date('d M Y') }}" data-match-id="{{ match.id }}" data-virage-price="{{ match.prixBilletVirage }}" data-virage-qty="{{ match.nbrBilletsVirage }}" data-virage-vendus="{{ match.billetsVirageVendus }}" data-pelouse-price="{{ match.prixBilletPelouse }}" data-pelouse-qty="{{ match.nbrBilletsPelouse }}" data-pelouse-vendus="{{ match.billetsPelouseVendus }}" data-enceinte-price="{{ match.prixBilletEnceinte }}" data-enceinte-qty="{{ match.nbrBilletsEnceinte }}" data-enceinte-vendus="{{ match.billetsEnceinteVendus }}">Réserver</button>
+									{% set virageAvailable = match.nbrBilletsVirage - match.billetsVirageVendus %}
+									{% set pelouseAvailable = match.nbrBilletsPelouse - match.billetsPelouseVendus %}
+									{% set enceinteAvailable = match.nbrBilletsEnceinte - match.billetsEnceinteVendus %}
+									{% set totalAvailable = virageAvailable + pelouseAvailable + enceinteAvailable %}
+
+									{% if totalAvailable <= 0 %}
+										<button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Complet</button>
+									{% else %}
+										<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-date="{{ match.dateEtHeure|date('d M Y') }}" data-match-id="{{ match.id }}" data-virage-price="{{ match.prixBilletVirage }}" data-virage-qty="{{ match.nbrBilletsVirage }}" data-virage-vendus="{{ match.billetsVirageVendus }}" data-pelouse-price="{{ match.prixBilletPelouse }}" data-pelouse-qty="{{ match.nbrBilletsPelouse }}" data-pelouse-vendus="{{ match.billetsPelouseVendus }}" data-enceinte-price="{{ match.prixBilletEnceinte }}" data-enceinte-qty="{{ match.nbrBilletsEnceinte }}" data-enceinte-vendus="{{ match.billetsEnceinteVendus }}">Réserver</button>
+									{% endif %}
 								{% else %}
 									<button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
 								{% endif %}
@@ -486,347 +495,357 @@
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
-    <script>
-        // Fonction globale d'ajout au panier
-        window.addToCart = async function(item) {
-            try {
-                const response = await fetch('/cart/add', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify(item)
-                });
-                
-                if (response.ok) {
-                    // Mettre à jour le compteur du panier après l'ajout réussi
-                    await updateCartCount();
-                } else {
-                    alert('Erreur lors de l\'ajout au panier');
-                }
-            } catch (error) {
-                console.error('Error adding item to cart:', error);
-            }
-        };
+	{{ parent() }}
+	<script>
+		// Fonction globale d'ajout au panier
+window.addToCart = async function (item) {
+try {
+const response = await fetch('/cart/add', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'X-Requested-With': 'XMLHttpRequest'
+},
+body: JSON.stringify(item)
+});
 
-        // Gestion de la modal
-        const bookingModal = document.getElementById('bookingModal');
-        const closeModal = document.getElementById('closeModal');
+if (response.ok) { // Mettre à jour le compteur du panier après l'ajout réussi
+await updateCartCount();
+} else {
+alert('Erreur lors de l\'ajout au panier');
+}
+} catch (error) {
+console.error('Error adding item to cart:', error);
+}
+};
 
-        closeModal.addEventListener('click', () => {
-            bookingModal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        });
+// Gestion de la modal
+const bookingModal = document.getElementById('bookingModal');
+const closeModal = document.getElementById('closeModal');
 
-        // Gestion des boutons "Réserver"
-        document.querySelectorAll('.book-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const match = e.target.getAttribute('data-match');
-                const stadium = e.target.getAttribute('data-stadium');
-                const date = e.target.getAttribute('data-date');
-                const matchId = e.target.getAttribute('data-match-id');
+closeModal.addEventListener('click', () => {
+bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
 
-                // Récupération des données des sections
-                const viragePrice = e.target.getAttribute('data-virage-price');
-                const virageQty = e.target.getAttribute('data-virage-qty');
-                const virageVendus = e.target.getAttribute('data-virage-vendus');
-                const pelousePrice = e.target.getAttribute('data-pelouse-price');
-                const pelouseQty = e.target.getAttribute('data-pelouse-qty');
-                const pelouseVendus = e.target.getAttribute('data-pelouse-vendus');
-                const enceintePrice = e.target.getAttribute('data-enceinte-price');
-                const enceinteQty = e.target.getAttribute('data-enceinte-qty');
-                const enceinteVendus = e.target.getAttribute('data-enceinte-vendus');
+// Gestion des boutons "Réserver"
+document.querySelectorAll('.book-btn').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const match = e.target.getAttribute('data-match');
+const stadium = e.target.getAttribute('data-stadium');
+const date = e.target.getAttribute('data-date');
+const matchId = e.target.getAttribute('data-match-id');
 
-                // Mise à jour du titre de la modal avec toutes les infos
-                document.getElementById('modalMatchTitle').textContent = `${match} - ${date}`;
-                document.getElementById('modalMatchStadium').textContent = stadium;
-                document.getElementById('currentMatchId').value = matchId;
+// Récupération des données des sections
+const viragePrice = e.target.getAttribute('data-virage-price');
+const virageQty = e.target.getAttribute('data-virage-qty');
+const virageVendus = e.target.getAttribute('data-virage-vendus');
+const pelousePrice = e.target.getAttribute('data-pelouse-price');
+const pelouseQty = e.target.getAttribute('data-pelouse-qty');
+const pelouseVendus = e.target.getAttribute('data-pelouse-vendus');
+const enceintePrice = e.target.getAttribute('data-enceinte-price');
+const enceinteQty = e.target.getAttribute('data-enceinte-qty');
+const enceinteVendus = e.target.getAttribute('data-enceinte-vendus');
 
-                // Mise à jour des sections avec les prix et quantités disponibles (total - vendus)
-                updateSection('virage', viragePrice, virageQty, virageVendus);
-                updateSection('pelouse', pelousePrice, pelouseQty, pelouseVendus);
-                updateSection('enceinte', enceintePrice, enceinteQty, enceinteVendus);
+// Mise à jour du titre de la modal avec toutes les infos
+document.getElementById('modalMatchTitle').textContent = `${match} - ${date}`;
+document.getElementById('modalMatchStadium').textContent = stadium;
+document.getElementById('currentMatchId').value = matchId;
 
-                // Réinitialiser les quantités sélectionnées
-                document.getElementById('ticketVirageQuantity').value = 0;
-                document.getElementById('ticketPelouseQuantity').value = 0;
-                document.getElementById('ticketEnceinteQuantity').value = 0;
+// Mise à jour des sections avec les prix et quantités disponibles (total - vendus)
+updateSection('virage', viragePrice, virageQty, virageVendus);
+updateSection('pelouse', pelousePrice, pelouseQty, pelouseVendus);
+updateSection('enceinte', enceintePrice, enceinteQty, enceinteVendus);
 
-                // Mettre à jour le panier
-                updateCart();
+// Réinitialiser les quantités sélectionnées
+document.getElementById('ticketVirageQuantity').value = 0;
+document.getElementById('ticketPelouseQuantity').value = 0;
+document.getElementById('ticketEnceinteQuantity').value = 0;
 
-                // Ouvrir la modal
-                bookingModal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            });
-        });
+// Mettre à jour le panier
+updateCart();
 
-        // Fonction pour mettre à jour une section
-        function updateSection(sectionName, price, totalQuantity, soldQuantity) {
-            const section = document.getElementById(`${sectionName}Section`);
-            const priceElement = document.getElementById(`${sectionName}Price`);
-            const availableElement = document.getElementById(`${sectionName}Available`);
-            const quantityInput = document.getElementById(`ticket${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}Quantity`);
+// Ouvrir la modal
+bookingModal.classList.remove('hidden');
+document.body.style.overflow = 'hidden';
+});
+});
 
-            if (!price || !totalQuantity) { // Si pas de prix ou pas de quantité, cacher la section
-                section.style.display = 'none';
-                return;
-            }
+// Fonction pour mettre à jour une section
+function updateSection(sectionName, price, totalQuantity, soldQuantity) {
+const section = document.getElementById (`${sectionName}Section`);
+const priceElement = document.getElementById (`${sectionName}Price`);
+const availableElement = document.getElementById (`${sectionName}Available`);
+const quantityInput = document.getElementById (`ticket${
+sectionName.charAt(0).toUpperCase() + sectionName.slice(1)
+}Quantity`);
 
-            // Calculer le nombre de places disponibles
-            const availableQuantity = parseInt(totalQuantity) - parseInt(soldQuantity || 0);
+if (! price || ! totalQuantity) { // Si pas de prix ou pas de quantité, cacher la section
+section.style.display = 'none';
+return;
+}
 
-            // Afficher la section et mettre à jour les valeurs
-            section.style.display = 'block';
-            priceElement.textContent = `${price} DT`;
-            availableElement.textContent = availableQuantity;
-            quantityInput.max = availableQuantity;
-        }
+// Calculer le nombre de places disponibles
+const availableQuantity = parseInt(totalQuantity) - parseInt(soldQuantity || 0);
 
-        // Gestion des quantités
-        function updateQuantity(inputId, change) {
-            const input = document.getElementById(inputId);
-            let value = parseInt(input.value) + change;
-            const max = parseInt(input.max);
+// Afficher la section et mettre à jour les valeurs
+section.style.display = 'block';
+priceElement.textContent = `${price} DT`;
+availableElement.textContent = availableQuantity;
+quantityInput.max = availableQuantity;
+}
 
-            if (value < 0) value = 0;
-            if (value > max) value = max;
+// Gestion des quantités
+function updateQuantity(inputId, change) {
+const input = document.getElementById(inputId);
+let value = parseInt(input.value) + change;
+const max = parseInt(input.max);
 
-            input.value = value;
-            updateCart();
-        }
+if (value < 0) 
+value = 0;
 
-        function incrementVirage() {
-            updateQuantity('ticketVirageQuantity', 1);
-        }
-        function decrementVirage() {
-            updateQuantity('ticketVirageQuantity', -1);
-        }
-        function incrementPelouse() {
-            updateQuantity('ticketPelouseQuantity', 1);
-        }
-        function decrementPelouse() {
-            updateQuantity('ticketPelouseQuantity', -1);
-        }
-        function incrementEnceinte() {
-            updateQuantity('ticketEnceinteQuantity', 1);
-        }
-        function decrementEnceinte() {
-            updateQuantity('ticketEnceinteQuantity', -1);
-        }
+if (value > max) 
+value = max;
 
-        // Mise à jour du panier
-        function updateCart() {
-            const virageSection = document.getElementById('virageSection');
-            const pelouseSection = document.getElementById('pelouseSection');
-            const enceinteSection = document.getElementById('enceinteSection');
 
-            const virageQty = virageSection.style.display !== 'none' ? parseInt(document.getElementById('ticketVirageQuantity').value) || 0 : 0;
-            const pelouseQty = pelouseSection.style.display !== 'none' ? parseInt(document.getElementById('ticketPelouseQuantity').value) || 0 : 0;
-            const enceinteQty = enceinteSection.style.display !== 'none' ? parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0 : 0;
+input.value = value;
+updateCart();
+}
 
-            const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
-            const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
-            const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
-            const serviceFee = 2;
+function incrementVirage() {
+updateQuantity('ticketVirageQuantity', 1);
+}
+function decrementVirage() {
+updateQuantity('ticketVirageQuantity', -1);
+}
+function incrementPelouse() {
+updateQuantity('ticketPelouseQuantity', 1);
+}
+function decrementPelouse() {
+updateQuantity('ticketPelouseQuantity', -1);
+}
+function incrementEnceinte() {
+updateQuantity('ticketEnceinteQuantity', 1);
+}
+function decrementEnceinte() {
+updateQuantity('ticketEnceinteQuantity', -1);
+}
 
-            const subtotal = (virageQty * viragePrice) + (pelouseQty * pelousePrice) + (enceinteQty * enceintePrice);
-            const total = subtotal + (subtotal > 0 ? serviceFee : 0);
+// Mise à jour du panier
+function updateCart() {
+const virageSection = document.getElementById('virageSection');
+const pelouseSection = document.getElementById('pelouseSection');
+const enceinteSection = document.getElementById('enceinteSection');
 
-            // Mise à jour des totaux
-            document.getElementById('subtotalPrice').textContent = subtotal + ' DT';
-            document.getElementById('totalPrice').textContent = total + ' DT';
+const virageQty = virageSection.style.display !== 'none' ? parseInt(document.getElementById('ticketVirageQuantity').value) || 0 : 0;
+const pelouseQty = pelouseSection.style.display !== 'none' ? parseInt(document.getElementById('ticketPelouseQuantity').value) || 0 : 0;
+const enceinteQty = enceinteSection.style.display !== 'none' ? parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0 : 0;
 
-            // Mise à jour de la liste des places sélectionnées
-            const selectedSeats = document.getElementById('selectedSeats');
-            selectedSeats.innerHTML = '';
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
+const serviceFee = 2;
 
-            if (subtotal === 0) {
-                selectedSeats.innerHTML = '<div class="empty-cart">Aucune place sélectionnée</div>';
-                return;
-            }
+const subtotal = (virageQty * viragePrice) + (pelouseQty * pelousePrice) + (enceinteQty * enceintePrice);
+const total = subtotal + (subtotal > 0 ? serviceFee : 0);
 
-            if (virageQty > 0) {
-                const item = document.createElement('div');
-                item.className = 'cart-item';
-                item.innerHTML = `
+// Mise à jour des totaux
+document.getElementById('subtotalPrice').textContent = subtotal + ' DT';
+document.getElementById('totalPrice').textContent = total + ' DT';
+
+// Mise à jour de la liste des places sélectionnées
+const selectedSeats = document.getElementById('selectedSeats');
+selectedSeats.innerHTML = '';
+
+if (subtotal === 0) {
+selectedSeats.innerHTML = '<div class="empty-cart">Aucune place sélectionnée</div>';
+return;
+}
+
+if (virageQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
                     <span>${virageQty} x Virage</span>
-                    <span>${virageQty * viragePrice} DT</span>
+                    <span>${
+virageQty * viragePrice
+} DT</span>
                 `;
-                selectedSeats.appendChild(item);
-            }
+selectedSeats.appendChild(item);
+}
 
-            if (pelouseQty > 0) {
-                const item = document.createElement('div');
-                item.className = 'cart-item';
-                item.innerHTML = `
+if (pelouseQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
                     <span>${pelouseQty} x Pelouse</span>
-                    <span>${pelouseQty * pelousePrice} DT</span>
+                    <span>${
+pelouseQty * pelousePrice
+} DT</span>
                 `;
-                selectedSeats.appendChild(item);
-            }
+selectedSeats.appendChild(item);
+}
 
-            if (enceinteQty > 0) {
-                const item = document.createElement('div');
-                item.className = 'cart-item';
-                item.innerHTML = `
+if (enceinteQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
                     <span>${enceinteQty} x Enceinte</span>
-                    <span>${enceinteQty * enceintePrice} DT</span>
+                    <span>${
+enceinteQty * enceintePrice
+} DT</span>
                 `;
-                selectedSeats.appendChild(item);
-            }
-        }
+selectedSeats.appendChild(item);
+}
+}
 
-        // Écouteurs pour les changements de quantité
-        document.getElementById('ticketVirageQuantity').addEventListener('change', updateCart);
-        document.getElementById('ticketPelouseQuantity').addEventListener('change', updateCart);
-        document.getElementById('ticketEnceinteQuantity').addEventListener('change', updateCart);
+// Écouteurs pour les changements de quantité
+document.getElementById('ticketVirageQuantity').addEventListener('change', updateCart);
+document.getElementById('ticketPelouseQuantity').addEventListener('change', updateCart);
+document.getElementById('ticketEnceinteQuantity').addEventListener('change', updateCart);
 
-        // Gestion des boutons d'action
-        document.getElementById('addToCart').addEventListener('click', () => {
-            // Récupérer les données
-            const matchId = document.getElementById('currentMatchId').value;
-            const matchTitle = document.getElementById('modalMatchTitle').textContent;
-            const stadium = document.getElementById('modalMatchStadium').textContent;
+// Gestion des boutons d'action
+document.getElementById('addToCart').addEventListener('click', () => { // Récupérer les données
+const matchId = document.getElementById('currentMatchId').value;
+const matchTitle = document.getElementById('modalMatchTitle').textContent;
+const stadium = document.getElementById('modalMatchStadium').textContent;
 
-            // Récupérer les quantités et prix
-            const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
-            const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
-            const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
+// Récupérer les quantités et prix
+const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
+const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
+const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
 
-            const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
-            const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
-            const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
 
-            // Créer les éléments du panier
-            let cartItemsToAdd = [];
+// Créer les éléments du panier
+let cartItemsToAdd = [];
 
-            // Ajouter les billets Virage
-            for (let i = 0; i < virageQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Virage',
-                    price: viragePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Virage
+for (let i = 0; i < virageQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Virage',
+price: viragePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter les billets Pelouse
-            for (let i = 0; i < pelouseQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Pelouse',
-                    price: pelousePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Pelouse
+for (let i = 0; i < pelouseQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Pelouse',
+price: pelousePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter les billets Enceinte
-            for (let i = 0; i < enceinteQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Enceinte',
-                    price: enceintePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Enceinte
+for (let i = 0; i < enceinteQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Enceinte',
+price: enceintePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter tous les billets au panier global
-            if (window.addToCart && cartItemsToAdd.length > 0) {
-                cartItemsToAdd.forEach(item => {
-                    window.addToCart(item);
-                });
+// Ajouter tous les billets au panier global
+if (window.addToCart && cartItemsToAdd.length > 0) {
+cartItemsToAdd.forEach(item => {
+window.addToCart(item);
+});
 
-                // Afficher une notification
-                alert('Votre sélection a été ajoutée au panier');
-                bookingModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            } else if (cartItemsToAdd.length === 0) {
-                alert('Veuillez sélectionner au moins un billet.');
-            } else {
-                alert('Erreur: Impossible d\'ajouter au panier');
-            }
-        });
+// Afficher une notification
+alert('Votre sélection a été ajoutée au panier');
+bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+} else if (cartItemsToAdd.length === 0) {
+alert('Veuillez sélectionner au moins un billet.');
+} else {
+alert('Erreur: Impossible d\'ajouter au panier');
+}
+});
 
-        document.getElementById('checkoutBtn').addEventListener('click', () => {
-            const matchId = document.getElementById('currentMatchId').value;
-            const matchTitle = document.getElementById('modalMatchTitle').textContent;
-            const stadium = document.getElementById('modalMatchStadium').textContent;
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+const matchId = document.getElementById('currentMatchId').value;
+const matchTitle = document.getElementById('modalMatchTitle').textContent;
+const stadium = document.getElementById('modalMatchStadium').textContent;
 
-            // Récupérer les quantités et prix
-            const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
-            const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
-            const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
+// Récupérer les quantités et prix
+const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
+const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
+const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
 
-            const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
-            const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
-            const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
 
-            // Vérifier si des billets ont été sélectionnés
-            if (virageQty === 0 && pelouseQty === 0 && enceinteQty === 0) {
-                alert('Veuillez sélectionner au moins un billet.');
-                return;
-            }
+// Vérifier si des billets ont été sélectionnés
+if (virageQty === 0 && pelouseQty === 0 && enceinteQty === 0) {
+alert('Veuillez sélectionner au moins un billet.');
+return;
+}
 
-            // Créer les éléments du panier
-            let cartItemsToAdd = [];
+// Créer les éléments du panier
+let cartItemsToAdd = [];
 
-            // Ajouter les billets Virage
-            for (let i = 0; i < virageQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Virage',
-                    price: viragePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Virage
+for (let i = 0; i < virageQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Virage',
+price: viragePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter les billets Pelouse
-            for (let i = 0; i < pelouseQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Pelouse',
-                    price: pelousePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Pelouse
+for (let i = 0; i < pelouseQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Pelouse',
+price: pelousePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter les billets Enceinte
-            for (let i = 0; i < enceinteQty; i++) {
-                cartItemsToAdd.push({
-                    match: matchTitle,
-                    stadium: stadium,
-                    section: 'Enceinte',
-                    price: enceintePrice,
-                    matchId: matchId
-                });
-            }
+// Ajouter les billets Enceinte
+for (let i = 0; i < enceinteQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Enceinte',
+price: enceintePrice,
+matchId: matchId
+});
+}
 
-            // Ajouter tous les billets au panier global
-            if (window.addToCart && cartItemsToAdd.length > 0) {
-                cartItemsToAdd.forEach(item => {
-                    window.addToCart(item);
-                });
+// Ajouter tous les billets au panier global
+if (window.addToCart && cartItemsToAdd.length > 0) {
+cartItemsToAdd.forEach(item => {
+window.addToCart(item);
+});
 
-                // Fermer la modal et ouvrir le panier
-                bookingModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
+// Fermer la modal et ouvrir le panier
+bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
 
-                // Simuler un clic sur le bouton du panier pour l'ouvrir
-                document.getElementById('cartBtn').click();
-            }
-        });
+// Simuler un clic sur le bouton du panier pour l'ouvrir
+document.getElementById('cartBtn').click();
+}
+});
 
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCart();
-        });
-    </script>
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+updateCart();
+});
+	</script>
 {% endblock %}

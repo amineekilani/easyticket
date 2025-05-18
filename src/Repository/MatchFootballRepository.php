@@ -98,6 +98,23 @@ class MatchFootballRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Trouve les matchs les plus populaires basés sur le nombre total de billets vendus
+     * 
+     * @param int $limit Le nombre maximum de matchs à retourner
+     * @return array
+     */
+    public function findTopMatches(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m')
+            ->addSelect('(m.billetsVirageVendus + m.billetsPelouseVendus + m.billetsEnceinteVendus) as totalBillets')
+            ->orderBy('totalBillets', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return MatchFootball[] Returns an array of MatchFootball objects
     //     */

@@ -1,328 +1,305 @@
 {# templates/admin/dashbord.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Tableau de bord - EasyTicket{% endblock %}
+{% block title %}Tableau de bord - EasyTicket
+{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        .chart-container {
-            height: 300px;
-        }
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-        }
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-        }
-    </style>
+	{{ parent() }}
+	<style>
+		.stat-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+		}
+		.chart-container {
+			height: 300px;
+		}
+		.progress-bar {
+			height: 6px;
+			border-radius: 3px;
+		}
+		.user-avatar {
+			width: 40px;
+			height: 40px;
+		}
+	</style>
 {% endblock %}
 
 {% block body %}
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-        <div class="px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-semibold text-gray-800"><i class="fas fa-tachometer-alt mr-2 text-red-600"></i>
-                Tableau de bord</h1>
-            <div class="flex items-center space-x-4">
-                <div class="relative">
-                    <input type="text" placeholder="Rechercher..." class="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
-                <!--
-                <div class="relative">
-                    <button class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
-                        <i class="fas fa-bell"></i>
-                        <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary"></span>
-                    </button>
-                </div>
-                -->
-            </div>
-        </div>
-    </header>
+	<!-- Header -->
+	<header class="bg-white shadow-sm">
+		<div class="px-6 py-4 flex justify-between items-center">
+			<h1 class="text-2xl font-semibold text-gray-800">
+				<i class="fas fa-tachometer-alt mr-2 text-red-600"></i>
+				Tableau de bord
+			</h1>
+		</div>
+	</header>
 
-    <!-- Dashboard Content -->
-    <main class="p-6">
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Tickets Sold -->
-            <div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Billets vendus</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">0</h3>
-                        <p class="text-sm text-green-500 mt-2">
-                            <i class="fas fa-arrow-up mr-1"></i> ??% vs mois dernier
-                        </p>
-                    </div>
-                    <div class="p-3 rounded-full bg-red-100 text-primary">
-                        <i class="fas fa-ticket-alt text-xl"></i>
-                    </div>
-                </div>
-            </div>
+	<!-- Dashboard Content -->
+	<main
+		class="p-6">
+		<!-- Stats Cards -->
+		<div
+			class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+			<!-- Tickets Sold -->
+			<div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-sm font-medium text-gray-500">Billets vendus</p>
+						<h3 class="text-2xl font-bold text-gray-800 mt-1">0</h3>
+						<p class="text-sm text-green-500 mt-2">
+							<i class="fas fa-arrow-up mr-1"></i>
+							??% vs mois dernier
+						</p>
+					</div>
+					<div class="p-3 rounded-full bg-red-100 text-primary">
+						<i class="fas fa-ticket-alt text-xl"></i>
+					</div>
+				</div>
+			</div>
 
-            <!-- Revenue -->
-            <div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Revenu total</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">0 DT</h3>
-                        <p class="text-sm text-green-500 mt-2">
-                            <i class="fas fa-arrow-up mr-1"></i> ??% vs mois dernier
-                        </p>
-                    </div>
-                    <div class="p-3 rounded-full bg-green-100 text-green-600">
-                        <i class="fas fa-money-bill-wave text-xl"></i>
-                    </div>
-                </div>
-            </div>
+			<!-- Revenue -->
+			<div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-sm font-medium text-gray-500">Revenu total</p>
+						<h3 class="text-2xl font-bold text-gray-800 mt-1">0 DT</h3>
+						<p class="text-sm text-green-500 mt-2">
+							<i class="fas fa-arrow-up mr-1"></i>
+							??% vs mois dernier
+						</p>
+					</div>
+					<div class="p-3 rounded-full bg-green-100 text-green-600">
+						<i class="fas fa-money-bill-wave text-xl"></i>
+					</div>
+				</div>
+			</div>
 
-            <!-- Stadium Fill Rate -->
-            <div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Taux de remplissage</p>
-                        <h3 class="text-2xl font-bold text-gray-800 mt-1">0%</h3>
-                        <p class="text-sm text-green-500 mt-2">
-                            <i class="fas fa-arrow-up mr-1"></i> ??% vs mois dernier
-                        </p>
-                    </div>
-                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                        <i class="fas fa-chart-pie text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+			<!-- Stadium Fill Rate -->
+			<div class="stat-card bg-white rounded-lg shadow-sm p-6 transition duration-300 hover:shadow-md">
+				<div class="flex items-center justify-between">
+					<div>
+						<p class="text-sm font-medium text-gray-500">Taux de remplissage</p>
+						<h3 class="text-2xl font-bold text-gray-800 mt-1">0%</h3>
+						<p class="text-sm text-green-500 mt-2">
+							<i class="fas fa-arrow-up mr-1"></i>
+							??% vs mois dernier
+						</p>
+					</div>
+					<div class="p-3 rounded-full bg-blue-100 text-blue-600">
+						<i class="fas fa-chart-pie text-xl"></i>
+					</div>
+				</div>
+			</div>
+		</div>
 
-        <!-- Sales Chart and Top Matches -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Sales Chart -->
-            <div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800">Évolution des ventes</h2>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 text-sm bg-primary text-white rounded-md">7 jours</button>
-                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">30 jours</button>
-                        <button class="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">90 jours</button>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="salesChart"></canvas>
-                </div>
+		<!-- Sales Chart and Top Matches -->
+		<div
+			class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+			<!-- Sales Chart -->
+			<div class="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+				<div class="flex justify-between items-center mb-6">
+					<h2 class="text-lg font-semibold text-gray-800">Évolution des ventes</h2>
+					<div class="flex space-x-2">
+						<button class="px-3 py-1 text-sm bg-primary text-white rounded-md">7 jours</button>
+						<button class="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">30 jours</button>
+						<button class="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200">90 jours</button>
+					</div>
+				</div>
+				<div class="chart-container">
+					<canvas id="salesChart"></canvas>
+				</div>
 
-            </div>
+			</div>
 
-            <!-- Top Matches -->
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h2 class="text-lg font-semibold text-gray-800 mb-6">Top matchs</h2>
-                <div class="space-y-4">
-                    <!-- Match 1 -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold">1</div>
-                            <div>
-                                <p class="font-medium">EST vs CSS</p>
-                                <p class="text-sm text-gray-500">15/04/2025</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">0</p>
-                            <p class="text-xs text-gray-500">billets</p>
-                        </div>
-                    </div>
+			<!-- Top Matches -->
+			<div class="bg-white rounded-lg shadow-sm p-6">
+				<h2 class="text-lg font-semibold text-gray-800 mb-6">Top matchs</h2>
+				<div class="space-y-4">
+					{% for match in topMatches %}
+						<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+							<div class="flex items-center space-x-3">
+								<div class="w-10 h-10 rounded-full
+										                                    {% if loop.index == 1 %}
+										                                        bg-yellow-400
+										                                    {% elseif loop.index == 2 %}
+										                                        bg-gray-400
+										                                    {% elseif loop.index == 3 %}
+										                                        bg-amber-600
+										                                    {% else %}
+										                                        bg-gray-900
+										                                    {% endif %}
+										                                    flex items-center justify-center text-white font-bold">
+									{{ loop.index }}
+								</div>
+								<div>
+									<p class="font-medium">{{ match[0].equipe1.abreviation }}
+										vs
+										{{ match[0].equipe2.abreviation }}</p>
+									<p class="text-sm text-gray-500">{{ match[0].dateEtHeure|date('d/m/Y') }}</p>
+								</div>
+							</div>
+							<div class="text-right">
+								{% set totalBillets = match[0].billetsVirageVendus + match[0].billetsPelouseVendus + match[0].billetsEnceinteVendus %}
+								<p class="font-bold">{{ totalBillets }}</p>
+								<p class="text-xs text-gray-500">billets</p>
+							</div>
+						</div>
+					{% else %}
+						<div class="p-3 bg-gray-50 rounded-lg text-center text-gray-500">
+							Aucun match disponible
+						</div>
+					{% endfor %}
+				</div>
 
-                    <!-- Match 2 -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold">2</div>
-                            <div>
-                                <p class="font-medium">CA vs ESS</p>
-                                <p class="text-sm text-gray-500">22/04/2025</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">0</p>
-                            <p class="text-xs text-gray-500">billets</p>
-                        </div>
-                    </div>
+				<a href="{{ path('app_match_football_index') }}" class="w-full mt-4 py-2 text-sm text-primary font-medium rounded-lg border border-primary hover:bg-primary hover:text-white transition duration-300 block text-center">
+					Voir tous les matchs
+				</a>
+			</div>
+		</div>
 
-                    <!-- Match 3 -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold">3</div>
-                            <div>
-                                <p class="font-medium">USM vs EST</p>
-                                <p class="text-sm text-gray-500">30/04/2025</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">0</p>
-                            <p class="text-xs text-gray-500">billets</p>
-                        </div>
-                    </div>
+		<!-- Recent Users -->
+		<div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+			<div class="flex justify-between items-center mb-6">
+				<h2 class="text-lg font-semibold text-gray-800">Derniers utilisateurs inscrits</h2>
+				<a href="{{ path('app_user_new') }}" class="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-red-800 inline-flex items-center">
+					<i class="fas fa-plus mr-1"></i>
+					Nouvel utilisateur
+				</a>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200">
+					<thead class="bg-gray-50">
+						<tr>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vérifié</th>
+							<th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+						</tr>
+					</thead>
+					<tbody class="bg-white divide-y divide-gray-200">
+						{% for user in latestUsers %}
+							<tr>
+								<td class="px-6 py-4 whitespace-nowrap">
+									<div class="flex items-center">
+										<div class="flex-shrink-0 h-10 w-10">
+											<div class="user-avatar rounded-full bg-primary flex items-center justify-center text-white">
+												<i class="fas fa-user"></i>
+											</div>
+										</div>
+										<div class="ml-4">
+											<div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+										</div>
+									</div>
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
+								<td class="px-6 py-4 whitespace-nowrap">
+									<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+											                    {{ 'ROLE_ADMIN' in user.roles ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
+										{{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
+									</span>
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+									{{ user.dateInscription ? user.dateInscription|date('d M, Y') : '-' }}
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-center">
+									{% if user.isVerified %}
+										<span class="text-green-700 " title="Vérifié">
+											✓
+										</span>
+									{% else %}
+										<span class="text-red-600 " title="Non vérifié">
+											✗
+										</span>
+									{% endif %}
+								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+									<a href="{{ path('app_user_edit', { id: user.id }) }}" class="text-blue-600 hover:text-blue-900 mr-3">
+										<i class="fas fa-edit"></i>
+									</a>
+									<form method="post" action="{{ path('app_user_delete', { id: user.id }) }}" class="inline" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+										<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+										<button class="text-red-600 hover:text-red-900" type="submit">
+											<i class="fas fa-trash-alt"></i>
+										</button>
+									</form>
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucun utilisateur trouvé.</td>
+							</tr>
+						{% endfor %}
+					</tbody>
 
-                    <!-- Match 4 -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">4</div>
-                            <div>
-                                <p class="font-medium">CSS vs CA</p>
-                                <p class="text-sm text-gray-500">05/05/2025</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">0</p>
-                            <p class="text-xs text-gray-500">billets</p>
-                        </div>
-                    </div>
-
-                    <!-- Match 5 -->
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-white font-bold">5</div>
-                            <div>
-                                <p class="font-medium">ESS vs USM</p>
-                                <p class="text-sm text-gray-500">12/05/2025</p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold">0</p>
-                            <p class="text-xs text-gray-500">billets</p>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="w-full mt-4 py-2 text-sm text-primary font-medium rounded-lg border border-primary hover:bg-primary hover:text-white transition duration-300">
-                    Voir tous les matchs
-                </button>
-            </div>
-        </div>
-
-        <!-- Recent Users -->
-        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-lg font-semibold text-gray-800">Derniers utilisateurs inscrits</h2>
-                <a href="{{ path('app_user_new') }}"
-                   class="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-red-800 inline-flex items-center">
-                    <i class="fas fa-plus mr-1"></i> Nouvel utilisateur
-                </a>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vérifié</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                    {% for user in latestUsers %}
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10">
-                                        <div class="user-avatar rounded-full bg-primary flex items-center justify-center text-white">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.email }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                    {{ 'ROLE_ADMIN' in user.roles ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                    {{ 'ROLE_ADMIN' in user.roles ? 'Admin' : 'Client' }}
-                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ user.dateInscription ? user.dateInscription|date('d M, Y') : '-' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                {% if user.isVerified %}
-                                    <span class="text-green-700 " title="Vérifié">
-                                            ✓
-                                        </span>
-                                {% else %}
-                                    <span class="text-red-600 " title="Non vérifié">
-                                            ✗
-                                        </span>
-                                {% endif %}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <a href="{{ path('app_user_edit', { id: user.id }) }}"  class="text-blue-600 hover:text-blue-900 mr-3"><i class="fas fa-edit"></i></a>
-                                <form method="post" action="{{ path('app_user_delete', { id: user.id }) }}" class="inline" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                    <button class="text-red-600 hover:text-red-900" type="submit"><i class="fas fa-trash-alt"></i></button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">Aucun utilisateur trouvé.</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-
-                </table>
-            </div>
-        </div>
-    </main>
+				</table>
+			</div>
+		</div>
+	</main>
 {% endblock %}
 {% block javascripts %}
-    {{ parent() }}
-    <!-- Intégration de Chart.js-->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
-                    datasets: [{
-                        label: 'Billets vendus',
-                        data: [1230, 1560, 1890, 1430, 2100, 2650, 1300],
-                        backgroundColor: 'rgba(220, 38, 38, 0.7)', // rouge
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 500
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return context.parsed.y + ' billets';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
+	{{ parent() }}
+	<!-- Intégration de Chart.js-->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+const ctx = document.getElementById('salesChart').getContext('2d');
+new Chart(ctx, {
+type: 'bar',
+data: {
+labels: [
+'Lun',
+'Mar',
+'Mer',
+'Jeu',
+'Ven',
+'Sam',
+'Dim'
+],
+datasets: [
+{
+label: 'Billets vendus',
+data: [
+1230,
+1560,
+1890,
+1430,
+2100,
+2650,
+1300
+],
+backgroundColor: 'rgba(220, 38, 38, 0.7)', // rouge
+borderRadius: 6
+}
+]
+},
+options: {
+responsive: true,
+scales: {
+y: {
+beginAtZero: true,
+ticks: {
+stepSize: 500
+}
+}
+},
+plugins: {
+legend: {
+display: false
+},
+tooltip: {
+callbacks: {
+label: function (context) {
+return context.parsed.y + ' billets';
+}
+}
+}
+}
+}
+});
+});
+	</script>
 {% endblock %}

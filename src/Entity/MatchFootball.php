@@ -44,6 +44,15 @@ class MatchFootball
     #[ORM\Column(nullable: true)]
     private ?float $prixBilletEnceinte = null;
 
+    #[ORM\Column]
+    private ?int $billetsVirageVendus = null;
+
+    #[ORM\Column]
+    private ?int $billetsPelouseVendus = null;
+
+    #[ORM\Column]
+    private ?int $billetsEnceinteVendus = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -165,6 +174,42 @@ class MatchFootball
     public function setPrixBilletEnceinte(?float $prixBilletEnceinte): static
     {
         $this->prixBilletEnceinte = $prixBilletEnceinte;
+
+        return $this;
+    }
+
+    public function getBilletsVirageVendus(): ?int
+    {
+        return $this->billetsVirageVendus;
+    }
+
+    public function setBilletsVirageVendus(int $billetsVirageVendus): static
+    {
+        $this->billetsVirageVendus = $billetsVirageVendus;
+
+        return $this;
+    }
+
+    public function getBilletsPelouseVendus(): ?int
+    {
+        return $this->billetsPelouseVendus;
+    }
+
+    public function setBilletsPelouseVendus(int $billetsPelouseVendus): static
+    {
+        $this->billetsPelouseVendus = $billetsPelouseVendus;
+
+        return $this;
+    }
+
+    public function getBilletsEnceinteVendus(): ?int
+    {
+        return $this->billetsEnceinteVendus;
+    }
+
+    public function setBilletsEnceinteVendus(int $billetsEnceinteVendus): static
+    {
+        $this->billetsEnceinteVendus = $billetsEnceinteVendus;
 
         return $this;
     }

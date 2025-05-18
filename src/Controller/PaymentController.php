@@ -6,6 +6,7 @@ use App\Entity\Billet;
 use App\Entity\Commande;
 use App\Repository\MatchFootballRepository;
 use App\Service\CartService;
+use App\Service\EmailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -126,7 +127,12 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/payment/success', name: 'payment_success')]
-    public function success(Request $request, CartService $cartService, EntityManagerInterface $entityManager): Response
+    public function success(
+        Request $request, 
+        CartService $cartService, 
+        EntityManagerInterface $entityManager,
+        EmailService $emailService
+    ): Response
     {
         $sessionId = $request->query->get('session_id');
         
@@ -135,7 +141,39 @@ class PaymentController extends AbstractController
         $commande = $commandeRepository->findByStripeSessionId($sessionId);
         
         if ($commande) {
+            // Marquer la commande comme payée
+            $commande->setPaid(true);
             $entityManager->flush();
+            
+            // Récupérer l'utilisateur et ses informations
+            $user = $commande->getUser();
+            $email = $user->getEmail();
+            $name = $user->getName() ?? 'Client';
+            
+            // Préparer les détails de la commande pour l'email
+            $orderDetails = [
+                'numero' => $commande->getId(),
+                'date' => $commande->getCreatedAt(),
+                'total' => $commande->getTotal(),
+                'billets' => []
+            ];
+            
+            foreach ($commande->getBillets() as $billet) {
+                $match = $billet->getMatch();
+                $equipe1 = $match->getEquipe1() ? $match->getEquipe1()->getNom() : 'Équipe 1';
+                $equipe2 = $match->getEquipe2() ? $match->getEquipe2()->getNom() : 'Équipe 2';
+                
+                $orderDetails['billets'][] = [
+                    'match' => $equipe1 . ' vs ' . $equipe2,
+                    'date' => $match->getDateEtHeure(),
+                    'section' => $billet->getSection(),
+                    'price' => $billet->getPrice(),
+                    'qrCode' => $billet->getQrCode()
+                ];
+            }
+            
+            // Envoyer l'email de confirmation
+            $emailService->sendPaymentConfirmation($email, $name, $orderDetails);
         }
         
         // Vider le panier

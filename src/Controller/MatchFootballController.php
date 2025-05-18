@@ -29,6 +29,9 @@ final class MatchFootballController extends AbstractController{
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $matchFootball->setBilletsVirageVendus(0);
+            $matchFootball->setBilletsPelouseVendus(0);
+            $matchFootball->setBilletsEnceinteVendus(0);
             $entityManager->persist($matchFootball);
             $entityManager->flush();
 

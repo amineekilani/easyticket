@@ -19,7 +19,6 @@ class CartController extends AbstractController
             'match' => $data['match'],
             'stadium' => $data['stadium'],
             'section' => $data['section'],
-            'seatNumber' => $data['seatNumber'],
             'price' => (float)$data['price'],
             'matchId' => $data['matchId']
         ];

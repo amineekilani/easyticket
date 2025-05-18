@@ -1,0 +1,113 @@
+{% extends 'customer/layout.html.twig' %}
+
+{% block title %}Détails de la commande{% endblock %}
+
+{% block body %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center mb-8">
+            <a href="{{ path('app_commandes') }}" class="mr-4 text-gray-600 hover:text-red-600">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="text-3xl font-bold">Commande #{{ commande.id }}</h1>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase mb-2">Date de commande</h4>
+                        <p class="text-lg font-medium">{{ commande.createdAt|date('d/m/Y H:i') }}</p>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-500 uppercase mb-2">Total</h4>
+                        <p class="text-lg font-medium">{{ commande.total }} DT</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <h3 class="text-lg font-bold mb-4">Détails des billets</h3>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Match</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date et Heure</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stade</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Section</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Place</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for billet in commande.billets %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium">{{ billet.match.equipe1.abreviation }} vs {{ billet.match.equipe2.abreviation }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ billet.match.dateEtHeure|date('d/m/Y') }}</div>
+                                        <div class="text-sm text-gray-500">{{ billet.match.dateEtHeure|date('H:i') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ billet.match.stade.nom }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ billet.section }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        {{ billet.price }} DT
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <a href="{{ path('app_ticket_show', {'id': billet.id}) }}" class="text-red-600 hover:text-red-900">
+                                            <i class="fas fa-eye mr-1"></i> Voir
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="bg-gray-50">
+                                <td colspan="5" class="px-6 py-4 text-right font-medium">Frais de service</td>
+                                <td class="px-6 py-4 text-sm font-medium">2.00 DT</td>
+                                <td></td>
+                            </tr>
+                            <tr class="bg-gray-50">
+                                <td colspan="5" class="px-6 py-4 text-right font-medium">Total</td>
+                                <td class="px-6 py-4 font-bold">{{ commande.total }} DT</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                    <div class="mt-8">
+                        <h3 class="text-lg font-bold mb-4">QR Codes des billets</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {% for billet in commande.billets %}
+                                <div class="border rounded-lg p-4 text-center">
+                                    <div class="mb-2">
+                                        <div class="font-medium">{{ billet.match.equipe1.abreviation }} vs {{ billet.match.equipe2.abreviation }}</div>
+                                        <div class="text-sm text-gray-500">{{ billet.section }}</div>
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ billet.qrCode }}" alt="QR Code" class="w-32 h-32">
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                
+                <div class="mt-8">
+                    <div class="flex justify-between">
+                        <a href="{{ path('app_commandes') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            Retour aux commandes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

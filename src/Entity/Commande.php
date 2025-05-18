@@ -32,9 +32,6 @@ class Commande
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $stripeSessionId = null;
     
-    #[ORM\Column(length: 255)]
-    private ?string $status = 'pending';
-    
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: Billet::class, cascade: ['persist', 'remove'])]
     private Collection $billets;
 
@@ -106,18 +103,6 @@ class Commande
     {
         $this->stripeSessionId = $stripeSessionId;
 
-        return $this;
-    }
-    
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-    
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
-        
         return $this;
     }
     

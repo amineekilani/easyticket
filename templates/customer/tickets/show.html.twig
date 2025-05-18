@@ -9,11 +9,8 @@
             <div class="bg-gradient-to-r from-red-600 to-red-800 text-white p-6">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h1 class="text-2xl font-bold mb-2">{{ billet.match.homeTeam }} vs {{ billet.match.awayTeam }}</h1>
-                        <p>{{ billet.match.date|date('d/m/Y H:i') }}</p>
-                    </div>
-                    <div class="bg-white text-red-600 rounded-full px-4 py-1 font-bold">
-                        {{ billet.status == 'valid' ? 'Valide' : 'Utilisé' }}
+                        <h1 class="text-2xl font-bold mb-2">{{ billet.match.equipe1.nom }} vs {{ billet.match.equipe2.nom }}</h1>
+                        <p>{{ billet.match.dateEtHeure|date('d/m/Y H:i') }}</p>
                     </div>
                 </div>
             </div>
@@ -25,15 +22,11 @@
                         <div class="space-y-3">
                             <p class="flex justify-between">
                                 <span class="text-gray-600">Stade:</span>
-                                <span class="font-medium">{{ billet.match.stadium }}</span>
+                                <span class="font-medium">{{ billet.match.stade.nom }}</span>
                             </p>
                             <p class="flex justify-between">
                                 <span class="text-gray-600">Section:</span>
                                 <span class="font-medium">{{ billet.section }}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <span class="text-gray-600">Place:</span>
-                                <span class="font-medium">{{ billet.seatNumber }}</span>
                             </p>
                             <p class="flex justify-between">
                                 <span class="text-gray-600">Prix:</span>

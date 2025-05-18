@@ -18,19 +18,12 @@
                                     <p class="text-gray-600">{{ billet.match.dateEtHeure|date('d/m/Y H:i') }}</p>
                                     <p class="text-gray-600">{{ billet.match.stade.nom }}</p>
                                 </div>
-                                <div class="bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-bold">
-                                    {{ billet.status == 'valid' ? 'Valide' : 'Utilisé' }}
-                                </div>
                             </div>
                             
                             <div class="border-t border-gray-200 pt-4 mt-4">
                                 <p class="flex justify-between mb-2">
                                     <span class="text-gray-600">Section:</span>
                                     <span class="font-bold">{{ billet.section }}</span>
-                                </p>
-                                <p class="flex justify-between mb-2">
-                                    <span class="text-gray-600">Place:</span>
-                                    <span class="font-bold">{{ billet.seatNumber }}</span>
                                 </p>
                                 <p class="flex justify-between">
                                     <span class="text-gray-600">Prix:</span>

@@ -54,8 +54,27 @@ class TicketController extends AbstractController
         
         $commandes = $commandeRepository->findByUser($user);
         
-        return $this->render('customer/tickets/commandes.html.twig', [
+        return $this->render('customer/commandes/index.html.twig', [
             'commandes' => $commandes,
+        ]);
+    }
+    
+    #[Route('/commande/{id}', name: 'app_commande_show')]
+    public function showCommande(string $id, CommandeRepository $commandeRepository): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+        
+        $commande = $commandeRepository->find($id);
+        
+        if (!$commande || $commande->getUser() !== $user) {
+            throw $this->createNotFoundException('Commande non trouvée');
+        }
+        
+        return $this->render('customer/commandes/show.html.twig', [
+            'commande' => $commande,
         ]);
     }
 }

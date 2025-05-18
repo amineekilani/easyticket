@@ -22,9 +22,7 @@ class BilletRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('b')
             ->join('b.commande', 'c')
             ->andWhere('c.user = :user')
-            ->andWhere('b.status = :status')
             ->setParameter('user', $user)
-            ->setParameter('status', 'valid')
             ->orderBy('c.createdAt', 'DESC')
             ->getQuery()
             ->getResult();

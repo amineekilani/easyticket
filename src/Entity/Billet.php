@@ -24,17 +24,11 @@ class Billet
     #[ORM\Column(length: 255)]
     private ?string $section = null;
     
-    #[ORM\Column(length: 255)]
-    private ?string $seatNumber = null;
-    
     #[ORM\Column]
     private ?float $price = null;
     
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $qrCode = null;
-    
-    #[ORM\Column(length: 255)]
-    private ?string $status = 'valid';
 
     public function getId(): ?int
     {
@@ -77,18 +71,6 @@ class Billet
         return $this;
     }
     
-    public function getSeatNumber(): ?string
-    {
-        return $this->seatNumber;
-    }
-    
-    public function setSeatNumber(string $seatNumber): self
-    {
-        $this->seatNumber = $seatNumber;
-        
-        return $this;
-    }
-    
     public function getPrice(): ?float
     {
         return $this->price;
@@ -109,18 +91,6 @@ class Billet
     public function setQrCode(?string $qrCode): self
     {
         $this->qrCode = $qrCode;
-        
-        return $this;
-    }
-    
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-    
-    public function setStatus(string $status): self
-    {
-        $this->status = $status;
         
         return $this;
     }

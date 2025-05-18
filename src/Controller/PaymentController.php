@@ -56,7 +56,6 @@ class PaymentController extends AbstractController
             $billet = new Billet();
             $billet->setMatch($match)
                 ->setSection($item['section'])
-                ->setSeatNumber($item['seatNumber'])
                 ->setPrice($item['price'])
                 ->generateQrCode();
                 
@@ -106,7 +105,6 @@ class PaymentController extends AbstractController
                 'mode' => 'payment',
                 'success_url' => $this->generateUrl('payment_success', ['session_id' => '{CHECKOUT_SESSION_ID}'], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
                 'cancel_url' => $this->generateUrl('payment_cancel', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
-                'customer_email' => $user->getEmail(),
             ]);
             
             // Mettre à jour la commande avec l'ID de session Stripe
@@ -137,7 +135,6 @@ class PaymentController extends AbstractController
         $commande = $commandeRepository->findByStripeSessionId($sessionId);
         
         if ($commande) {
-            $commande->setStatus('completed');
             $entityManager->flush();
         }
         

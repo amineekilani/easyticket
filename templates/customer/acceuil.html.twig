@@ -341,7 +341,7 @@
 										DT</span>
 								</div>
 								{% if (matchTime - now) < 259200 %}
-									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-date="{{ match.dateEtHeure|date('d M Y') }}" data-match-id="{{ match.id }}" data-virage-price="{{ match.prixBilletVirage }}" data-virage-qty="{{ match.nbrBilletsVirage }}" data-pelouse-price="{{ match.prixBilletPelouse }}" data-pelouse-qty="{{ match.nbrBilletsPelouse }}" data-enceinte-price="{{ match.prixBilletEnceinte }}" data-enceinte-qty="{{ match.nbrBilletsEnceinte }}">Réserver</button>
+									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-date="{{ match.dateEtHeure|date('d M Y') }}" data-match-id="{{ match.id }}" data-virage-price="{{ match.prixBilletVirage }}" data-virage-qty="{{ match.nbrBilletsVirage }}" data-virage-vendus="{{ match.billetsVirageVendus }}" data-pelouse-price="{{ match.prixBilletPelouse }}" data-pelouse-qty="{{ match.nbrBilletsPelouse }}" data-pelouse-vendus="{{ match.billetsPelouseVendus }}" data-enceinte-price="{{ match.prixBilletEnceinte }}" data-enceinte-qty="{{ match.nbrBilletsEnceinte }}" data-enceinte-vendus="{{ match.billetsEnceinteVendus }}">Réserver</button>
 								{% else %}
 									<button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
 								{% endif %}
@@ -531,20 +531,23 @@
                 // Récupération des données des sections
                 const viragePrice = e.target.getAttribute('data-virage-price');
                 const virageQty = e.target.getAttribute('data-virage-qty');
+                const virageVendus = e.target.getAttribute('data-virage-vendus');
                 const pelousePrice = e.target.getAttribute('data-pelouse-price');
                 const pelouseQty = e.target.getAttribute('data-pelouse-qty');
+                const pelouseVendus = e.target.getAttribute('data-pelouse-vendus');
                 const enceintePrice = e.target.getAttribute('data-enceinte-price');
                 const enceinteQty = e.target.getAttribute('data-enceinte-qty');
+                const enceinteVendus = e.target.getAttribute('data-enceinte-vendus');
 
                 // Mise à jour du titre de la modal avec toutes les infos
                 document.getElementById('modalMatchTitle').textContent = `${match} - ${date}`;
                 document.getElementById('modalMatchStadium').textContent = stadium;
                 document.getElementById('currentMatchId').value = matchId;
 
-                // Mise à jour des sections avec les prix et quantités dynamiques
-                updateSection('virage', viragePrice, virageQty);
-                updateSection('pelouse', pelousePrice, pelouseQty);
-                updateSection('enceinte', enceintePrice, enceinteQty);
+                // Mise à jour des sections avec les prix et quantités disponibles (total - vendus)
+                updateSection('virage', viragePrice, virageQty, virageVendus);
+                updateSection('pelouse', pelousePrice, pelouseQty, pelouseVendus);
+                updateSection('enceinte', enceintePrice, enceinteQty, enceinteVendus);
 
                 // Réinitialiser les quantités sélectionnées
                 document.getElementById('ticketVirageQuantity').value = 0;
@@ -561,22 +564,25 @@
         });
 
         // Fonction pour mettre à jour une section
-        function updateSection(sectionName, price, quantity) {
+        function updateSection(sectionName, price, totalQuantity, soldQuantity) {
             const section = document.getElementById(`${sectionName}Section`);
             const priceElement = document.getElementById(`${sectionName}Price`);
             const availableElement = document.getElementById(`${sectionName}Available`);
             const quantityInput = document.getElementById(`ticket${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}Quantity`);
 
-            if (!price || !quantity) { // Si pas de prix ou pas de quantité, cacher la section
+            if (!price || !totalQuantity) { // Si pas de prix ou pas de quantité, cacher la section
                 section.style.display = 'none';
                 return;
             }
 
+            // Calculer le nombre de places disponibles
+            const availableQuantity = parseInt(totalQuantity) - parseInt(soldQuantity || 0);
+
             // Afficher la section et mettre à jour les valeurs
             section.style.display = 'block';
             priceElement.textContent = `${price} DT`;
-            availableElement.textContent = quantity;
-            quantityInput.max = quantity;
+            availableElement.textContent = availableQuantity;
+            quantityInput.max = availableQuantity;
         }
 
         // Gestion des quantités

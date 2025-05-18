@@ -21,110 +21,128 @@ class PaymentController extends AbstractController
     #[Route('/checkout', name: 'checkout')]
     public function checkout(Request $request, CartService $cartService, EntityManagerInterface $entityManager, MatchFootballRepository $matchRepository): Response
     {
-        Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+    Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+    
+    $cart = $cartService->getCart();
+    if (empty($cart)) {
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => false, 'message' => 'Votre panier est vide'], 400);
+        }
+        return $this->redirectToRoute('app_customer');
+    }
+    
+    $user = $this->getUser();
+    if (!$user) {
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => false, 'message' => 'Vous devez être connecté pour effectuer un paiement'], 401);
+        }
+        return $this->redirectToRoute('app_login');
+    }
+    
+    // Créer la commande
+    $commande = new Commande();
+    $commande->setUser($user);
+    
+    // Calculer le total
+    $total = 0;
+    foreach ($cart as $item) {
+        $total += $item['price'];
         
-        $cart = $cartService->getCart();
-        if (empty($cart)) {
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['success' => false, 'message' => 'Votre panier est vide'], 400);
-            }
-            return $this->redirectToRoute('app_customer');
+        // Récupérer le match et mettre à jour les compteurs de billets vendus
+        $match = $matchRepository->find($item['matchId']);
+        if (!$match) {
+            continue;
         }
         
-        $user = $this->getUser();
-        if (!$user) {
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['success' => false, 'message' => 'Vous devez être connecté pour effectuer un paiement'], 401);
-            }
-            return $this->redirectToRoute('app_login');
+        // Incrémenter le compteur approprié en fonction de la section
+        switch ($item['section']) {
+            case 'Virage':
+                $match->setBilletsVirageVendus($match->getBilletsVirageVendus() + 1);
+                break;
+            case 'Pelouse':
+                $match->setBilletsPelouseVendus($match->getBilletsPelouseVendus() + 1);
+                break;
+            case 'Enceinte':
+                $match->setBilletsEnceinteVendus($match->getBilletsEnceinteVendus() + 1);
+                break;
         }
         
-        // Créer la commande
-        $commande = new Commande();
-        $commande->setUser($user);
+        $entityManager->persist($match);
         
-        // Calculer le total
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += $item['price'];
+        // Créer le billet
+        $billet = new Billet();
+        $billet->setMatch($match)
+            ->setSection($item['section'])
+            ->setPrice($item['price'])
+            ->generateQrCode();
             
-            // Créer le billet
-            $match = $matchRepository->find($item['matchId']);
-            if (!$match) {
-                continue;
-            }
-            
-            $billet = new Billet();
-            $billet->setMatch($match)
-                ->setSection($item['section'])
-                ->setPrice($item['price'])
-                ->generateQrCode();
-                
-            $commande->addBillet($billet);
-        }
-        
-        // Ajouter les frais de service
-        $total += 2;
-        $commande->setTotal($total);
-        
-        // Stocker les détails de la commande
-        $commande->setCommandeDetails(json_encode($cart));
-        
-        $entityManager->persist($commande);
-        $entityManager->flush();
-        
-        $lineItems = [];
-        foreach ($cart as $item) {
-            $lineItems[] = [
-                'price_data' => [
-                    'currency' => 'usd',
-                    'product_data' => [
-                        'name' => $item['match'] . ' - ' . $item['section'],
-                    ],
-                    'unit_amount' => $item['price'] * 100, // Stripe utilise les centimes
-                ],
-                'quantity' => 1,
-            ];
-        }
-        
-        // Ajouter les frais de service
+        $commande->addBillet($billet);
+    }
+    
+    // Ajouter les frais de service
+    $total += 2;
+    $commande->setTotal($total);
+    
+    // Stocker les détails de la commande
+    $commande->setCommandeDetails(json_encode($cart));
+    
+    $entityManager->persist($commande);
+    $entityManager->flush();
+    
+    // Reste du code pour créer la session Stripe...
+    $lineItems = [];
+    foreach ($cart as $item) {
         $lineItems[] = [
             'price_data' => [
                 'currency' => 'usd',
                 'product_data' => [
-                    'name' => 'Frais de service',
+                    'name' => $item['match'] . ' - ' . $item['section'],
                 ],
-                'unit_amount' => 2 * 100,
+                'unit_amount' => $item['price'] * 100,
             ],
             'quantity' => 1,
         ];
-        
-        try {
-            $session = Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => $lineItems,
-                'mode' => 'payment',
-                'success_url' => $this->generateUrl('payment_success', ['session_id' => '{CHECKOUT_SESSION_ID}'], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
-                'cancel_url' => $this->generateUrl('payment_cancel', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
-            ]);
-            
-            // Mettre à jour la commande avec l'ID de session Stripe
-            $commande->setStripeSessionId($session->id);
-            $entityManager->flush();
-            
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['success' => true, 'redirect_url' => $session->url]);
-            }
-            
-            return $this->redirect($session->url, 303);
-        } catch (\Exception $e) {
-            if ($request->isXmlHttpRequest()) {
-                return new JsonResponse(['success' => false, 'message' => 'Erreur lors de la création de la session de paiement: ' . $e->getMessage()], 500);
-            }
-            
-            throw $e;
-        }
     }
+    
+    $lineItems[] = [
+        'price_data' => [
+            'currency' => 'usd',
+            'product_data' => [
+                'name' => 'Frais de service',
+            ],
+            'unit_amount' => 2 * 100,
+        ],
+        'quantity' => 1,
+    ];
+    
+    try {
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => $this->generateUrl('payment_success', ['session_id' => '{CHECKOUT_SESSION_ID}'], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
+            'cancel_url' => $this->generateUrl('payment_cancel', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
+        ]);
+        
+        $commande->setStripeSessionId($session->id);
+        $entityManager->flush();
+        
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => true, 'redirect_url' => $session->url]);
+        }
+        
+        return $this->redirect($session->url, 303);
+    } catch (\Exception $e) {
+        // En cas d'erreur, annuler les modifications
+        $entityManager->rollback();
+        
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(['success' => false, 'message' => 'Erreur lors de la création de la session de paiement: ' . $e->getMessage()], 500);
+        }
+        
+        throw $e;
+    }
+}
 
     #[Route('/payment/success', name: 'payment_success')]
     public function success(

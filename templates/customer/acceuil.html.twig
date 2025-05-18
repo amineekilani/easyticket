@@ -609,8 +609,11 @@ const max = parseInt(input.max);
 if (value < 0) 
 value = 0;
 
+
+
 if (value > max) 
 value = max;
+
 
 
 input.value = value;
@@ -714,23 +717,93 @@ document.getElementById('ticketEnceinteQuantity').addEventListener('change', upd
 // Gestion des boutons d'action
 document.getElementById('addToCart').addEventListener('click', () => { // Récupérer les données
 const matchId = document.getElementById('currentMatchId').value;
+const matchTitle = document.getElementById('modalMatchTitle').textContent;
+const stadium = document.getElementById('modalMatchStadium').textContent;
+
+// Récupérer les quantités et prix
 const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
 const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
 const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
 
-// Ici vous pourriez envoyer ces données à votre serveur via AJAX
-// pour les ajouter au panier de l'utilisateur
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
 
+// Créer les éléments du panier
+let cartItemsToAdd = [];
+
+// Ajouter les billets Virage
+for (let i = 0; i < virageQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Virage',
+seatNumber: `V${
+i + 1
+}`,
+price: viragePrice,
+matchId: matchId
+});
+}
+
+// Ajouter les billets Pelouse
+for (let i = 0; i < pelouseQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Pelouse',
+seatNumber: `P${
+i + 1
+}`,
+price: pelousePrice,
+matchId: matchId
+});
+}
+
+// Ajouter les billets Enceinte
+for (let i = 0; i < enceinteQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Enceinte',
+seatNumber: `E${
+i + 1
+}`,
+price: enceintePrice,
+matchId: matchId
+});
+}
+
+// Ajouter tous les billets au panier global
+if (window.addToCart && cartItemsToAdd.length > 0) {
+cartItemsToAdd.forEach(item => {
+window.addToCart(item);
+});
+
+// Afficher une notification
 alert('Votre sélection a été ajoutée au panier');
 bookingModal.classList.add('hidden');
 document.body.style.overflow = 'auto';
+} else if (cartItemsToAdd.length === 0) {
+alert('Veuillez sélectionner au moins un billet.');
+} else {
+alert('Erreur: Impossible d\'ajouter au panier');
+}
 });
 
 document.getElementById('checkoutBtn').addEventListener('click', () => {
 const matchId = document.getElementById('currentMatchId').value;
+const matchTitle = document.getElementById('modalMatchTitle').textContent;
+const stadium = document.getElementById('modalMatchStadium').textContent;
+
+// Récupérer les quantités et prix
 const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
 const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
 const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
+
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
 
 // Vérifier si des billets ont été sélectionnés
 if (virageQty === 0 && pelouseQty === 0 && enceinteQty === 0) {
@@ -738,12 +811,64 @@ alert('Veuillez sélectionner au moins un billet.');
 return;
 }
 
-// Ici vous pourriez rediriger vers la page de paiement
-// avec les données nécessaires
+// Créer les éléments du panier
+let cartItemsToAdd = [];
 
-alert('Redirection vers le paiement');
+// Ajouter les billets Virage
+for (let i = 0; i < virageQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Virage',
+seatNumber: `V${
+i + 1
+}`,
+price: viragePrice,
+matchId: matchId
+});
+}
+
+// Ajouter les billets Pelouse
+for (let i = 0; i < pelouseQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Pelouse',
+seatNumber: `P${
+i + 1
+}`,
+price: pelousePrice,
+matchId: matchId
+});
+}
+
+// Ajouter les billets Enceinte
+for (let i = 0; i < enceinteQty; i++) {
+cartItemsToAdd.push({
+match: matchTitle,
+stadium: stadium,
+section: 'Enceinte',
+seatNumber: `E${
+i + 1
+}`,
+price: enceintePrice,
+matchId: matchId
+});
+}
+
+// Ajouter tous les billets au panier global
+if (window.addToCart && cartItemsToAdd.length > 0) {
+cartItemsToAdd.forEach(item => {
+window.addToCart(item);
+});
+
+// Fermer la modal et ouvrir le panier
 bookingModal.classList.add('hidden');
 document.body.style.overflow = 'auto';
+
+// Simuler un clic sur le bouton du panier pour l'ouvrir
+document.getElementById('cartBtn').click();
+}
 });
 
 // Initialisation

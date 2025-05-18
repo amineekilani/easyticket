@@ -3,7 +3,206 @@
 {% block stylesheets %}
 	{{ parent() }}
 	<style>
-		/* Réservation de sièges */
+		/* Réservation de sièges - Version améliorée */
+		.stadium-selection-container {
+			background-color: #f8fafc;
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+		}
+
+		.stadium-section {
+			margin-bottom: 24px;
+			padding: 20px;
+			border-radius: 10px;
+			background-color: white;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+			transition: all 0.3s ease;
+			border-left: 4px solid transparent;
+		}
+
+		.stadium-section:hover {
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			border-left-color: #ef4444;
+		}
+
+		.section-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 16px;
+		}
+
+		.section-title {
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: #1e293b;
+		}
+
+		.section-price {
+			font-size: 1.2rem;
+			font-weight: 700;
+			color: #ef4444;
+		}
+
+		.section-remaining {
+			font-size: 0.9rem;
+			color: #64748b;
+			margin-bottom: 12px;
+		}
+
+		.quantity-selector {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.quantity-control {
+			display: flex;
+			align-items: center;
+			border: 1px solid #e2e8f0;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		.quantity-btn {
+			width: 36px;
+			height: 36px;
+			background-color: #f1f5f9;
+			border: none;
+			font-size: 1.2rem;
+			color: #475569;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.quantity-btn:hover {
+			background-color: #e2e8f0;
+		}
+
+		.quantity-input {
+			width: 50px;
+			height: 36px;
+			text-align: center;
+			border: none;
+			border-left: 1px solid #e2e8f0;
+			border-right: 1px solid #e2e8f0;
+			font-weight: 600;
+			-moz-appearance: textfield;
+		}
+
+		.quantity-input::-webkit-outer-spin-button,
+		.quantity-input::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		/* Visualisation du stade */
+		.stadium-visualization {
+			margin-top: 24px;
+			text-align: center;
+		}
+
+		.stadium-image {
+			max-width: 100%;
+			height: auto;
+			border-radius: 8px;
+			margin-bottom: 16px;
+		}
+
+		.sections-legend {
+			display: flex;
+			justify-content: center;
+			gap: 16px;
+			flex-wrap: wrap;
+		}
+
+		.legend-item {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 0.9rem;
+		}
+
+		.legend-color {
+			width: 16px;
+			height: 16px;
+			border-radius: 4px;
+		}
+
+		/* Panier amélioré */
+		.cart-summary {
+			background-color: white;
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+			position: sticky;
+			top: 20px;
+		}
+
+		.cart-items {
+			max-height: 300px;
+			overflow-y: auto;
+			margin-bottom: 16px;
+		}
+
+		.cart-item {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 0;
+			border-bottom: 1px solid #f1f5f9;
+		}
+
+		.cart-item:last-child {
+			border-bottom: none;
+		}
+
+		.empty-cart {
+			color: #64748b;
+			text-align: center;
+			padding: 16px 0;
+		}
+
+		/* Boutons améliorés */
+		.action-btn {
+			width: 100%;
+			padding: 12px;
+			border-radius: 8px;
+			font-weight: 600;
+			text-align: center;
+			transition: all 0.2s;
+			margin-bottom: 12px;
+		}
+
+		.add-to-cart {
+			background-color: #ef4444;
+			color: white;
+			border: none;
+		}
+
+		.add-to-cart:hover {
+			background-color: #dc2626;
+		}
+
+		.checkout-btn {
+			background-color: #10b981;
+			color: white;
+			border: none;
+		}
+
+		.checkout-btn:hover {
+			background-color: #059669;
+		}
+
+		/* Responsive */
+		@media(max-width: 768px) {
+			.quantity-selector {
+				flex-direction: column;
+				align-items: flex-start;
+			}
+		}
+
+		/* Original styles kept for compatibility */
 		.stadium-seat {
 			width: 30px;
 			height: 30px;
@@ -32,22 +231,14 @@
 			background-color: #fbbf24;
 			cursor: not-allowed;
 		}
-		.stadium-section {
-			margin-bottom: 20px;
-			padding: 15px;
-			border-radius: 8px;
-			background-color: #f3f4f6;
-		}
-
-		/* Cartes de match */
 		.match-card:hover {
 			transform: translateY(-5px);
 			box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 		}
 	</style>
 {% endblock %}
-{% block body %}
 
+{% block body %}
 	<!-- Hero Section -->
 	<section id="home" class="bg-gradient-to-r from-red-600 to-red-800 text-white py-16">
 		<div class="container mx-auto px-4 flex flex-col md:flex-row items-center">
@@ -150,7 +341,7 @@
 										DT</span>
 								</div>
 								{% if (matchTime - now) < 259200 %}
-									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}">Réserver</button>
+									<button class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 book-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-date="{{ match.dateEtHeure|date('d M Y') }}" data-match-id="{{ match.id }}" data-virage-price="{{ match.prixBilletVirage }}" data-virage-qty="{{ match.nbrBilletsVirage }}" data-pelouse-price="{{ match.prixBilletPelouse }}" data-pelouse-qty="{{ match.nbrBilletsPelouse }}" data-enceinte-price="{{ match.prixBilletEnceinte }}" data-enceinte-qty="{{ match.nbrBilletsEnceinte }}">Réserver</button>
 								{% else %}
 									<button class="px-4 py-2 bg-gray-300 text-gray-600 rounded-lg cursor-not-allowed" disabled>Bientôt</button>
 								{% endif %}
@@ -217,113 +408,116 @@
 		<div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-screen overflow-y-auto">
 			<div class="p-6">
 				<div class="flex justify-between items-center mb-6">
-					<h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
+					<div>
+						<h3 class="text-2xl font-bold" id="modalMatchTitle">EST vs CA - 15 May 2025</h3>
+						<p class="text-gray-600" id="modalMatchStadium">Stade Hammadi Agrebi, Radès</p>
+					</div>
 					<button id="closeModal" class="text-gray-500 hover:text-gray-700">
-						<i class="fas fa-times text-2xl"></i>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+						</svg>
 					</button>
 				</div>
 
 				<div class="grid md:grid-cols-3 gap-6">
 					<div class="md:col-span-2">
-						<h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
+						<div class="stadium-selection-container">
+							<h4 class="text-lg font-semibold mb-4">Sélectionnez vos places</h4>
+							<input
+							type="hidden" id="currentMatchId" value="">
 
-						<!-- Stadium Map -->
-						<div class="bg-gray-100 p-4 rounded-lg mb-6">
-							<div class="text-center mb-4">
-								<div class="w-20 h-8 bg-green-500 mx-auto mb-1"></div>
-								<span class="text-sm">Terrain</span>
-							</div>
-
-							<!-- Tribune Nord -->
-							<div class="stadium-section">
-								<h5 class="font-semibold mb-3">Tribune Nord - 15 DT</h5>
-								<div class="flex flex-wrap justify-center">
-									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N1">N1</div>
-									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N2">N2</div>
-									<div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N3">N3</div>
-									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N4">N4</div>
-									<div class="stadium-seat reserved" data-section="Nord" data-price="15" data-seat="N5">N5</div>
-									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N6">N6</div>
-									<div class="stadium-seat available" data-section="Nord" data-price="15" data-seat="N7">N7</div>
-									<div class="stadium-seat sold" data-section="Nord" data-price="15" data-seat="N8">N8</div>
+							<!-- Virage -->
+							<div class="stadium-section" id="virageSection">
+								<div class="section-header">
+									<span class="section-title">Virage</span>
+									<span class="section-price" id="viragePrice">15 DT</span>
 								</div>
-							</div>
-
-							<!-- Tribune Sud -->
-							<div class="stadium-section">
-								<h5 class="font-semibold mb-3">Tribune Sud - 15 DT</h5>
-								<div class="flex flex-wrap justify-center">
-									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S1">S1</div>
-									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S2">S2</div>
-									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S3">S3</div>
-									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S4">S4</div>
-									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S5">S5</div>
-									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S6">S6</div>
-									<div class="stadium-seat sold" data-section="Sud" data-price="15" data-seat="S7">S7</div>
-									<div class="stadium-seat available" data-section="Sud" data-price="15" data-seat="S8">S8</div>
+								<p class="section-remaining">
+									<span id="virageAvailable">5000</span>
+									places disponibles</p>
+								<div class="quantity-selector">
+									<label for="ticketVirageQuantity" class="text-sm font-medium text-gray-700">Nombre de places :</label>
+									<div class="quantity-control">
+										<button class="quantity-btn" onclick="decrementVirage()">-</button>
+										<input type="number" id="ticketVirageQuantity" class="quantity-input" value="0" min="0" max="5000">
+										<button class="quantity-btn" onclick="incrementVirage()">+</button>
+									</div>
 								</div>
 							</div>
 
-							<!-- Tribune VIP -->
-							<div class="stadium-section">
-								<h5 class="font-semibold mb-3">Tribune VIP - 30 DT</h5>
-								<div class="flex flex-wrap justify-center">
-									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V1">V1</div>
-									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V2">V2</div>
-									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V3">V3</div>
-									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V4">V4</div>
-									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V5">V5</div>
-									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V6">V6</div>
-									<div class="stadium-seat available" data-section="VIP" data-price="30" data-seat="V7">V7</div>
-									<div class="stadium-seat sold" data-section="VIP" data-price="30" data-seat="V8">V8</div>
+							<!-- Pelouse -->
+							<div class="stadium-section" id="pelouseSection">
+								<div class="section-header">
+									<span class="section-title">Pelouse</span>
+									<span class="section-price" id="pelousePrice">25 DT</span>
+								</div>
+								<p class="section-remaining">
+									<span id="pelouseAvailable">15000</span>
+									places disponibles</p>
+								<div class="quantity-selector">
+									<label for="ticketPelouseQuantity" class="text-sm font-medium text-gray-700">Nombre de places :</label>
+									<div class="quantity-control">
+										<button class="quantity-btn" onclick="decrementPelouse()">-</button>
+										<input type="number" id="ticketPelouseQuantity" class="quantity-input" value="0" min="0" max="15000">
+										<button class="quantity-btn" onclick="incrementPelouse()">+</button>
+									</div>
 								</div>
 							</div>
-						</div>
 
-						<div class="bg-red-50 p-4 rounded-lg">
-							<h5 class="font-semibold mb-2">Légende :</h5>
-							<div class="flex flex-wrap gap-4">
-								<div class="flex items-center">
-									<div class="stadium-seat available mr-2"></div>
-									<span>Disponible</span>
+							<!-- Enceinte -->
+							<div class="stadium-section" id="enceinteSection">
+								<div class="section-header">
+									<span class="section-title">Enceinte</span>
+									<span class="section-price" id="enceintePrice">50 DT</span>
 								</div>
-								<div class="flex items-center">
-									<div class="stadium-seat selected mr-2"></div>
-									<span>Sélectionné</span>
-								</div>
-								<div class="flex items-center">
-									<div class="stadium-seat sold mr-2"></div>
-									<span>Vendu</span>
-								</div>
-								<div class="flex items-center">
-									<div class="stadium-seat reserved mr-2"></div>
-									<span>Réservé</span>
+								<p class="section-remaining">
+									<span id="enceinteAvailable">10000</span>
+									places disponibles</p>
+								<div class="quantity-selector">
+									<label for="ticketEnceinteQuantity" class="text-sm font-medium text-gray-700">Nombre de places :</label>
+									<div class="quantity-control">
+										<button class="quantity-btn" onclick="decrementEnceinte()">-</button>
+										<input type="number" id="ticketEnceinteQuantity" class="quantity-input" value="0" min="0" max="10000">
+										<button class="quantity-btn" onclick="incrementEnceinte()">+</button>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 
 					<div class="md:col-span-1">
-						<div class="bg-gray-50 p-6 rounded-lg sticky top-4">
+						<div class="cart-summary">
 							<h4 class="text-lg font-semibold mb-4">Votre sélection</h4>
 
-							<div id="selectedSeats" class="mb-6">
-								<p class="text-gray-500">Aucune place sélectionnée</p>
+							<div class="cart-items" id="selectedSeats">
+								<div class="empty-cart">Aucune place sélectionnée</div>
 							</div>
 
 							<div class="border-t border-gray-200 pt-4 mb-4">
 								<div class="flex justify-between mb-2">
-									<span class="text-gray-600">Total :</span>
-									<span id="totalPrice" class="font-bold">0 DT</span>
+									<span class="text-gray-600">Sous-total :</span>
+									<span id="subtotalPrice" class="font-bold">0 DT</span>
+								</div>
+								<div class="flex justify-between mb-2">
+									<span class="text-gray-600">Frais de service :</span>
+									<span id="serviceFee" class="font-bold">2 DT</span>
+								</div>
+								<div class="flex justify-between text-lg font-bold">
+									<span>Total :</span>
+									<span id="totalPrice">2 DT</span>
 								</div>
 							</div>
 
-							<button id="addToCart" class="w-full py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 mb-3">Ajouter au panier</button>
-							<button id="checkoutBtn" class="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Payer maintenant</button>
+							<button id="addToCart" class="action-btn add-to-cart">Ajouter au panier</button>
+							<button id="checkoutBtn" class="action-btn checkout-btn">Payer maintenant</button>
 
 							<div class="mt-4 text-sm text-gray-500">
-								<p>Les billets seront envoyés par email après paiement.</p>
-								<p>Annulation possible jusqu'à 24h avant le match.</p>
+								<p>
+									<i class="fas fa-shield-alt mr-2"></i>
+									Paiement sécurisé</p>
+								<p>
+									<i class="fas fa-ticket-alt mr-2"></i>
+									Billets envoyés par email</p>
 							</div>
 						</div>
 					</div>
@@ -331,31 +525,230 @@
 			</div>
 		</div>
 	</div>
-
 {% endblock %}
+
 {% block javascripts %}
 	{{ parent() }}
 	<script>
-		// Dans les boutons "Réserver" de la page d'accueil :
+		// Gestion de la modal
+const bookingModal = document.getElementById('bookingModal');
+const closeModal = document.getElementById('closeModal');
+
+closeModal.addEventListener('click', () => {
+bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+
+// Gestion des boutons "Réserver"
 document.querySelectorAll('.book-btn').forEach(btn => {
 btn.addEventListener('click', (e) => {
 const match = e.target.getAttribute('data-match');
-// Ouvrir la modal de réservation
+const stadium = e.target.getAttribute('data-stadium');
+const date = e.target.getAttribute('data-date');
+const matchId = e.target.getAttribute('data-match-id');
+
+// Récupération des données des sections
+const viragePrice = e.target.getAttribute('data-virage-price');
+const virageQty = e.target.getAttribute('data-virage-qty');
+const pelousePrice = e.target.getAttribute('data-pelouse-price');
+const pelouseQty = e.target.getAttribute('data-pelouse-qty');
+const enceintePrice = e.target.getAttribute('data-enceinte-price');
+const enceinteQty = e.target.getAttribute('data-enceinte-qty');
+
+// Mise à jour du titre de la modal avec toutes les infos
+document.getElementById('modalMatchTitle').textContent = `${match} - ${date}`;
+document.getElementById('modalMatchStadium').textContent = stadium;
+document.getElementById('currentMatchId').value = matchId;
+
+// Mise à jour des sections avec les prix et quantités dynamiques
+updateSection('virage', viragePrice, virageQty);
+updateSection('pelouse', pelousePrice, pelouseQty);
+updateSection('enceinte', enceintePrice, enceinteQty);
+
+// Réinitialiser les quantités sélectionnées
+document.getElementById('ticketVirageQuantity').value = 0;
+document.getElementById('ticketPelouseQuantity').value = 0;
+document.getElementById('ticketEnceinteQuantity').value = 0;
+
+// Mettre à jour le panier
+updateCart();
+
+// Ouvrir la modal
 bookingModal.classList.remove('hidden');
-document.getElementById('modalMatchTitle').textContent = match;
+document.body.style.overflow = 'hidden';
 });
 });
 
-// Dans le bouton "Ajouter au panier" :
-document.getElementById('addToCart').addEventListener('click', () => {
-const selectedSeats = []; // Récupérer les sièges sélectionnés
-const match = document.getElementById('modalMatchTitle').textContent;
+// Fonction pour mettre à jour une section
+function updateSection(sectionName, price, quantity) {
+const section = document.getElementById (`${sectionName}Section`);
+const priceElement = document.getElementById (`${sectionName}Price`);
+const availableElement = document.getElementById (`${sectionName}Available`);
+const quantityInput = document.getElementById (`ticket${
+sectionName.charAt(0).toUpperCase() + sectionName.slice(1)
+}Quantity`);
 
-selectedSeats.forEach(seat => {
-window.addToCart({match: match, section: seat.section, seatNumber: seat.seatNumber, price: seat.price});
-});
+if (! price || ! quantity) { // Si pas de prix ou pas de quantité, cacher la section
+section.style.display = 'none';
+return;
+}
 
+// Afficher la section et mettre à jour les valeurs
+section.style.display = 'block';
+priceElement.textContent = `${price} DT`;
+availableElement.textContent = quantity;
+quantityInput.max = quantity;
+}
+
+// Gestion des quantités
+function updateQuantity(inputId, change) {
+const input = document.getElementById(inputId);
+let value = parseInt(input.value) + change;
+const max = parseInt(input.max);
+
+if (value < 0) 
+value = 0;
+
+if (value > max) 
+value = max;
+
+
+input.value = value;
+updateCart();
+}
+
+function incrementVirage() {
+updateQuantity('ticketVirageQuantity', 1);
+}
+function decrementVirage() {
+updateQuantity('ticketVirageQuantity', -1);
+}
+function incrementPelouse() {
+updateQuantity('ticketPelouseQuantity', 1);
+}
+function decrementPelouse() {
+updateQuantity('ticketPelouseQuantity', -1);
+}
+function incrementEnceinte() {
+updateQuantity('ticketEnceinteQuantity', 1);
+}
+function decrementEnceinte() {
+updateQuantity('ticketEnceinteQuantity', -1);
+}
+
+// Mise à jour du panier
+function updateCart() {
+const virageSection = document.getElementById('virageSection');
+const pelouseSection = document.getElementById('pelouseSection');
+const enceinteSection = document.getElementById('enceinteSection');
+
+const virageQty = virageSection.style.display !== 'none' ? parseInt(document.getElementById('ticketVirageQuantity').value) || 0 : 0;
+
+const pelouseQty = pelouseSection.style.display !== 'none' ? parseInt(document.getElementById('ticketPelouseQuantity').value) || 0 : 0;
+
+const enceinteQty = enceinteSection.style.display !== 'none' ? parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0 : 0;
+
+const viragePrice = parseFloat(document.getElementById('viragePrice').textContent) || 0;
+const pelousePrice = parseFloat(document.getElementById('pelousePrice').textContent) || 0;
+const enceintePrice = parseFloat(document.getElementById('enceintePrice').textContent) || 0;
+const serviceFee = 2;
+
+const subtotal = (virageQty * viragePrice) + (pelouseQty * pelousePrice) + (enceinteQty * enceintePrice);
+const total = subtotal + (subtotal > 0 ? serviceFee : 0);
+
+// Mise à jour des totaux
+document.getElementById('subtotalPrice').textContent = subtotal + ' DT';
+document.getElementById('totalPrice').textContent = total + ' DT';
+
+// Mise à jour de la liste des places sélectionnées
+const selectedSeats = document.getElementById('selectedSeats');
+selectedSeats.innerHTML = '';
+
+if (subtotal === 0) {
+selectedSeats.innerHTML = '<div class="empty-cart">Aucune place sélectionnée</div>';
+return;
+}
+
+if (virageQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
+                    <span>${virageQty} x Virage</span>
+                    <span>${
+virageQty * viragePrice
+} DT</span>
+                `;
+selectedSeats.appendChild(item);
+}
+
+if (pelouseQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
+                    <span>${pelouseQty} x Pelouse</span>
+                    <span>${
+pelouseQty * pelousePrice
+} DT</span>
+                `;
+selectedSeats.appendChild(item);
+}
+
+if (enceinteQty > 0) {
+const item = document.createElement('div');
+item.className = 'cart-item';
+item.innerHTML = `
+                    <span>${enceinteQty} x Enceinte</span>
+                    <span>${
+enceinteQty * enceintePrice
+} DT</span>
+                `;
+selectedSeats.appendChild(item);
+}
+}
+
+// Écouteurs pour les changements de quantité
+document.getElementById('ticketVirageQuantity').addEventListener('change', updateCart);
+document.getElementById('ticketPelouseQuantity').addEventListener('change', updateCart);
+document.getElementById('ticketEnceinteQuantity').addEventListener('change', updateCart);
+
+// Gestion des boutons d'action
+document.getElementById('addToCart').addEventListener('click', () => { // Récupérer les données
+const matchId = document.getElementById('currentMatchId').value;
+const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
+const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
+const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
+
+// Ici vous pourriez envoyer ces données à votre serveur via AJAX
+// pour les ajouter au panier de l'utilisateur
+
+alert('Votre sélection a été ajoutée au panier');
 bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+
+document.getElementById('checkoutBtn').addEventListener('click', () => {
+const matchId = document.getElementById('currentMatchId').value;
+const virageQty = parseInt(document.getElementById('ticketVirageQuantity').value) || 0;
+const pelouseQty = parseInt(document.getElementById('ticketPelouseQuantity').value) || 0;
+const enceinteQty = parseInt(document.getElementById('ticketEnceinteQuantity').value) || 0;
+
+// Vérifier si des billets ont été sélectionnés
+if (virageQty === 0 && pelouseQty === 0 && enceinteQty === 0) {
+alert('Veuillez sélectionner au moins un billet.');
+return;
+}
+
+// Ici vous pourriez rediriger vers la page de paiement
+// avec les données nécessaires
+
+alert('Redirection vers le paiement');
+bookingModal.classList.add('hidden');
+document.body.style.overflow = 'auto';
+});
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+updateCart();
 });
 	</script>
 {% endblock %}

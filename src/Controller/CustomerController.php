@@ -2,16 +2,24 @@
 
 namespace App\Controller;
 
+use App\Entity\MatchFootball;
+use App\Repository\StadeRepository;
 use App\Repository\EquipeRepository;
 use App\Repository\MatchFootballRepository;
-use App\Repository\StadeRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class CustomerController extends AbstractController
 {
+    #[Route('/match/{id}', name: 'app_match_details')]
+    public function details(MatchFootball $match): Response
+    {
+        return $this->render('customer/details.html.twig', [
+            'match' => $match,
+        ]);
+    }
     #[Route('/', name: 'app_customer')]
     public function index(MatchFootballRepository $matchFootballRepository): Response
     {

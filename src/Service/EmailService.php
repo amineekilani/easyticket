@@ -45,4 +45,19 @@ class EmailService
             ]
         );
     }
+
+    public function sendPaymentConfirmation(string $to, string $name, array $orderDetails): void
+    {
+        $this->send(
+            'no-reply@easyticket.tn',
+            $to,
+            'Confirmation de votre commande - EasyTicket',
+            'emails/payment_confirmation.html.twig',
+            [
+                'name' => $name,
+                'order' => $orderDetails,
+                'date' => new \DateTime()
+            ]
+        );
+    }
 }

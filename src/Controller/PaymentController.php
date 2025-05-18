@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Billet;
+use App\Entity\Commande;
+use App\Repository\MatchFootballRepository;
 use App\Service\CartService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +18,7 @@ use Stripe\Checkout\Session;
 class PaymentController extends AbstractController
 {
     #[Route('/checkout', name: 'checkout')]
-    public function checkout(Request $request, CartService $cartService): Response
+    public function checkout(Request $request, CartService $cartService, EntityManagerInterface $entityManager, MatchFootballRepository $matchRepository): Response
     {
         Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
         
@@ -25,6 +29,49 @@ class PaymentController extends AbstractController
             }
             return $this->redirectToRoute('app_customer');
         }
+        
+        $user = $this->getUser();
+        if (!$user) {
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(['success' => false, 'message' => 'Vous devez être connecté pour effectuer un paiement'], 401);
+            }
+            return $this->redirectToRoute('app_login');
+        }
+        
+        // Créer la commande
+        $commande = new Commande();
+        $commande->setUser($user);
+        
+        // Calculer le total
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += $item['price'];
+            
+            // Créer le billet
+            $match = $matchRepository->find($item['matchId']);
+            if (!$match) {
+                continue;
+            }
+            
+            $billet = new Billet();
+            $billet->setMatch($match)
+                ->setSection($item['section'])
+                ->setSeatNumber($item['seatNumber'])
+                ->setPrice($item['price'])
+                ->generateQrCode();
+                
+            $commande->addBillet($billet);
+        }
+        
+        // Ajouter les frais de service
+        $total += 2;
+        $commande->setTotal($total);
+        
+        // Stocker les détails de la commande
+        $commande->setCommandeDetails(json_encode($cart));
+        
+        $entityManager->persist($commande);
+        $entityManager->flush();
         
         $lineItems = [];
         foreach ($cart as $item) {
@@ -57,9 +104,14 @@ class PaymentController extends AbstractController
                 'payment_method_types' => ['card'],
                 'line_items' => $lineItems,
                 'mode' => 'payment',
-                'success_url' => $this->generateUrl('payment_success', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
+                'success_url' => $this->generateUrl('payment_success', ['session_id' => '{CHECKOUT_SESSION_ID}'], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
                 'cancel_url' => $this->generateUrl('payment_cancel', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
+                'customer_email' => $user->getEmail(),
             ]);
+            
+            // Mettre à jour la commande avec l'ID de session Stripe
+            $commande->setStripeSessionId($session->id);
+            $entityManager->flush();
             
             if ($request->isXmlHttpRequest()) {
                 return new JsonResponse(['success' => true, 'redirect_url' => $session->url]);
@@ -76,10 +128,25 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/payment/success', name: 'payment_success')]
-    public function success(CartService $cartService): Response
+    public function success(Request $request, CartService $cartService, EntityManagerInterface $entityManager): Response
     {
+        $sessionId = $request->query->get('session_id');
+        
+        // Trouver et mettre à jour la commande
+        $commandeRepository = $entityManager->getRepository(Commande::class);
+        $commande = $commandeRepository->findByStripeSessionId($sessionId);
+        
+        if ($commande) {
+            $commande->setStatus('completed');
+            $entityManager->flush();
+        }
+        
+        // Vider le panier
         $cartService->clearCart();
-        return $this->render('customer/payment/success.html.twig');
+        
+        return $this->render('customer/payment/success.html.twig', [
+            'commande' => $commande
+        ]);
     }
 
     #[Route('/payment/cancel', name: 'payment_cancel')]

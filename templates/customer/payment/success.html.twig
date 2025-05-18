@@ -1,17 +1,28 @@
 {# templates/Customer/payment/success.html.twig #}
-{% extends 'Customer/layout.html.twig' %}
+{% extends 'customer/layout.html.twig' %}
+
+{% block title %}Paiement réussi{% endblock %}
 
 {% block body %}
-<div class="container mx-auto px-4 py-16">
-    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 text-center">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fas fa-check text-green-600 text-2xl"></i>
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-lg mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            
+            <h1 class="text-2xl font-bold mb-4">Paiement confirmé !</h1>
+            <p class="text-gray-600 mb-8">Merci pour votre achat. Vos billets ont été envoyés à votre adresse email.</p>
+            
+            <div class="flex flex-col space-y-4">
+                <a href="{{ path('app_tickets') }}" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">
+                    Voir mes billets
+                </a>
+                <a href="{{ path('app_customer') }}" class="px-6 py-3 border border-gray-300 text-gray-700 font-bold rounded-lg hover:bg-gray-50">
+                    Retour à l'accueil
+                </a>
+            </div>
         </div>
-        <h2 class="text-2xl font-bold mb-4">Paiement réussi !</h2>
-        <p class="text-gray-600 mb-6">Merci pour votre achat. Vos billets ont été envoyés à votre adresse email.</p>
-        <a href="{{ path('app_customer') }}" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">
-            Retour à l'accueil
-        </a>
     </div>
-</div>
+</section>
 {% endblock %}

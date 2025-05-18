@@ -1,0 +1,77 @@
+{% extends 'customer/layout.html.twig' %}
+
+{% block title %}Détails du billet{% endblock %}
+
+{% block body %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="bg-gradient-to-r from-red-600 to-red-800 text-white p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-2">{{ billet.match.homeTeam }} vs {{ billet.match.awayTeam }}</h1>
+                        <p>{{ billet.match.date|date('d/m/Y H:i') }}</p>
+                    </div>
+                    <div class="bg-white text-red-600 rounded-full px-4 py-1 font-bold">
+                        {{ billet.status == 'valid' ? 'Valide' : 'Utilisé' }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h2 class="text-xl font-bold mb-4">Informations</h2>
+                        <div class="space-y-3">
+                            <p class="flex justify-between">
+                                <span class="text-gray-600">Stade:</span>
+                                <span class="font-medium">{{ billet.match.stadium }}</span>
+                            </p>
+                            <p class="flex justify-between">
+                                <span class="text-gray-600">Section:</span>
+                                <span class="font-medium">{{ billet.section }}</span>
+                            </p>
+                            <p class="flex justify-between">
+                                <span class="text-gray-600">Place:</span>
+                                <span class="font-medium">{{ billet.seatNumber }}</span>
+                            </p>
+                            <p class="flex justify-between">
+                                <span class="text-gray-600">Prix:</span>
+                                <span class="font-medium">{{ billet.price }} DT</span>
+                            </p>
+                            <p class="flex justify-between">
+                                <span class="text-gray-600">Date d'achat:</span>
+                                <span class="font-medium">{{ billet.commande.createdAt|date('d/m/Y H:i') }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center justify-center">
+                        <div class="qr-code p-3 border border-gray-200 rounded mb-4">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ billet.qrCode }}" alt="QR Code" class="w-full h-auto">
+                        </div>
+                        <p class="text-sm text-gray-500 text-center">Ce QR code est votre billet d'entrée au stade</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <h2 class="text-xl font-bold mb-4">Instructions</h2>
+                    <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                        <li>Présentez ce billet à l'entrée du stade (version imprimée ou sur votre téléphone).</li>
+                        <li>Arrivez au moins 30 minutes avant le début du match pour éviter les files d'attente.</li>
+                        <li>Une pièce d'identité pourrait être demandée lors du contrôle.</li>
+                        <li>Ce billet est unique et ne peut être utilisé qu'une seule fois.</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <a href="{{ path('app_tickets') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Retour aux billets</a>
+                    <button onclick="window.print()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        <i class="fas fa-print mr-2"></i> Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

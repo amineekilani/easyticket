@@ -43,7 +43,7 @@
         <nav class="hidden md:flex space-x-8">
             <a href="{{ path('app_customer') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Accueil</a>
             <a href="{{ path('app_customer_matchs') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Matchs</a>
-            <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">Mes Billets</a>
+            <a href="{{ path('app_tickets') }}" class="nav-link text-gray-600 hover:text-red-600 font-medium">Mes Billets</a>
             <a href="#" class="nav-link text-gray-600 hover:text-red-600 font-medium">À propos</a>
         </nav>
         <div class="flex items-center space-x-4">
@@ -504,4 +504,3 @@
 {% endblock %}
 </body>
 </html>
-``` 

@@ -1,0 +1,64 @@
+{% extends 'customer/layout.html.twig' %}
+
+{% block title %}Mes billets{% endblock %}
+
+{% block body %}
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold mb-8">Mes billets</h1>
+        
+        {% if billets|length > 0 %}
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for billet in billets %}
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold">{{ billet.match.equipe1.abreviation }} vs {{ billet.match.equipe2.abreviation }}</h3>
+                                    <p class="text-gray-600">{{ billet.match.dateEtHeure|date('d/m/Y H:i') }}</p>
+                                    <p class="text-gray-600">{{ billet.match.stade.nom }}</p>
+                                </div>
+                                <div class="bg-green-100 text-green-800 rounded-full px-3 py-1 text-xs font-bold">
+                                    {{ billet.status == 'valid' ? 'Valide' : 'Utilisé' }}
+                                </div>
+                            </div>
+                            
+                            <div class="border-t border-gray-200 pt-4 mt-4">
+                                <p class="flex justify-between mb-2">
+                                    <span class="text-gray-600">Section:</span>
+                                    <span class="font-bold">{{ billet.section }}</span>
+                                </p>
+                                <p class="flex justify-between mb-2">
+                                    <span class="text-gray-600">Place:</span>
+                                    <span class="font-bold">{{ billet.seatNumber }}</span>
+                                </p>
+                                <p class="flex justify-between">
+                                    <span class="text-gray-600">Prix:</span>
+                                    <span class="font-bold">{{ billet.price }} DT</span>
+                                </p>
+                            </div>
+                            
+                            <div class="flex justify-center mt-6">
+                                <div class="qr-code mx-auto">
+                                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ billet.qrCode }}" alt="QR Code" class="w-full h-auto">
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <a href="{{ path('app_ticket_show', {'id': billet.id}) }}" class="text-red-600 hover:underline font-medium">Voir détails</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12 bg-white rounded-lg shadow-md">
+                <i class="fas fa-ticket-alt text-4xl text-gray-300 mb-4"></i>
+                <h2 class="text-2xl font-bold mb-2">Vous n'avez pas encore de billets</h2>
+                <p class="text-gray-600 mb-6">Achetez vos billets pour les prochains matchs dès maintenant.</p>
+                <a href="{{ path('app_customer_matchs') }}" class="px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700">Voir les matchs</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -77,10 +77,10 @@
 										DT</span>
 								</div>
 							{% endif %}
-							{% if match.prixBilletLaterale is defined %}
+							{% if match.prixBilletEnceinte is defined %}
 								<div class="flex items-center justify-between py-2 border-b">
-									<span>Latérale</span>
-									<span class="font-bold">{{ match.prixBilletLaterale }}
+									<span>Enceinte</span>
+									<span class="font-bold">{{ match.prixBilletEnceinte }}
 										DT</span>
 								</div>
 							{% endif %}
@@ -88,8 +88,92 @@
 					</div>
 				</div>
 
+				{# Section d'achat de billets #}
+				<div class="mt-8 p-6 bg-gray-50 rounded-lg">
+					<h2 class="text-xl font-semibold mb-4">Acheter des billets</h2>
+
+					{% set now = "now"|date("U") %}
+					{% set matchTime = match.dateEtHeure|date("U") %}
+					{% set virageAvailable = match.nbrBilletsVirage - match.billetsVirageVendus %}
+					{% set pelouseAvailable = match.nbrBilletsPelouse - match.billetsPelouseVendus %}
+					{% set enceinteAvailable = match.nbrBilletsEnceinte - match.billetsEnceinteVendus %}
+					{% set totalAvailable = virageAvailable + pelouseAvailable + enceinteAvailable %}
+
+					{% if (matchTime - now) < 259200 and totalAvailable > 0 %}
+						<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+							{% if match.prixBilletVirage and virageAvailable > 0 %}
+								<div class="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
+									<div class="flex justify-between mb-2">
+										<span class="font-semibold">Virage</span>
+										<span class="font-bold text-red-600">{{ match.prixBilletVirage }}
+											DT</span>
+									</div>
+									<p class="text-sm text-gray-600 mb-4">
+										<span class="font-medium">{{ virageAvailable }}</span>
+										{% if virageAvailable > 1 %}places disponibles{% else %}place disponible
+										{% endif %}
+									</p>
+									<button class="w-full py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 add-to-cart-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-section="Virage" data-price="{{ match.prixBilletVirage }}" data-match-id="{{ match.id }}">
+										Ajouter au panier
+									</button>
+								</div>
+							{% endif %}
+
+							{% if match.prixBilletPelouse and pelouseAvailable > 0 %}
+								<div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+									<div class="flex justify-between mb-2">
+										<span class="font-semibold">Pelouse</span>
+										<span class="font-bold text-red-600">{{ match.prixBilletPelouse }}
+											DT</span>
+									</div>
+									<p class="text-sm text-gray-600 mb-4">
+										<span class="font-medium">{{ pelouseAvailable }}</span>
+										{% if pelouseAvailable > 1 %}places disponibles{% else %}place disponible
+										{% endif %}
+									</p>
+									<button class="w-full py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 add-to-cart-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-section="Pelouse" data-price="{{ match.prixBilletPelouse }}" data-match-id="{{ match.id }}">
+										Ajouter au panier
+									</button>
+								</div>
+							{% endif %}
+
+							{% if match.prixBilletEnceinte and enceinteAvailable > 0 %}
+								<div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+									<div class="flex justify-between mb-2">
+										<span class="font-semibold">Enceinte</span>
+										<span class="font-bold text-red-600">{{ match.prixBilletEnceinte }}
+											DT</span>
+									</div>
+									<p class="text-sm text-gray-600 mb-4">
+										<span class="font-medium">{{ enceinteAvailable }}</span>
+										{% if enceinteAvailable > 1 %}places disponibles{% else %}place disponible
+										{% endif %}
+									</p>
+									<button class="w-full py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 add-to-cart-btn" data-match="{{ match.equipe1.nom }} vs {{ match.equipe2.nom }}" data-stadium="{{ match.stade.nom }}" data-section="Enceinte" data-price="{{ match.prixBilletEnceinte }}" data-match-id="{{ match.id }}">
+										Ajouter au panier
+									</button>
+								</div>
+							{% endif %}
+						</div>
+					{% elseif totalAvailable <= 0 %}
+						<div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+							<p class="text-yellow-800 font-medium flex items-center">
+								<i class="fas fa-exclamation-circle mr-2"></i>
+								Ce match est complet. Aucun billet n'est disponible.
+							</p>
+						</div>
+					{% else %}
+						<div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+							<p class="text-blue-800 font-medium flex items-center">
+								<i class="fas fa-info-circle mr-2"></i>
+								La vente des billets pour ce match n'est pas encore ouverte.
+							</p>
+						</div>
+					{% endif %}
+				</div>
+
 				<div class="mt-8">
-					<a href="{{ path('app_customer') }}" class="inline-block px-6 py-3 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+					<a href="{{ path('app_customer_matchs') }}" class="inline-block px-6 py-3 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
 						<i class="fas fa-arrow-left mr-2"></i>
 						Retour
 					</a>
@@ -97,4 +181,79 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () { // Récupération de tous les boutons "Ajouter au panier"
+const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+
+// Ajout d'un écouteur d'événement sur chaque bouton
+addToCartButtons.forEach(button => {
+button.addEventListener('click', async function () {
+const matchName = this.getAttribute('data-match');
+const stadium = this.getAttribute('data-stadium');
+const section = this.getAttribute('data-section');
+const price = parseFloat(this.getAttribute('data-price'));
+const matchId = this.getAttribute('data-match-id');
+
+try { // Bouton en état de chargement
+this.disabled = true;
+const originalText = this.innerHTML;
+this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Traitement...';
+
+// Appel à l'API pour ajouter au panier
+const response = await fetch('/cart/add', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'X-Requested-With': 'XMLHttpRequest'
+},
+body: JSON.stringify(
+{
+match: matchName,
+stadium: stadium,
+section: section,
+price: price,
+matchId: matchId
+}
+)
+});
+
+if (response.ok) { // Mise à jour du compteur du panier
+const data = await response.json();
+const cartCount = document.getElementById('cartCount');
+if (cartCount) {
+cartCount.textContent = data.count;
+cartCount.classList.remove('hidden');
+}
+
+// Animation de succès
+this.innerHTML = '<i class="fas fa-check mr-2"></i>Ajouté !';
+this.classList.remove('bg-red-600', 'hover:bg-red-700');
+this.classList.add('bg-green-600', 'hover:bg-green-700');
+
+// Restaurer l'apparence du bouton après un délai
+setTimeout(() => {
+this.innerHTML = originalText;
+this.classList.remove('bg-green-600', 'hover:bg-green-700');
+this.classList.add('bg-red-600', 'hover:bg-red-700');
+this.disabled = false;
+}, 2000);
+} else { // En cas d'erreur
+alert('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
+this.innerHTML = originalText;
+this.disabled = false;
+}
+} catch (error) {
+console.error('Error adding to cart:', error);
+alert('Erreur lors de l\'ajout au panier. Veuillez réessayer.');
+this.innerHTML = originalText;
+this.disabled = false;
+}
+});
+});
+});
+	</script>
 {% endblock %}

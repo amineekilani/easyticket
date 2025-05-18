@@ -2,7 +2,6 @@
 	<div class="match-card bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 border border-gray-100">
 		<div class="p-4 bg-gray-50 border-b border-gray-200">
 			<div class="flex justify-between items-center mb-2">
-				<span class="text-sm font-medium text-gray-500">Ligue 1 Professionnelle</span>
 				{% if match.dateEtHeure|date('Y-m-d H:i:s') == "now"|date('Y-m-d H:i:s') %}
 					<span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">En direct</span>
 				{% endif %}
@@ -37,7 +36,8 @@
 			{% set matchEnd = match.dateEtHeure|date_modify('+105 minutes')|date('U') %}
 			{# +1h45 pour être large #}
 
-			{% set placesRestantes = 100 %}
+			{% set ratio = (match.billetsVirageVendus + match.billetsPelouseVendus + match.billetsEnceinteVendus) / (match.nbrBilletsVirage + match.nbrBilletsPelouse + match.nbrBilletsEnceinte) %}
+			{% set placesRestantes = 100 - (ratio * 100) %}
 			{# À remplacer par la valeur réelle #}
 
 			{% if now < matchStart %}
@@ -50,7 +50,7 @@
 					</div>
 					<div class="remaining-places">
 						<p class="text-sm text-gray-500 mb-1">Places restantes</p>
-						<span class="text-sm font-medium">{{ placesRestantes }}%</span>
+						<span class="text-sm font-medium">{{ placesRestantes | number_format(2, '.', '') }}%</span>
 						<div class="progress-bar" style="width: {{ placesRestantes }}%"></div>
 					</div>
 				</div>

@@ -29,6 +29,12 @@
             .footer-link:hover {
                 text-decoration: underline;
             }
+            .user-menu {
+                min-width: 10rem;
+            }
+            .user-menu a {
+                transition: all 0.2s ease;
+            }
         </style>{% endblock %}
 </head>
 <body class="bg-gray-50">
@@ -48,10 +54,16 @@
         </nav>
         <div class="flex items-center space-x-4">
             {% if app.user %}
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-user text-red-600"></i>
-                    <span class="text-gray-600 font-medium">{{ app.user.name }}</span>
-                    <a href="{{ path('app_logout') }}" class="text-red-600 hover:underline ml-3">Déconnexion</a>
+                <div class="relative">
+                    <button id="userMenuButton" class="flex items-center space-x-2 text-gray-600 font-medium focus:outline-none">
+                        <i class="fas fa-user text-red-600"></i>
+                        <span>{{ app.user.name }}</span>
+                        <i class="fas fa-chevron-down text-gray-600"></i>
+                    </button>
+                    <div id="userMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 user-menu hidden">
+                        <a href="{{ path('app_profile_edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600">Modifier le profil</a>
+                        <a href="{{ path('app_logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600">Déconnexion</a>
+                    </div>
                 </div>
             {% else %}
                 <a href="{{ path('app_login') }}" class="text-red-600 hover:underline">Connexion</a>
@@ -61,7 +73,6 @@
                 <i class="fas fa-shopping-cart text-xl text-gray-600"></i>
                 <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
             </a>
-
         </div>
     </div>
 </header>
@@ -350,6 +361,22 @@
                 window.location.href = '/tickets'; // Redirection vers la page des billets
             });
         }
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+
+        if (userMenuButton && userMenu) {
+            userMenuButton.addEventListener('click', () => {
+                userMenu.classList.toggle('hidden');
+            });
+
+            // Fermer le menu si on clique en dehors
+            document.addEventListener('click', (event) => {
+                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+
     });
 
     async function updateCartCount() {

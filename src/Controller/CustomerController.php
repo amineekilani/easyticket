@@ -3,11 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\MatchFootball;
+use App\Form\UserType;
 use App\Repository\StadeRepository;
 use App\Repository\EquipeRepository;
 use App\Repository\MatchFootballRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -80,6 +83,35 @@ final class CustomerController extends AbstractController
 
         return $this->render('customer/_match_cards.html.twig', [
             'matchs' => $matchs
+        ]);
+    }
+
+    #[Route('/profile/edit', name: 'app_profile_edit', methods: ['GET', 'POST'])]
+    public function editProfile(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $form = $this->createForm(UserType::class, $user, [
+            'is_customer' => true, // Pass option to exclude admin-specific fields
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plainPassword')->getData();
+            if ($plainPassword) {
+                $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+                $user->setPassword($hashedPassword);
+            }
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+            return $this->redirectToRoute('app_customer');
+        }
+
+        return $this->render('customer/profile/edit.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

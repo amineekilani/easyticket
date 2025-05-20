@@ -1,0 +1,74 @@
+{% extends 'Customer/layout.html.twig' %}
+
+{% block title %}Modifier votre profil - EasyTicket{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        }
+        .form-error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        {% for message in app.flashes('success') %}
+            <div class="bg-green-100 text-green-700 p-4 rounded-lg mb-6 flex items-center">
+                <i class="fas fa-check-circle mr-2"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+        <div class="bg-white shadow rounded-lg p-6 max-w-lg mx-auto">
+            <div class="flex items-center mb-6">
+                <i class="fas fa-user-edit text-red-600 text-2xl mr-2"></i>
+                <h1 class="text-2xl font-bold text-gray-800">Modifier votre profil</h1>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+            <div>
+                {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-input'}}) }}
+                <span class="form-error">{{ form_errors(form.email, {'attr': {'class': 'form-error'}}) }}</span>
+            </div>
+            <div>
+                {{ form_label(form.name, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
+                <span class="form-error">{{ form_errors(form.name, {'attr': {'class': 'form-error'}}) }}</span>
+            </div>
+            <div>
+                {{ form_label(form.plainPassword.first, 'Nouveau mot de passe (facultatif)', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-input', 'placeholder': 'Laissez vide pour ne pas changer'}}) }}
+                <span class="form-error">{{ form_errors(form.plainPassword.first, {'attr': {'class': 'form-error'}}) }}</span>
+            </div>
+            <div>
+                {{ form_label(form.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-input', 'placeholder': 'Confirmez le mot de passe'}}) }}
+                <span class="form-error">{{ form_errors(form.plainPassword.second, {'attr': {'class': 'form-error'}}) }}</span>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <a href="{{ path('app_customer') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>Retour
+                </a>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-white bg-red-600 hover:bg-red-700">
+                    <i class="fas fa-save mr-2"></i>Enregistrer
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

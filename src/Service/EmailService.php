@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class EmailService
 {
@@ -22,10 +23,11 @@ class EmailService
         array $context
     ): void {
         $email = (new TemplatedEmail())
-            ->from($from)
+            ->from(new Address($from, 'EasyTicket'))
             ->to($to)
             ->subject($subject)
             ->htmlTemplate($template)
+
             ->context($context);
 
         $this->mailer->send($email);

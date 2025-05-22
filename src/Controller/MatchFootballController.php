@@ -25,7 +25,9 @@ final class MatchFootballController extends AbstractController{
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $matchFootball = new MatchFootball();
-        $form = $this->createForm(MatchFootballType::class, $matchFootball);
+        $form = $this->createForm(MatchFootballType::class, $matchFootball, [
+            'entity_manager' => $entityManager,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -55,7 +57,9 @@ final class MatchFootballController extends AbstractController{
     #[Route('/{id}/edit', name: 'app_match_football_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, MatchFootball $matchFootball, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(MatchFootballType::class, $matchFootball);
+        $form = $this->createForm(MatchFootballType::class, $matchFootball, [
+            'entity_manager' => $entityManager,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

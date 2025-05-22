@@ -125,6 +125,42 @@ class MatchFootballType extends AbstractType
                 if ($match->getNbrBilletsEnceinte() > $stade->getCapaciteEnceinte()) {
                     $form->get('nbrBilletsEnceinte')->addError(new FormError('Le nombre de billets enceinte dépasse la capacité du stade'));
                 }
+                
+                // Vérification de disponibilité du stade
+                $dateMatch = $match->getDateEtHeure();
+                if ($dateMatch) {
+                    $em = $form->getConfig()->getOption('entity_manager');
+                    
+                    // Créer un intervalle de temps pour le jour entier
+                    $debutJour = (clone $dateMatch)->setTime(0, 0, 0);
+                    $finJour = (clone $dateMatch)->setTime(23, 59, 59);
+                    
+                    $qb = $em->createQueryBuilder()
+                        ->select('COUNT(m)')
+                        ->from('App\Entity\MatchFootball', 'm')
+                        ->where('m.stade = :stade')
+                        ->andWhere('m.dateEtHeure BETWEEN :debut AND :fin')
+                        ->setParameter('stade', $stade)
+                        ->setParameter('debut', $debutJour)
+                        ->setParameter('fin', $finJour);
+                    
+                    // Exclure le match actuel en cas de modification
+                    if ($match->getId()) {
+                        $qb->andWhere('m.id != :id')
+                           ->setParameter('id', $match->getId());
+                    }
+                    
+                    $matchesCount = $qb->getQuery()->getSingleScalarResult();
+                    
+                    if ($matchesCount > 0) {
+                        $form->get('stade')->addError(
+                            new FormError('Ce stade est déjà réservé pour un autre match ce jour-là')
+                        );
+                        $form->get('dateEtHeure')->addError(
+                            new FormError('Une autre rencontre est déjà programmée dans ce stade à cette date')
+                        );
+                    }
+                }
             }
         });
     }
@@ -133,6 +169,7 @@ class MatchFootballType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => MatchFootball::class,
+            'entity_manager' => null,
         ]);
     }
 }

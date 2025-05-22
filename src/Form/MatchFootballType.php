@@ -160,6 +160,68 @@ class MatchFootballType extends AbstractType
                             new FormError('Une autre rencontre est déjà programmée dans ce stade à cette date')
                         );
                     }
+                    
+                    // Vérification pour l'équipe 1
+                    $equipe1 = $match->getEquipe1();
+                    if ($equipe1) {
+                        $qb1 = $em->createQueryBuilder()
+                            ->select('COUNT(m)')
+                            ->from('App\Entity\MatchFootball', 'm')
+                            ->where('(m.equipe1 = :equipe OR m.equipe2 = :equipe)')
+                            ->andWhere('m.dateEtHeure BETWEEN :debut AND :fin')
+                            ->setParameter('equipe', $equipe1)
+                            ->setParameter('debut', $debutJour)
+                            ->setParameter('fin', $finJour);
+                        
+                        // Exclure le match actuel en cas de modification
+                        if ($match->getId()) {
+                            $qb1->andWhere('m.id != :id')
+                               ->setParameter('id', $match->getId());
+                        }
+                        
+                        $equipe1MatchesCount = $qb1->getQuery()->getSingleScalarResult();
+                        
+                        if ($equipe1MatchesCount > 0) {
+                            $form->get('equipe1')->addError(
+                                new FormError('Cette équipe a déjà un match programmé ce jour-là')
+                            );
+                            $form->get('dateEtHeure')->addError(
+                                new FormError('Une des équipes a déjà un match programmé à cette date')
+                            );
+                        }
+                    }
+                    
+                    // Vérification pour l'équipe 2
+                    $equipe2 = $match->getEquipe2();
+                    if ($equipe2) {
+                        $qb2 = $em->createQueryBuilder()
+                            ->select('COUNT(m)')
+                            ->from('App\Entity\MatchFootball', 'm')
+                            ->where('(m.equipe1 = :equipe OR m.equipe2 = :equipe)')
+                            ->andWhere('m.dateEtHeure BETWEEN :debut AND :fin')
+                            ->setParameter('equipe', $equipe2)
+                            ->setParameter('debut', $debutJour)
+                            ->setParameter('fin', $finJour);
+                        
+                        // Exclure le match actuel en cas de modification
+                        if ($match->getId()) {
+                            $qb2->andWhere('m.id != :id')
+                               ->setParameter('id', $match->getId());
+                        }
+                        
+                        $equipe2MatchesCount = $qb2->getQuery()->getSingleScalarResult();
+                        
+                        if ($equipe2MatchesCount > 0) {
+                            $form->get('equipe2')->addError(
+                                new FormError('Cette équipe a déjà un match programmé ce jour-là')
+                            );
+                            if (!$form->get('dateEtHeure')->getErrors()->count()) {
+                                $form->get('dateEtHeure')->addError(
+                                    new FormError('Une des équipes a déjà un match programmé à cette date')
+                                );
+                            }
+                        }
+                    }
                 }
             }
         });

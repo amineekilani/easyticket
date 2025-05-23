@@ -4,13 +4,15 @@ namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RegistrationForm extends AbstractType
 {
@@ -43,6 +45,24 @@ class RegistrationForm extends AbstractType
                     ]),
                 ],
             ])
+
+            ->add('passwordConfirm', PasswordType::class, [
+        'mapped' => false,
+        'constraints' => [
+            new NotBlank([
+                'message' => 'Veuillez confirmer votre mot de passe',
+            ]),
+            new Callback([
+                'callback' => function ($value, ExecutionContextInterface $context) {
+                    $form = $context->getRoot();
+                    if ($value !== $form->get('plainPassword')->getData()) {
+                        $context->buildViolation('Les mots de passe ne correspondent pas')
+                            ->addViolation();
+                    }
+                },
+            ]),
+        ],
+    ])
         ;
     }
 

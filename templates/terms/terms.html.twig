@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<title>EasyTicket | Conditions d'utilisation</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+		<link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
+		<script>
+			tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#df4e4e',
+secondary: '#f8f9fc'
+}
+}
+}
+}
+		</script>
+	</head>
+	<body class="bg-secondary min-h-screen">
+		<div class="container mx-auto px-4 py-10">
+			<div class="flex justify-center mb-8">
+				<a href="{{ path('app_home') }}">
+					<img src="{{ asset('easy-ticket-logo.png') }}" alt="EasyTicket" class="h-16">
+				</a>
+			</div>
+
+			<div class="bg-white rounded-xl shadow-lg p-8 max-w-4xl mx-auto">
+				<h1 class="text-3xl font-bold text-gray-800 mb-6">Conditions d'utilisation</h1>
+
+				<div class="space-y-6 text-gray-700">
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">1. Introduction</h2>
+						<p>Bienvenue sur EasyTicket. En utilisant notre plateforme, vous acceptez ces conditions d'utilisation dans leur intégralité. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">2. Définitions</h2>
+						<p>"Service" désigne la plateforme EasyTicket accessible via notre site web.</p>
+						<p>"Utilisateur" désigne toute personne qui accède à notre Service et crée un compte.</p>
+						<p>"Contenu" désigne l'ensemble des informations, textes, images et données que vous pouvez consulter ou soumettre sur notre Service.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">3. Inscription et compte</h2>
+						<p>Pour utiliser certaines fonctionnalités de notre Service, vous devez créer un compte. Vous êtes responsable de maintenir la confidentialité de vos identifiants et de toutes les activités effectuées sous votre compte.</p>
+						<p>Vous vous engagez à fournir des informations exactes, actuelles et complètes lors de votre inscription et à les mettre à jour si nécessaire.</p>
+						<p>Nous nous réservons le droit de suspendre ou supprimer votre compte si vous fournissez des informations inexactes, fausses ou incomplètes.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">4. Utilisation du service</h2>
+						<p>Vous vous engagez à utiliser notre Service conformément aux lois et réglementations en vigueur et à ces conditions d'utilisation.</p>
+						<p>Vous ne devez pas:</p>
+						<ul class="list-disc pl-6 mt-2">
+							<li>Utiliser le Service d'une manière qui pourrait endommager, désactiver, surcharger ou altérer notre Service.</li>
+							<li>Tenter d'accéder à des zones restreintes du Service sans autorisation.</li>
+							<li>Utiliser le Service pour envoyer du contenu illégal, offensant ou nuisible.</li>
+							<li>Collecter des informations sur d'autres utilisateurs sans leur consentement.</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">5. Propriété intellectuelle</h2>
+						<p>Le Service et son contenu original, fonctionnalités et fonctionnalités sont la propriété d'EasyTicket et sont protégés par les lois internationales sur le droit d'auteur, les marques déposées et autres lois sur la propriété intellectuelle.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">6. Limitation de responsabilité</h2>
+						<p>Dans toute la mesure permise par la loi, EasyTicket ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ou de toute perte de profits ou de revenus.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">7. Modifications</h2>
+						<p>Nous nous réservons le droit de modifier ces conditions d'utilisation à tout moment. Les modifications entreront en vigueur dès leur publication sur le Service. Il est de votre responsabilité de consulter régulièrement ces conditions.</p>
+					</section>
+
+					<section>
+						<h2 class="text-xl font-semibold text-gray-800 mb-2">8. Contact</h2>
+						<p>Pour toute question concernant ces conditions d'utilisation, veuillez nous contacter à l'adresse: contact@easyticket.com</p>
+					</section>
+				</div>
+
+				<div class="mt-10 text-center">
+					<a href="{{ path('app_register') }}" class="inline-block bg-primary hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200">
+						Retour à l'inscription
+					</a>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

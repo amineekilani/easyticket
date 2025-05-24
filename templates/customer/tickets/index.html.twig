@@ -37,8 +37,17 @@
                                 </div>
                             </div>
                             
-                            <div class="text-center mt-4">
+                            <div class="text-center mt-4 flex flex-col gap-2">
                                 <a href="{{ path('app_ticket_show', {'id': billet.id}) }}" class="text-red-600 hover:underline font-medium">Voir détails</a>
+                                
+                                {% set timeBeforeMatch = billet.match.dateEtHeure|date('U') - date()|date('U') %}
+                                {% if timeBeforeMatch > 86400 %} {# 86400 seconds = 24 hours #}
+                                    <form action="{{ path('app_ticket_cancel', {'id': billet.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce billet?');">
+                                        <button type="submit" class="text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg w-full">Annuler ce billet</button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-gray-500 text-sm italic">L'annulation n'est plus possible (moins de 24h avant le match)</p>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

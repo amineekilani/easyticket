@@ -241,196 +241,221 @@
 </footer>
 
 {% block javascripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        updateCartCount();
-        
-        // Gestion du panier
-        const cartBtn = document.getElementById('cartBtn');
-        const cartSidebar = document.getElementById('cartSidebar');
-        const closeCart = document.getElementById('closeCart');
-        const proceedCheckout = document.getElementById('proceedCheckout');
-        const checkoutModal = document.getElementById('checkoutModal');
-        const closeCheckoutModal = document.getElementById('closeCheckoutModal');
-        const continueShopping = document.getElementById('continueShopping');
-        
-        if (cartBtn && cartSidebar) {
-            cartBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                await updateCartItems();
-                cartSidebar.classList.remove('translate-x-full');
-                document.body.style.overflow = 'hidden';
-            });
-        }
-        
-        if (closeCart) {
-            closeCart.addEventListener('click', () => {
-                cartSidebar.classList.add('translate-x-full');
-                document.body.style.overflow = 'auto';
-            });
-        }
-        
-        if (continueShopping) {
-            continueShopping.addEventListener('click', () => {
-                cartSidebar.classList.add('translate-x-full');
-                document.body.style.overflow = 'auto';
-            });
-        }
-        
-        // Gestion du paiement
-        if (proceedCheckout && checkoutModal) {
-            proceedCheckout.addEventListener('click', async () => {
-                // Fermer le sidebar du panier
-                cartSidebar.classList.add('translate-x-full');
-                
-                // Afficher les éléments du panier dans la modal de paiement
-                await updateCheckoutItems();
-                
-                // Ouvrir la modal de paiement
-                checkoutModal.classList.remove('hidden');
-            });
-        }
-        
-        if (closeCheckoutModal) {
-            closeCheckoutModal.addEventListener('click', () => {
-                checkoutModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            });
-        }
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
 
-        // Gestion du bouton "Confirmer le paiement"
-        const confirmPayment = document.getElementById('confirmPayment');
-        const confirmationModal = document.getElementById('confirmationModal');
-        
-        if (confirmPayment) {
-            confirmPayment.addEventListener('click', async () => {
-                try {
-                    confirmPayment.disabled = true;
-                    confirmPayment.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Traitement en cours...';
-                    
-                    const response = await fetch('/checkout', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    });
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        if (data.redirect_url) {
-                            // Redirection vers Stripe si une URL est fournie
-                            window.location.href = data.redirect_url;
-                        } else {
-                            // Sinon, afficher la confirmation comme avant
-                            checkoutModal.classList.add('hidden');
-                            confirmationModal.classList.remove('hidden');
-                            await updateCartCount();
-                        }
-                    } else {
-                        const errorData = await response.json();
-                        alert(errorData.message || 'Erreur lors du traitement du paiement. Veuillez réessayer.');
-                    }
-                } catch (error) {
-                    console.error('Error during checkout:', error);
-                    alert('Erreur lors du traitement du paiement. Veuillez réessayer.');
-                } finally {
-                    confirmPayment.disabled = false;
-                    confirmPayment.innerHTML = 'Confirmer le paiement';
-                }
-            });
-        }
-        
-        const closeConfirmation = document.getElementById('closeConfirmation');
-        
-        if (closeConfirmation) {
-            closeConfirmation.addEventListener('click', () => {
-                confirmationModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                window.location.href = '/'; // Retour à l'accueil
-            });
-        }
-        
-        const viewTickets = document.getElementById('viewTickets');
-        
-        if (viewTickets) {
-            viewTickets.addEventListener('click', () => {
-                confirmationModal.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                window.location.href = '/tickets'; // Redirection vers la page des billets
-            });
-        }
-        const userMenuButton = document.getElementById('userMenuButton');
-        const userMenu = document.getElementById('userMenu');
+            // Gestion du panier
+            const cartBtn = document.getElementById('cartBtn');
+            const cartSidebar = document.getElementById('cartSidebar');
+            const closeCart = document.getElementById('closeCart');
+            const proceedCheckout = document.getElementById('proceedCheckout');
+            const checkoutModal = document.getElementById('checkoutModal');
+            const closeCheckoutModal = document.getElementById('closeCheckoutModal');
+            const continueShopping = document.getElementById('continueShopping');
 
-        if (userMenuButton && userMenu) {
-            userMenuButton.addEventListener('click', () => {
-                userMenu.classList.toggle('hidden');
-            });
+            // Check authentication status
+            const isAuthenticated = {{ app.user ? 'true' : 'false' }};
 
-            // Fermer le menu si on clique en dehors
-            document.addEventListener('click', (event) => {
-                if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
-                    userMenu.classList.add('hidden');
-                }
-            });
-        }
-
-    });
-
-    async function updateCartCount() {
-        try {
-            const response = await fetch('/cart/count');
-            const data = await response.json();
-            const cartCount = document.getElementById('cartCount');
-            
-            if (data.count > 0) {
-                cartCount.textContent = data.count;
-                cartCount.classList.remove('hidden');
-            } else {
-                cartCount.classList.add('hidden');
+            if (cartBtn && cartSidebar) {
+                cartBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await updateCartItems();
+                    cartSidebar.classList.remove('translate-x-full');
+                    document.body.style.overflow = 'hidden';
+                });
             }
-        } catch (error) {
-            console.error('Error fetching cart count:', error);
-        }
-    }
 
-    async function updateCartItems() {
-        try {
-            const response = await fetch('/cart/items');
-            const cart = await response.json();
-            const cartItemsContainer = document.getElementById('cartItems');
-            const cartTotalElement = document.getElementById('cartTotal');
-            
-            if (cart.length === 0) {
-                cartItemsContainer.innerHTML = `
+            if (closeCart) {
+                closeCart.addEventListener('click', () => {
+                    cartSidebar.classList.add('translate-x-full');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+
+            if (continueShopping) {
+                continueShopping.addEventListener('click', () => {
+                    cartSidebar.classList.add('translate-x-full');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+
+            // Gestion du paiement
+            if (proceedCheckout && checkoutModal) {
+                proceedCheckout.addEventListener('click', async () => {
+                    if (!isAuthenticated) {
+                        // Set flash message via AJAX
+                        try {
+                            await fetch('/set-flash-message', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({
+                                    type: 'warning',
+                                    message: 'Vous devez être connecté pour procéder au paiement.'
+                                })
+                            });
+                        } catch (error) {
+                            console.error('Error setting flash message:', error);
+                        }
+                        // Redirect to login page
+                        window.location.href = '{{ path('app_login') }}';
+                        return;
+                    }
+
+                    // Fermer le sidebar du panier
+                    cartSidebar.classList.add('translate-x-full');
+
+                    // Afficher les éléments du panier dans la modal de paiement
+                    await updateCheckoutItems();
+
+                    // Ouvrir la modal de paiement
+                    checkoutModal.classList.remove('hidden');
+                });
+            }
+
+            if (closeCheckoutModal) {
+                closeCheckoutModal.addEventListener('click', () => {
+                    checkoutModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+
+            // Gestion du bouton "Confirmer le paiement"
+            const confirmPayment = document.getElementById('confirmPayment');
+            const confirmationModal = document.getElementById('confirmationModal');
+
+            if (confirmPayment) {
+                confirmPayment.addEventListener('click', async () => {
+                    try {
+                        confirmPayment.disabled = true;
+                        confirmPayment.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Traitement en cours...';
+
+                        const response = await fetch('/checkout', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+
+                            if (data.redirect_url) {
+                                // Redirection vers Stripe si une URL est fournie
+                                window.location.href = data.redirect_url;
+                            } else {
+                                // Sinon, afficher la confirmation comme avant
+                                checkoutModal.classList.add('hidden');
+                                confirmationModal.classList.remove('hidden');
+                                await updateCartCount();
+                            }
+                        } else {
+                            const errorData = await response.json();
+                            alert(errorData.message || 'Erreur lors du traitement du paiement. Veuillez réessayer.');
+                        }
+                    } catch (error) {
+                        console.error('Error during checkout:', error);
+                        alert('Erreur lors du traitement du paiement. Veuillez réessayer.');
+                    } finally {
+                        confirmPayment.disabled = false;
+                        confirmPayment.innerHTML = 'Confirmer le paiement';
+                    }
+                });
+            }
+
+            const closeConfirmation = document.getElementById('closeConfirmation');
+
+            if (closeConfirmation) {
+                closeConfirmation.addEventListener('click', () => {
+                    confirmationModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    window.location.href = '/'; // Retour à l'accueil
+                });
+            }
+
+            const viewTickets = document.getElementById('viewTickets');
+
+            if (viewTickets) {
+                viewTickets.addEventListener('click', () => {
+                    confirmationModal.classList.add('hidden');
+                    document.body.style.overflow = 'auto';
+                    window.location.href = '/tickets'; // Redirection vers la page des billets
+                });
+            }
+
+            const userMenuButton = document.getElementById('userMenuButton');
+            const userMenu = document.getElementById('userMenu');
+
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', () => {
+                    userMenu.classList.toggle('hidden');
+                });
+
+                // Fermer le menu si on clique en dehors
+                document.addEventListener('click', (event) => {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+            }
+        });
+
+        async function updateCartCount() {
+            try {
+                const response = await fetch('/cart/count');
+                const data = await response.json();
+                const cartCount = document.getElementById('cartCount');
+
+                if (data.count > 0) {
+                    cartCount.textContent = data.count;
+                    cartCount.classList.remove('hidden');
+                } else {
+                    cartCount.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error fetching cart count:', error);
+            }
+        }
+
+        async function updateCartItems() {
+            try {
+                const response = await fetch('/cart/items');
+                const cart = await response.json();
+                const cartItemsContainer = document.getElementById('cartItems');
+                const cartTotalElement = document.getElementById('cartTotal');
+
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = `
                     <div class="text-center py-8">
                         <i class="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
                         <p class="text-gray-500">Votre panier est vide</p>
                     </div>
                 `;
-                cartTotalElement.textContent = '0 DT';
-                return;
-            }
-            
-            let html = '';
-            let total = 0;
-            const matches = {};
+                    cartTotalElement.textContent = '0 DT';
+                    return;
+                }
 
-            cart.forEach(item => {
-                if (!matches[item.match]) matches[item.match] = [];
-                matches[item.match].push(item);
-            });
+                let html = '';
+                let total = 0;
+                const matches = {};
 
-            Object.keys(matches).forEach(match => {
-                html += `<div class="mb-6 pb-6 border-b border-gray-200">
+                cart.forEach(item => {
+                    if (!matches[item.match]) matches[item.match] = [];
+                    matches[item.match].push(item);
+                });
+
+                Object.keys(matches).forEach(match => {
+                    html += `<div class="mb-6 pb-6 border-b border-gray-200">
                     <h4 class="font-semibold mb-3">${match}</h4>`;
 
-                let matchTotal = 0;
+                    let matchTotal = 0;
 
-                matches[match].forEach(item => {
-                    html += `
+                    matches[match].forEach(item => {
+                        html += `
                     <div class="flex justify-between items-center py-2">
                         <div class="flex items-center">
                             <span class="font-bold mr-4">${item.price} DT</span>
@@ -440,90 +465,89 @@
                             </button>
                         </div>
                     </div>`;
-                    matchTotal += item.price;
-                    total += item.price;
-                });
+                        matchTotal += item.price;
+                        total += item.price;
+                    });
 
-                html += `<div class="flex justify-between pt-2 mt-2 border-t border-gray-200">
+                    html += `<div class="flex justify-between pt-2 mt-2 border-t border-gray-200">
                     <span class="font-medium">Total pour ce match :</span>
                     <span class="font-bold">${matchTotal} DT</span>
                 </div></div>`;
-            });
-
-            cartItemsContainer.innerHTML = html;
-            cartTotalElement.textContent = `${total} DT`;
-
-            // Gestion suppression éléments
-            document.querySelectorAll('.remove-item').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const itemId = e.target.closest('button').getAttribute('data-id');
-                    
-                    try {
-                        const response = await fetch(`/cart/remove/${itemId}`, {
-                            method: 'DELETE'
-                        });
-                        
-                        if (response.ok) {
-                            await updateCartItems();
-                            await updateCartCount();
-                        }
-                    } catch (error) {
-                        console.error('Error removing item:', error);
-                    }
                 });
-            });
-        } catch (error) {
-            console.error('Error fetching cart items:', error);
-        }
-    }
 
-    // Fonction pour mettre à jour les articles dans la modal de paiement
-    async function updateCheckoutItems() {
-        try {
-            const response = await fetch('/cart/items');
-            const cart = await response.json();
-            const checkoutItemsContainer = document.getElementById('checkoutItems');
-            const checkoutSubtotal = document.getElementById('checkoutSubtotal');
-            const checkoutTotal = document.getElementById('checkoutTotal');
-            
-            if (cart.length === 0) {
-                checkoutItemsContainer.innerHTML = '<p class="text-gray-500">Votre panier est vide</p>';
-                checkoutSubtotal.textContent = '0 DT';
-                checkoutTotal.textContent = '2 DT'; // Frais de service
-                return;
+                cartItemsContainer.innerHTML = html;
+                cartTotalElement.textContent = `${total} DT`;
+
+                // Gestion suppression éléments
+                document.querySelectorAll('.remove-item').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const itemId = e.target.closest('button').getAttribute('data-id');
+
+                        try {
+                            const response = await fetch(`/cart/remove/${itemId}`, {
+                                method: 'DELETE'
+                            });
+
+                            if (response.ok) {
+                                await updateCartItems();
+                                await updateCartCount();
+                            }
+                        } catch (error) {
+                            console.error('Error removing item:', error);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching cart items:', error);
             }
-            
-            let html = '';
-            let total = 0;
-            const matches = {};
+        }
 
-            cart.forEach(item => {
-                if (!matches[item.match]) matches[item.match] = [];
-                matches[item.match].push(item);
-            });
+        async function updateCheckoutItems() {
+            try {
+                const response = await fetch('/cart/items');
+                const cart = await response.json();
+                const checkoutItemsContainer = document.getElementById('checkoutItems');
+                const checkoutSubtotal = document.getElementById('checkoutSubtotal');
+                const checkoutTotal = document.getElementById('checkoutTotal');
 
-            Object.keys(matches).forEach(match => {
-                html += `<div class="mb-4">
+                if (cart.length === 0) {
+                    checkoutItemsContainer.innerHTML = '<p class="text-gray-500">Votre panier est vide</p>';
+                    checkoutSubtotal.textContent = '0 DT';
+                    checkoutTotal.textContent = '2 DT'; // Frais de service
+                    return;
+                }
+
+                let html = '';
+                let total = 0;
+                const matches = {};
+
+                cart.forEach(item => {
+                    if (!matches[item.match]) matches[item.match] = [];
+                    matches[item.match].push(item);
+                });
+
+                Object.keys(matches).forEach(match => {
+                    html += `<div class="mb-4">
                     <h5 class="font-semibold">${match}</h5>`;
 
-                matches[match].forEach(item => {
-                    html += `<div class="flex justify-between text-sm py-1">
+                    matches[match].forEach(item => {
+                        html += `<div class="flex justify-between text-sm py-1">
                         <span>${item.price} DT</span>
                     </div>`;
-                    total += item.price;
+                        total += item.price;
+                    });
+
+                    html += `</div>`;
                 });
 
-                html += `</div>`;
-            });
-
-            checkoutItemsContainer.innerHTML = html;
-            checkoutSubtotal.textContent = `${total} DT`;
-            checkoutTotal.textContent = `${total + 2} DT`; // Ajouter les frais de service
-        } catch (error) {
-            console.error('Error fetching checkout items:', error);
+                checkoutItemsContainer.innerHTML = html;
+                checkoutSubtotal.textContent = `${total} DT`;
+                checkoutTotal.textContent = `${total + 2} DT`; // Ajouter les frais de service
+            } catch (error) {
+                console.error('Error fetching checkout items:', error);
+            }
         }
-    }
-</script>
+    </script>
 {% endblock %}
 </body>
 </html>

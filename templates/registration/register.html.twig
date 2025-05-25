@@ -9,15 +9,15 @@
 		<link rel="icon" href="{{ asset('easy-ticket-logo.png') }}" type="image/png">
 		<script>
 			tailwind.config = {
-theme: {
-extend: {
-colors: {
-primary: '#df4e4e',
-secondary: '#f8f9fc'
-}
-}
-}
-}
+				theme: {
+				extend: {
+				colors: {
+				primary: '#df4e4e',
+				secondary: '#f8f9fc'
+				}
+				}
+				}
+				}
 		</script>
 	</head>
 	<body class="bg-secondary min-h-screen flex items-center">
@@ -33,6 +33,11 @@ secondary: '#f8f9fc'
 							{% for flash_error in app.flashes('verify_email_error') %}
 								<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
 									{{ flash_error }}
+								</div>
+							{% endfor %}
+							{% for flash_success in app.flashes('success') %}
+								<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+									{{ flash_success }}
 								</div>
 							{% endfor %}
 							{% if form_errors(registrationForm)|length > 0 %}

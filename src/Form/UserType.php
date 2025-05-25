@@ -6,13 +6,17 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UserType extends AbstractType
 {
@@ -56,6 +60,16 @@ class UserType extends AbstractType
                     ]
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez entrer un mot de passe.',
+                    ]),
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        'max' => 4096,
+                    ]),
+                ],
             ])
                 ->add('role', ChoiceType::class, [
                     'mapped' => false,
@@ -87,6 +101,41 @@ class UserType extends AbstractType
                     ]
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
+                'constraints' => [
+                    new Length([
+                        'min' => 6,
+                        'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        'max' => 4096,
+                    ]),
+                ],
+            ]);
+
+            $builder->add('currentPassword', PasswordType::class, [
+                'label' => 'Mot de passe actuel',
+                'mapped' => false,
+                'required' => true,
+                'constraints' => [
+                    new NotBlank([
+                        'message' => 'Veuillez entrer votre mot de passe actuel.',
+                    ]),
+                    new Callback(function ($value, ExecutionContextInterface $context) use ($options) {
+                        // Corrected: Use getParent() instead of getForm()
+                        $user = $context->getObject()->getParent()->getData();
+                        if (!$user instanceof User) {
+                            return;
+                        }
+                        $passwordHasher = $options['password_hasher'];
+                        if (!$passwordHasher->isPasswordValid($user, $value)) {
+                            $context->buildViolation('Le mot de passe actuel est incorrect.')
+                                ->atPath('currentPassword')
+                                ->addViolation();
+                        }
+                    }),
+                ],
+                'attr' => [
+                    'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                    'placeholder' => 'Entrez votre mot de passe actuel'
+                ],
             ]);
         }
 
@@ -109,5 +158,6 @@ class UserType extends AbstractType
             'data_class' => User::class,
             'is_customer' => false,
         ]);
+        $resolver->setRequired('password_hasher');
     }
 }

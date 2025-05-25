@@ -76,7 +76,12 @@
         </div>
     </div>
 </header>
-
+{% for message in app.flashes('success') %}
+    <div class="bg-green-100 text-green-700 p-4 rounded-lg flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        {{ message }}
+    </div>
+{% endfor %}
 {# --- CONTENU PRINCIPAL --- #}
 <main>
     {% block body %}{% endblock %}

@@ -55,14 +55,14 @@
                 </div>
 
                 <div>
-                    {{ form_label(form.plainPassword.first, 'Nouveau mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_label(form.plainPassword.first, 'Nouveau mot de passe (facultatif)', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-input', 'placeholder': 'Laissez vide pour ne pas changer'}}) }}
                     {{ form_errors(form.plainPassword.first) }}
                 </div>
 
                 <div>
                     {{ form_label(form.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-input'}}) }}
+                    {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-input', 'placeholder': 'Confirmez le mot de passe'}}) }}
                     {{ form_errors(form.plainPassword.second) }}
                 </div>
 
@@ -70,7 +70,7 @@
                     {{ form_label(form.role, null, {'label_attr': {'class': 'form-label'}}) }}
                     <div class="flex items-center">
                         {% for child in form.role %}
-                            {{ form_widget(child, {'attr': {'class': 'form-radio','disabled':true}}) }}
+                            {{ form_widget(child, {'attr': {'class': 'form-radio'}}) }}
                             {{ form_label(child, null, {'label_attr': {'class': 'radio-label'}}) }}
                         {% endfor %}
                     </div>

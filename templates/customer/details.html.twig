@@ -20,7 +20,7 @@
 					</div>
 					<div class="text-center">
 						<div class="bg-gray-200 px-4 py-2 rounded-full">
-							<p class="text-gray-700 text-lg font-medium">VS</p>
+							<p class="text-gray-700 text-lg font-medium">V</p>
 						</div>
 						<p class="text-lg font-semibold mt-4">{{ match.dateEtHeure|date('d/m/Y') }}</p>
 						<p class="text-xl font-bold">{{ match.dateEtHeure|date('H:i') }}</p>
@@ -60,6 +60,20 @@
 								</div>
 							</div>
 						</div>
+
+						{# Ajout de la carte Google Maps #}
+						{% if match.stade.localisation %}
+							<div class="mt-6">
+								<h3 class="text-lg font-medium mb-2">Localisation du stade</h3>
+								<div class="rounded-lg overflow-hidden border border-gray-200 h-60">
+									<iframe src="https://maps.google.com/maps?q={{ match.stade.localisation|url_encode }}&output=embed" class="w-full h-full border-0" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+								</div>
+								<p class="text-sm text-gray-500 mt-2">
+									<i class="fas fa-info-circle mr-1"></i>
+									Localisation exacte du stade
+								</p>
+							</div>
+						{% endif %}
 					</div>
 
 					<div>

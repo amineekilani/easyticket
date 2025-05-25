@@ -42,6 +42,9 @@ class RegistrationController extends AbstractController
             $user->setIsVerified(false);
             $user->setDateInscription(new \DateTimeImmutable());
 
+            // Set default role
+            $user->setRoles(['ROLE_USER']); // Ajout du rôle par défaut
+
             // Persist the user
             $entityManager->persist($user);
             $entityManager->flush();
@@ -60,7 +63,7 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('success', 'Inscription réussie ! Veuillez vérifier votre email pour confirmer.');
 
-            return $this->redirectToRoute('app_equipe_index');
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [

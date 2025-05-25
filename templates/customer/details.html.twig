@@ -91,7 +91,6 @@
 				{# Section d'achat de billets #}
 				<div class="mt-8 p-6 bg-gray-50 rounded-lg">
 					<h2 class="text-xl font-semibold mb-4">Acheter des billets</h2>
-
 					{% set now = "now"|date("U") %}
 					{% set matchTime = match.dateEtHeure|date("U") %}
 					{% set virageAvailable = match.nbrBilletsVirage - match.billetsVirageVendus %}
@@ -154,6 +153,11 @@
 									</button>
 								</div>
 							{% endif %}
+						</div>
+						<!-- Stadium Plan Visualization -->
+						<div class="stadium-visualization mt-6">
+							<p class="text-sm text-gray-600 text-center mt-3 mb-3">Référez-vous au plan du stade pour choisir vos places.</p>
+							<img src="{{ asset('images/stadium_plan.png') }}" alt="Plan du stade Hammadi Agrebi" class="stadium-image mx-auto border border-gray-200 shadow-sm" width="500px">
 						</div>
 					{% elseif totalAvailable <= 0 %}
 						<div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">

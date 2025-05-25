@@ -16,6 +16,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\EntityRepository;
 
 class MatchFootballType extends AbstractType
 {
@@ -35,6 +36,12 @@ class MatchFootballType extends AbstractType
             ->add('equipe1', EntityType::class, [
                 'class' => Equipe::class,
                 'choice_label' => 'nom',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('e')
+                        ->where('e.statut = :statut')
+                        ->setParameter('statut', 'Actif')
+                        ->orderBy('e.nom', 'ASC');
+                },
                 'constraints' => [
                     new Assert\NotNull(['message' => 'L\'équipe à domicile est obligatoire']),
                     new Assert\NotEqualTo([
@@ -43,10 +50,17 @@ class MatchFootballType extends AbstractType
                     ]),
                 ],
                 'placeholder' => 'Sélectionner une équipe',
+                'attr' => ['data-team-selector' => 'equipe1'], // Identifier for JavaScript
             ])
             ->add('equipe2', EntityType::class, [
                 'class' => Equipe::class,
                 'choice_label' => 'nom',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('e')
+                        ->where('e.statut = :statut')
+                        ->setParameter('statut', 'Actif')
+                        ->orderBy('e.nom', 'ASC');
+                },
                 'constraints' => [
                     new Assert\NotNull(['message' => 'L\'équipe visiteur est obligatoire']),
                     new Assert\NotEqualTo([
@@ -55,6 +69,7 @@ class MatchFootballType extends AbstractType
                     ]),
                 ],
                 'placeholder' => 'Sélectionner une équipe',
+                'attr' => ['data-team-selector' => 'equipe2'], // Identifier for JavaScript
             ])
             ->add('stade', EntityType::class, [
                 'class' => Stade::class,
@@ -125,16 +140,16 @@ class MatchFootballType extends AbstractType
                 if ($match->getNbrBilletsEnceinte() > $stade->getCapaciteEnceinte()) {
                     $form->get('nbrBilletsEnceinte')->addError(new FormError('Le nombre de billets enceinte dépasse la capacité du stade'));
                 }
-                
+
                 // Vérification de disponibilité du stade
                 $dateMatch = $match->getDateEtHeure();
                 if ($dateMatch) {
                     $em = $form->getConfig()->getOption('entity_manager');
-                    
+
                     // Créer un intervalle de temps pour le jour entier
                     $debutJour = (clone $dateMatch)->setTime(0, 0, 0);
                     $finJour = (clone $dateMatch)->setTime(23, 59, 59);
-                    
+
                     $qb = $em->createQueryBuilder()
                         ->select('COUNT(m)')
                         ->from('App\Entity\MatchFootball', 'm')
@@ -143,15 +158,15 @@ class MatchFootballType extends AbstractType
                         ->setParameter('stade', $stade)
                         ->setParameter('debut', $debutJour)
                         ->setParameter('fin', $finJour);
-                    
+
                     // Exclure le match actuel en cas de modification
                     if ($match->getId()) {
                         $qb->andWhere('m.id != :id')
-                           ->setParameter('id', $match->getId());
+                            ->setParameter('id', $match->getId());
                     }
-                    
+
                     $matchesCount = $qb->getQuery()->getSingleScalarResult();
-                    
+
                     if ($matchesCount > 0) {
                         $form->get('stade')->addError(
                             new FormError('Ce stade est déjà réservé pour un autre match ce jour-là')
@@ -160,7 +175,7 @@ class MatchFootballType extends AbstractType
                             new FormError('Une autre rencontre est déjà programmée dans ce stade à cette date')
                         );
                     }
-                    
+
                     // Vérification pour l'équipe 1
                     $equipe1 = $match->getEquipe1();
                     if ($equipe1) {
@@ -172,15 +187,15 @@ class MatchFootballType extends AbstractType
                             ->setParameter('equipe', $equipe1)
                             ->setParameter('debut', $debutJour)
                             ->setParameter('fin', $finJour);
-                        
+
                         // Exclure le match actuel en cas de modification
                         if ($match->getId()) {
                             $qb1->andWhere('m.id != :id')
-                               ->setParameter('id', $match->getId());
+                                ->setParameter('id', $match->getId());
                         }
-                        
+
                         $equipe1MatchesCount = $qb1->getQuery()->getSingleScalarResult();
-                        
+
                         if ($equipe1MatchesCount > 0) {
                             $form->get('equipe1')->addError(
                                 new FormError('Cette équipe a déjà un match programmé ce jour-là')
@@ -190,7 +205,7 @@ class MatchFootballType extends AbstractType
                             );
                         }
                     }
-                    
+
                     // Vérification pour l'équipe 2
                     $equipe2 = $match->getEquipe2();
                     if ($equipe2) {
@@ -202,15 +217,15 @@ class MatchFootballType extends AbstractType
                             ->setParameter('equipe', $equipe2)
                             ->setParameter('debut', $debutJour)
                             ->setParameter('fin', $finJour);
-                        
+
                         // Exclure le match actuel en cas de modification
                         if ($match->getId()) {
                             $qb2->andWhere('m.id != :id')
-                               ->setParameter('id', $match->getId());
+                                ->setParameter('id', $match->getId());
                         }
-                        
+
                         $equipe2MatchesCount = $qb2->getQuery()->getSingleScalarResult();
-                        
+
                         if ($equipe2MatchesCount > 0) {
                             $form->get('equipe2')->addError(
                                 new FormError('Cette équipe a déjà un match programmé ce jour-là')

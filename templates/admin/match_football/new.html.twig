@@ -351,9 +351,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mise à jour dynamique des capacités
+            // Existing code for stadium capacity validation
             const stadeSelect = document.getElementById('{{ form.stade.vars.id }}');
-            
+
             if (stadeSelect) {
                 stadeSelect.addEventListener('change', function() {
                     const stadeId = this.value;
@@ -361,30 +361,23 @@
                         fetch(`/stade/capacity/${stadeId}`)
                             .then(response => response.json())
                             .then(data => {
-                                // Mise à jour des infos de capacité
                                 document.getElementById('virage-capacity-info').textContent = `Capacité max: ${data.virage}`;
                                 document.getElementById('pelouse-capacity-info').textContent = `Capacité max: ${data.pelouse}`;
                                 document.getElementById('enceinte-capacity-info').textContent = `Capacité max: ${data.enceinte}`;
-                                
-                                // Mise à jour des attributs max
                                 document.querySelector('[data-capacity-target="virage"]').max = data.virage;
                                 document.querySelector('[data-capacity-target="pelouse"]').max = data.pelouse;
                                 document.querySelector('[data-capacity-target="enceinte"]').max = data.enceinte;
                             });
                     }
                 });
-                
-                // Déclencher le changement si un stade est déjà sélectionné
                 if (stadeSelect.value) {
                     stadeSelect.dispatchEvent(new Event('change'));
                 }
             }
-            
-            // Validation des nombres de billets
+
             const validateCapacity = function(input) {
                 const max = parseInt(input.max);
                 const value = parseInt(input.value) || 0;
-                
                 if (value > max) {
                     input.setCustomValidity(`Ne peut pas dépasser ${max}`);
                     input.reportValidity();
@@ -392,12 +385,51 @@
                     input.setCustomValidity('');
                 }
             };
-            
+
             document.querySelectorAll('[data-capacity-target]').forEach(input => {
                 input.addEventListener('input', function() {
                     validateCapacity(this);
                 });
             });
+
+            // New code for team selection disabling
+            const equipe1Select = document.querySelector('[data-team-selector="equipe1"]');
+            const equipe2Select = document.querySelector('[data-team-selector="equipe2"]');
+
+            function updateTeamOptions() {
+                const equipe1Value = equipe1Select.value;
+                const equipe2Value = equipe2Select.value;
+
+                // Reset all options to enabled
+                Array.from(equipe1Select.options).forEach(option => {
+                    option.disabled = false;
+                });
+                Array.from(equipe2Select.options).forEach(option => {
+                    option.disabled = false;
+                });
+
+                // Disable the selected team in the opposite dropdown
+                if (equipe1Value) {
+                    const equipe2Option = Array.from(equipe2Select.options).find(option => option.value === equipe1Value);
+                    if (equipe2Option) {
+                        equipe2Option.disabled = true;
+                    }
+                }
+
+                if (equipe2Value) {
+                    const equipe1Option = Array.from(equipe1Select.options).find(option => option.value === equipe2Value);
+                    if (equipe1Option) {
+                        equipe1Option.disabled = true;
+                    }
+                }
+            }
+
+            // Add event listeners for both dropdowns
+            equipe1Select.addEventListener('change', updateTeamOptions);
+            equipe2Select.addEventListener('change', updateTeamOptions);
+
+            // Initial call to set up the options
+            updateTeamOptions();
         });
     </script>
 {% endblock %}

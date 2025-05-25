@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Changement de votre adresse email</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fc;
+        }
+        .container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .logo {
+            max-height: 150px;
+            margin-bottom: 20px;
+        }
+        .content {
+            padding: 30px;
+            border-radius: 0;
+            margin-bottom: 0;
+            background-color: white;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999999;
+            padding: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Changement de votre adresse email</h1>
+    </div>
+
+    <div class="content">
+        <p>Bonjour {{ user.name }},</p>
+
+        <p>Nous vous informons que l'adresse email associée à votre compte EasyTicket a été modifiée pour {{ newEmail }}.</p>
+
+        <p>Si vous n'avez pas initié ce changement, veuillez contacter notre support immédiatement à <a href="mailto:support@easyticket.com" style="color: #df4e4e;">support@easyticket.com</a>.</p>
+    </div>
+
+    <div class="footer">
+        <p>© {{ "now"|date("Y") }} EasyTicket. Tous droits réservés.</p>
+        <p>
+            <a href="#" style="color: #df4e4e; text-decoration: none; margin: 0 10px;">Visitez notre site</a>
+        </p>
+    </div>
+</div>
+</body>
+</html>

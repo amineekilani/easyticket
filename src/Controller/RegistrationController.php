@@ -43,7 +43,7 @@ class RegistrationController extends AbstractController
             $user->setDateInscription(new \DateTimeImmutable());
 
             // Set default role
-            $user->setRoles(['ROLE_USER']); // Ajout du rôle par défaut
+            $user->setRoles(['ROLE_USER']);
 
             // Persist the user
             $entityManager->persist($user);
@@ -79,7 +79,7 @@ class RegistrationController extends AbstractController
 
         if (!$user) {
             $this->addFlash('verify_email_error', $translator->trans('Le lien de vérification est invalide ou a expiré.', [], 'VerifyEmailBundle'));
-            return $this->redirectToRoute('app_register');
+            return $this->redirectToRoute('app_login');
         }
 
         // Mark the user as verified
@@ -90,6 +90,6 @@ class RegistrationController extends AbstractController
 
         $this->addFlash('success', 'Votre adresse email a été vérifiée.');
 
-        return $this->redirectToRoute('app_equipe_index');
+        return $this->redirectToRoute('app_customer');
     }
 }

@@ -3,19 +3,29 @@
 namespace App\Controller;
 
 use App\Entity\MatchFootball;
+use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\StadeRepository;
 use App\Repository\EquipeRepository;
 use App\Repository\MatchFootballRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\EmailService;
 
 final class CustomerController extends AbstractController
 {
+    private $emailService;
+
+    public function __construct(EmailService $emailService)
+    {
+        $this->emailService = $emailService;
+    }
+
     #[Route('/match/{id}', name: 'app_match_details')]
     public function details(MatchFootball $match): Response
     {
@@ -23,10 +33,10 @@ final class CustomerController extends AbstractController
             'match' => $match,
         ]);
     }
+
     #[Route('/', name: 'app_customer')]
     public function index(MatchFootballRepository $matchFootballRepository): Response
     {
-        // Récupérer les 3 prochains matchs à venir
         $prochainMatchs = $matchFootballRepository->findNextMatches(3);
 
         return $this->render('customer/acceuil.html.twig', [
@@ -55,13 +65,11 @@ final class CustomerController extends AbstractController
             'date' => $request->query->get('date'),
         ];
 
-        // Vérifier si AU MOINS UN filtre manuel est actif
         $hasManualFilters = !empty(array_filter($filters));
 
         if ($hasManualFilters) {
             $matchs = $matchRepo->findWithFilters($filters);
         } else {
-            // Appliquer le filtre par défaut "Cette semaine" SEULEMENT si aucun filtre manuel
             $matchs = $matchRepo->findByDateRange('week');
         }
 
@@ -94,24 +102,79 @@ final class CustomerController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
+        $originalEmail = $user->getEmail();
+
         $form = $this->createForm(UserType::class, $user, [
-            'is_customer' => true, // Pass option to exclude admin-specific fields
+            'is_customer' => true,
+            'password_hasher' => $passwordHasher,
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $plainPassword = $form->get('plainPassword')->getData();
+            $emailChanged = $user->getEmail() !== $originalEmail;
+
+            // Require current password for email or password changes
+            if ($emailChanged || $plainPassword) {
+                $currentPassword = $form->get('currentPassword')->getData();
+                if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                    $form->get('currentPassword')->addError(new FormError('Le mot de passe actuel est incorrect.'));
+                    return $this->render('customer/profile/edit.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+            }
+
             if ($plainPassword) {
                 $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
                 $user->setPassword($hashedPassword);
             }
+
+            if ($emailChanged) {
+                $user->setIsVerified(false);
+                $this->sendEmailConfirmation($user, $entityManager);
+                $this->sendEmailChangeNotification($originalEmail, $user);
+            }
+
             $entityManager->flush();
-            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
+            $this->addFlash('success', 'Votre profil a été mis à jour avec succès. Si vous avez changé votre email, veuillez vérifier votre nouvelle adresse.');
             return $this->redirectToRoute('app_customer');
         }
 
         return $this->render('customer/profile/edit.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    private function sendEmailConfirmation(User $user, EntityManagerInterface $entityManager): void
+    {
+        $token = bin2hex(random_bytes(32));
+        $user->setConfirmationToken($token);
+        $entityManager->flush();
+
+        $this->emailService->send(
+            'aminekilani901@gmail.com',
+            $user->getEmail(),
+            'EasyTicket | Confirmez votre nouvelle adresse email',
+            'registration/confirmation_email.html.twig',
+            [
+                'user' => $user,
+                'token' => $token,
+            ]
+        );
+    }
+
+    private function sendEmailChangeNotification(string $oldEmail, User $user): void
+    {
+        $this->emailService->send(
+            'aminekilani901@gmail.com',
+            $oldEmail,
+            'EasyTicket | Changement de votre adresse email',
+            'emails/email_change_notification.html.twig',
+            [
+                'user' => $user,
+                'newEmail' => $user->getEmail(),
+            ]
+        );
     }
 }

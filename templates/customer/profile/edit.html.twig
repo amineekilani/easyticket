@@ -43,22 +43,27 @@
             <div>
                 {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.email, {'attr': {'class': 'form-input'}}) }}
-                <span class="form-error">{{ form_errors(form.email, {'attr': {'class': 'form-error'}}) }}</span>
+                <span class="form-error">{{ form_errors(form.email) }}</span>
             </div>
             <div>
                 {{ form_label(form.name, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.name, {'attr': {'class': 'form-input'}}) }}
-                <span class="form-error">{{ form_errors(form.name, {'attr': {'class': 'form-error'}}) }}</span>
+                <span class="form-error">{{ form_errors(form.name) }}</span>
+            </div>
+            <div>
+                {{ form_label(form.currentPassword, 'Mot de passe actuel', {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.currentPassword, {'attr': {'class': 'form-input', 'placeholder': 'Entrez votre mot de passe actuel'}}) }}
+                <span class="form-error">{{ form_errors(form.currentPassword) }}</span>
             </div>
             <div>
                 {{ form_label(form.plainPassword.first, 'Nouveau mot de passe (facultatif)', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.plainPassword.first, {'attr': {'class': 'form-input', 'placeholder': 'Laissez vide pour ne pas changer'}}) }}
-                <span class="form-error">{{ form_errors(form.plainPassword.first, {'attr': {'class': 'form-error'}}) }}</span>
+                <span class="form-error">{{ form_errors(form.plainPassword.first) }}</span>
             </div>
             <div>
                 {{ form_label(form.plainPassword.second, 'Confirmer le mot de passe', {'label_attr': {'class': 'form-label'}}) }}
                 {{ form_widget(form.plainPassword.second, {'attr': {'class': 'form-input', 'placeholder': 'Confirmez le mot de passe'}}) }}
-                <span class="form-error">{{ form_errors(form.plainPassword.second, {'attr': {'class': 'form-error'}}) }}</span>
+                <span class="form-error">{{ form_errors(form.plainPassword.second) }}</span>
             </div>
             <div class="flex justify-end space-x-3">
                 <a href="{{ path('app_customer') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">

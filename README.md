@@ -23,8 +23,8 @@
 
 ## 👥 Authors
 
-- **Amine Kilani**  
-- [Nidhal Cherif]([https://github.com/NidhalCherif](https://github.com/BahaManai)) 
+- [Amine Kilani](https://github.com/amineekilani) 
+- [Baha Eddine Manai](https://github.com/BahaManai) 
 
 This project was developed as part of the Integration Project at ISET Radès.
 
